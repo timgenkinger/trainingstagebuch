@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rettungshund Trainingstagebuch</title>
+<meta name="description" content="Digitales Trainingstagebuch für Rettungshund-Flächensuche: jede Suche einzeln dokumentieren, auswerten und im Team synchron halten.">
+<meta name="theme-color" content="#4d7a4d">
+<meta name="color-scheme" content="light dark">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Trainingstagebuch">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body class="laedt">
+
+<div id="update-bar" class="update-bar" hidden>
+  <span>Eine neue Version ist verfügbar.</span>
+  <button type="button" class="btn btn--mini btn--hell">Jetzt aktualisieren</button>
+</div>
+
+<header class="kopf">
+  <div class="kopf__inhalt">
+    <a class="marke" href="#/suchen">
+      <svg viewBox="0 0 32 32" aria-hidden="true" class="marke__logo">
+        <circle cx="16" cy="16" r="15" fill="currentColor" opacity=".12"/>
+        <path d="M10.5 12.5c0-1.7 1-3 2.2-3s2.2 1.3 2.2 3-1 3-2.2 3-2.2-1.3-2.2-3Zm6.6 0c0-1.7 1-3 2.2-3s2.2 1.3 2.2 3-1 3-2.2 3-2.2-1.3-2.2-3ZM7 18.6c0-1.4.9-2.5 1.9-2.5s1.9 1.1 1.9 2.5-.9 2.5-1.9 2.5S7 20 7 18.6Zm14.2 0c0-1.4.9-2.5 1.9-2.5s1.9 1.1 1.9 2.5-.9 2.5-1.9 2.5-1.9-1.1-1.9-2.5ZM16 17.2c2.9 0 5.3 2.4 5.3 4.6 0 1.7-1.4 2.7-3 2.4-.8-.1-1.6-.3-2.3-.3s-1.5.2-2.3.3c-1.6.3-3-.7-3-2.4 0-2.2 2.4-4.6 5.3-4.6Z" fill="currentColor"/>
+      </svg>
+      <span class="marke__text">
+        <strong>Trainingstagebuch</strong>
+        <small id="version-badge">v–</small>
+      </span>
+    </a>
+    <div class="kopf__rechts">
+      <a id="sync-chip" class="sync-chip sync-chip--aus" href="#/einstellungen" title="Status des Online-Abgleichs">
+        <span class="punkt"></span><span>…</span>
+      </a>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Hauptnavigation">
+    <a href="#/suchen" data-tab="suchen">Suchen</a>
+    <a href="#/dashboard" data-tab="dashboard">Dashboard</a>
+    <a href="#/bilder" data-tab="bilder">Helfer:in-Bilder</a>
+    <a href="#/einstellungen" data-tab="mehr">Einstellungen</a>
+  </nav>
+</header>
+
+<main id="view" class="inhalt">
+  <div class="start-laden"><span class="spinner"></span> Daten werden geladen …</div>
+</main>
+
+<a class="fab" href="#/suche/neu" title="Neue Suche dokumentieren" aria-label="Neue Suche">+</a>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+
+<noscript><p style="padding:2rem">Diese Anwendung benötigt JavaScript.</p></noscript>
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>
