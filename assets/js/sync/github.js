@@ -175,18 +175,51 @@ function gleich(a, b) {
 /* ---------------------------------------------------------------- */
 
 /**
- * Stellt sicher, dass der Datenbranch existiert. Er wird als eigenständiger
- * Branch ohne Vorgeschichte angelegt, damit dort ausschließlich die Daten
- * liegen – getrennt vom Programmcode auf `main`.
+ * Stellt sicher, dass der Datenbranch existiert.
+ *
+ * Zwei Fälle sind zu unterscheiden:
+ *  a) Das Repository hat bereits Commits – dann wird ein eigenständiger Branch
+ *     ohne Vorgeschichte angelegt, damit dort ausschließlich die Daten liegen.
+ *  b) Das Repository ist noch vollständig leer – dann verweigert die Git-Data-API
+ *     die Arbeit ("Git Repository is empty", HTTP 409). In diesem Fall wird zuerst
+ *     über die Contents-API der Standardbranch mit der Datei angelegt und der
+ *     Datenbranch anschließend davon abgezweigt.
  */
 export async function stelleBranchSicher(cfg) {
   const vorhanden = await anfrage(cfg, `/repos/${cfg.owner}/${cfg.repo}/branches/${encodeURIComponent(cfg.branch)}`);
   if (vorhanden.ok) return { angelegt: false };
   if (vorhanden.status !== 404) throw new GhFehler(vorhanden.status, await fehlerText(vorhanden), 'branch');
 
+  const repoRes = await anfrage(cfg, `/repos/${cfg.owner}/${cfg.repo}`);
+  if (!repoRes.ok) throw new GhFehler(repoRes.status, await fehlerText(repoRes), 'branch');
+  const repo = await repoRes.json();
+
   const basis = `/repos/${cfg.owner}/${cfg.repo}/git`;
   const leer = JSON.stringify({ app: 'rhd-trainingstagebuch', records: [] }, null, 1);
 
+  // Hat das Repository überhaupt schon einen Commit?
+  const kopf = await anfrage(cfg, `${basis}/ref/heads/${encodeURIComponent(repo.default_branch)}`);
+  if (!kopf.ok) {
+    // Fall b) – leeres Repository über die Contents-API in Gang bringen.
+    const erst = await anfrage(cfg, dateiPfad(cfg), {
+      method: 'PUT',
+      body: JSON.stringify({ message: 'Datenablage für das Trainingstagebuch angelegt', content: nachBase64(leer) }),
+    });
+    if (!erst.ok) throw new GhFehler(erst.status, await fehlerText(erst), 'branch');
+    if (cfg.branch === repo.default_branch) return { angelegt: true };
+
+    const neuerKopf = await anfrage(cfg, `${basis}/ref/heads/${encodeURIComponent(repo.default_branch)}`);
+    if (!neuerKopf.ok) throw new GhFehler(neuerKopf.status, await fehlerText(neuerKopf), 'branch');
+    const sha = (await neuerKopf.json()).object.sha;
+    const ref0 = await anfrage(cfg, `${basis}/refs`, {
+      method: 'POST',
+      body: JSON.stringify({ ref: `refs/heads/${cfg.branch}`, sha }),
+    });
+    if (!ref0.ok) throw new GhFehler(ref0.status, await fehlerText(ref0), 'branch');
+    return { angelegt: true };
+  }
+
+  // Fall a) – eigenständiger Branch ohne Vorgeschichte.
   const blob = await anfrage(cfg, `${basis}/blobs`, {
     method: 'POST',
     body: JSON.stringify({ content: nachBase64(leer), encoding: 'base64' }),
@@ -203,11 +236,7 @@ export async function stelleBranchSicher(cfg) {
 
   const commit = await anfrage(cfg, `${basis}/commits`, {
     method: 'POST',
-    body: JSON.stringify({
-      message: 'Datenbranch für das Trainingstagebuch angelegt',
-      tree: treeSha,
-      parents: [],
-    }),
+    body: JSON.stringify({ message: 'Datenbranch für das Trainingstagebuch angelegt', tree: treeSha, parents: [] }),
   });
   if (!commit.ok) throw new GhFehler(commit.status, await fehlerText(commit), 'branch');
   const commitSha = (await commit.json()).sha;
@@ -316,6 +345,9 @@ export async function pruefe(cfg) {
       add('Branch', 'ok', `Branch "${cfg.branch}" vorhanden.`);
     } else if (res.status === 404) {
       add('Branch', 'warnung', `Branch "${cfg.branch}" fehlt noch – wird beim Verbinden angelegt.`);
+      if (repo && repo.size === 0) {
+        add('Repository-Inhalt', 'warnung', 'Das Repository ist noch leer – die Datenablage wird beim Verbinden eingerichtet.');
+      }
     } else {
       add('Branch', 'fehler', `GitHub antwortet mit ${res.status}: ${await fehlerText(res)}`);
     }

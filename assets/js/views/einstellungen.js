@@ -3,17 +3,39 @@
 import * as store from '../store.js';
 import * as sync from '../sync/index.js';
 import * as S from '../schema.js';
-import { ladeConfig, loescheLokaleConfig, speichereConfig, geraeteName, setzeGeraeteName, STANDARD_CONFIG } from '../config.js';
+import { ladeConfig, loescheLokaleConfig, speichereConfig, speichereToken, geraeteName, setzeGeraeteName, STANDARD_CONFIG } from '../config.js';
 import { RELEASE_DATE, BUILD, versionString } from '../version.js';
 import { esc, karte, feld, textInput, toast, frage, download, relativeZeit, formatDatum, leer } from '../ui.js';
 
+let statusAbmelden = null;
+
 export async function render(wurzel) {
   zeichne(wurzel);
+  // Der Abgleich meldet seinen Zustand asynchron – die Seite zieht nach.
+  statusAbmelden?.();
+  let letzter = null;
+  statusAbmelden = sync.onStatus((s) => {
+    const kennung = `${s.zustand}|${s.offen}|${s.text}`;
+    if (kennung === letzter) return;
+    letzter = kennung;
+    if (document.getElementById('view')?.contains(wurzel.querySelector('.seite'))) zeichne(wurzel);
+  });
+}
+
+export function verlassen() {
+  statusAbmelden?.();
+  statusAbmelden = null;
 }
 
 function zeichne(wurzel) {
+  const fokus = document.activeElement?.dataset?.token !== undefined;
+  const wert = fokus ? document.activeElement.value : null;
   wurzel.innerHTML = html();
   binde(wurzel.querySelector('.seite'), wurzel);
+  if (fokus) {
+    const neu = wurzel.querySelector('[data-token]');
+    if (neu) { neu.value = wert; neu.focus(); }
+  }
 }
 
 function html() {
@@ -35,9 +57,12 @@ function html() {
           <small>${esc(s.text)}</small>
           <small>Letzter Abgleich: ${esc(relativeZeit(s.letzterAbgleich))}</small>
         </div>
-        ${cfg.backend !== 'aus' ? '<button type="button" class="btn btn--mini" data-sync-jetzt>Jetzt abgleichen</button>' : ''}
+        ${cfg.backend !== 'aus' && s.zustand !== 'kein-token'
+          ? '<button type="button" class="btn btn--mini" data-sync-jetzt>Jetzt abgleichen</button>'
+          : ''}
       </div>
 
+      ${tokenKasten(cfg)}
       ${ziel(cfg)}
 
       <div class="freigabe-info">
@@ -47,8 +72,12 @@ function html() {
       </div>
 
       <div class="btn-zeile">
-        <a class="btn btn--primaer" href="#/einrichtung">${cfg.backend === 'aus' ? 'Abgleich einrichten' : 'Einrichtung ändern'}</a>
-        ${cfg.backend !== 'aus' ? '<button type="button" class="btn btn--gefahr-still" data-sync-trennen>Verbindung entfernen</button>' : ''}
+        <a class="btn ${cfg.github.token || cfg.backend !== 'github' ? 'btn--still' : 'btn--still'}" href="#/einrichtung">${
+        cfg.backend === 'aus' ? 'Abgleich einrichten' : 'Einrichtung ändern'
+      }</a>
+        ${cfg.github.token || cfg.backend === 'firebase'
+          ? '<button type="button" class="btn btn--gefahr-still" data-sync-trennen>Zugang von diesem Gerät entfernen</button>'
+          : ''}
       </div>
 
       ${s.protokoll.length ? `
@@ -119,6 +148,28 @@ function html() {
   </div>`;
 }
 
+/**
+ * Schnelleingabe: Adresse der Datenablage steht bereits in der Auslieferung,
+ * es fehlt nur noch der persönliche Zugangs-Token.
+ */
+function tokenKasten(cfg) {
+  if (cfg.backend !== 'github' || cfg.github.token) return '';
+  return `<div class="token-kasten">
+    <h3>Nur noch der Zugangs-Token fehlt</h3>
+    <p>Die gemeinsame Datenablage <code>${esc(cfg.github.owner)}/${esc(cfg.github.repo)}</code> ist bereits hinterlegt.
+      Trage einmalig deinen persönlichen Token ein – er bleibt ausschließlich auf diesem Gerät.</p>
+    <div class="btn-zeile">
+      <input class="input input--code" type="password" data-token placeholder="github_pat_…" autocomplete="off">
+      <button type="button" class="btn btn--primaer" data-token-speichern>Verbinden</button>
+    </div>
+    <p class="karte__hint">Token erzeugen unter
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Fine-grained tokens</a>:
+      nur das Repository <code>${esc(cfg.github.repo)}</code> auswählen und bei
+      <em>Repository permissions → Contents</em> auf <strong>Read and write</strong> stellen.
+      Wenn ihr im Team einen gemeinsamen Token nutzt, frag danach – dann entfällt dieser Schritt.</p>
+  </div>`;
+}
+
 function ziel(cfg) {
   if (cfg.backend === 'github') {
     const g = cfg.github;
@@ -134,7 +185,14 @@ function ziel(cfg) {
 }
 
 function zustandText(z) {
-  return { aus: 'Kein Abgleich', verbinde: 'Verbinde …', aktiv: 'Verbunden', offline: 'Offline', fehler: 'Fehler' }[z] || z;
+  return {
+    aus: 'Kein Abgleich',
+    'kein-token': 'Zugang fehlt',
+    verbinde: 'Verbinde …',
+    aktiv: 'Verbunden',
+    offline: 'Offline',
+    fehler: 'Fehler',
+  }[z] || z;
 }
 
 function verfahrenText(b) {
@@ -159,6 +217,21 @@ function binde(box, wurzel) {
   box.addEventListener('click', async (e) => {
     const t = e.target;
 
+    if (t.closest('[data-token-speichern]')) {
+      const feldEl = box.querySelector('[data-token]');
+      const wert = feldEl.value.trim();
+      if (!wert) {
+        toast('Bitte den Token einfügen.', 'fehler');
+        return;
+      }
+      speichereToken(wert);
+      toast('Token gespeichert – verbinde …');
+      const ok = await sync.neustart();
+      if (!ok) toast('Verbindung fehlgeschlagen – Einzelheiten im Assistenten unter "Einrichtung ändern".', 'fehler');
+      zeichne(wurzel);
+      return;
+    }
+
     if (t.closest('[data-sync-jetzt]')) {
       sync.jetztAbgleichen();
       toast('Abgleich angestoßen.');
@@ -166,7 +239,7 @@ function binde(box, wurzel) {
     }
 
     if (t.closest('[data-sync-trennen]')) {
-      if (await frage('Abgleich auf diesem Gerät entfernen? Die lokalen Daten und der Token bleiben bzw. werden gelöscht, die Daten im Team bleiben unberührt.', { ok: 'Entfernen', gefahr: true })) {
+      if (await frage('Zugang von diesem Gerät entfernen? Der Token wird gelöscht, deine lokalen Daten und die Daten im Team bleiben unberührt.', { ok: 'Entfernen', gefahr: true })) {
         await sync.stoppe();
         loescheLokaleConfig();
         speichereConfig({ ...STANDARD_CONFIG });

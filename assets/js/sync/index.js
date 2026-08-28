@@ -13,7 +13,7 @@ import { ladeConfig } from '../config.js';
 import * as store from '../store.js';
 
 export const status = {
-  zustand: 'aus', // aus | verbinde | aktiv | offline | fehler
+  zustand: 'aus', // aus | kein-token | verbinde | aktiv | offline | fehler
   text: 'Kein Online-Abgleich eingerichtet',
   verfahren: 'aus',
   offen: 0,
@@ -55,8 +55,13 @@ export async function starte() {
   status.verfahren = cfg.backend;
 
   if (cfg.backend === 'github') {
-    if (!cfg.github.owner || !cfg.github.repo || !cfg.github.token) {
-      setzeStatus('aus', 'GitHub-Abgleich unvollständig eingerichtet');
+    if (!cfg.github.owner || !cfg.github.repo) {
+      setzeStatus('aus', 'Kein Datenspeicher hinterlegt');
+      return false;
+    }
+    if (!cfg.github.token) {
+      // Adresse steht, nur der persönliche Zugang fehlt noch.
+      setzeStatus('kein-token', 'Zugangs-Token fehlt – unter Einstellungen eintragen');
       return false;
     }
     adapter = await import('./github.js');

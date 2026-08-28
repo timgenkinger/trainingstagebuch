@@ -11,11 +11,13 @@
  *              ausschließlich lokal im Browser jedes Geräts.
  */
 export const STANDARD_CONFIG = {
-  backend: 'aus', // 'aus' | 'github' | 'firebase'
+  backend: 'github', // 'aus' | 'github' | 'firebase'
 
+  // Gemeinsame Datenablage des Teams. Diese Angaben sind kein Geheimnis –
+  // ohne passenden Token kommt niemand an das private Repository heran.
   github: {
-    owner: '',
-    repo: '',
+    owner: 'timgenkinger',
+    repo: 'Trainingstagebuch-Fl-che',
     branch: 'daten',
     pfad: 'trainingsdaten.json',
     // token: NIEMALS hier eintragen – wird pro Gerät unter Einstellungen gesetzt

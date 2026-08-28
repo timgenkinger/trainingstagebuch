@@ -899,3 +899,20 @@ code {
 .prot--fehler { background: var(--marke-blass); color: var(--marke-dunkel); }
 .prot--gesendet, .prot--empfangen { background: var(--flaeche-2); }
 .prot--info { color: var(--text-leise); }
+
+/* --- Schnelleingabe des Zugangs-Tokens --- */
+.token-kasten {
+  border: 2px solid var(--marke);
+  background: var(--marke-blass);
+  border-radius: var(--r);
+  padding: .8rem .9rem;
+  margin-bottom: .8rem;
+}
+.token-kasten h3 { font-size: .95rem; margin-bottom: .3rem; }
+.token-kasten p { font-size: .875rem; margin-bottom: .5rem; }
+.token-kasten .btn-zeile { margin: .5rem 0; }
+.token-kasten .input { flex: 1 1 14rem; }
+.sync-box--kein-token { border-color: var(--marke); }
+.sync-box--kein-token .punkt { background: var(--marke); }
+.sync-chip--kein-token { background: #fff; color: #b3040f; border-color: #fff; font-weight: 650; }
+.sync-chip--kein-token .punkt { background: #b3040f; }

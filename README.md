@@ -138,39 +138,46 @@ Im Dashboard werden standardmäßig nur abgeschlossene Suchen ausgewertet; Entw�
 In der App unter **Einstellungen → Abgleich einrichten** führt ein Assistent durch die Einrichtung
 und prüft jeden Schritt gegen den echten Dienst. Zur Wahl stehen zwei Verfahren:
 
-| | GitHub-Repository | Cloud Firestore |
+| | GitHub-Repository (Vorgabe) | Cloud Firestore |
 |---|---|---|
 | Zusätzliches Konto | keines | Google-Konto |
 | Aktualisierung | alle 45 Sekunden | sofort |
 | Historie | jede Änderung als Commit nachvollziehbar | keine |
 | Pro Gerät nötig | ein Zugangs-Token | nichts |
 
-### Variante A – GitHub-Repository (ohne Google-Konto)
+### Variante A – GitHub-Repository (Vorgabe, ohne Google-Konto)
 
 Alle Datensätze liegen als eine JSON-Datei in einem Repository.
+**Die Datenablage ist bereits ausgeliefert** – im Team muss nur noch der persönliche
+Zugangs-Token eingetragen werden:
 
-1. **Repository wählen.** Am besten ein **eigenes, privates** Repository nur für die Daten
-   ([hier anlegen](https://github.com/new)). Ein leeres genügt.
+| | |
+|---|---|
+| Repository | `timgenkinger/Trainingstagebuch-Fl-che` (**privat**) |
+| Branch | `daten` |
+| Datei | `trainingsdaten.json` |
 
-   > **Wichtig:** In einem *öffentlichen* Repository wären die Trainingsdaten für jeden im
-   > Internet lesbar – Hundenamen, Namen der Hundeführer:innen, Orte, Notizen. Der Assistent
-   > warnt, wenn das gewählte Repository öffentlich ist.
+**Für jedes Gerät einmalig:**
 
-2. **Token erzeugen.** Unter
-   [Fine-grained tokens](https://github.com/settings/personal-access-tokens/new)
-   nur dieses eine Repository auswählen und bei *Repository permissions* unter **Contents**
-   auf **Read and write** stellen. Alles andere bleibt auf *No access*.
+1. Einen [Fine-grained Token](https://github.com/settings/personal-access-tokens/new) erzeugen:
+   unter *Repository access* nur `Trainingstagebuch-Fl-che` auswählen und bei
+   *Repository permissions → **Contents*** auf **Read and write** stellen. Alles andere bleibt
+   auf *No access*.
+   Alternativ gibt eine Person im Team einen gemeinsamen Token weiter – dann entfällt dieser Schritt.
+2. In der App unter **Einstellungen** in das Feld „Nur noch der Zugangs-Token fehlt" einfügen
+   und auf **Verbinden** klicken.
 
-3. **Im Assistenten eintragen** – Kontoname, Repository, Branch, Dateiname und Token.
-   Der Branch sollte **nicht** der Hauptbranch sein (Vorgabe: `daten`), sonst löst jedes
-   Speichern einen Pages-Deploy aus. Der Branch wird beim ersten Verbinden automatisch
-   ohne Vorgeschichte angelegt, sodass dort ausschließlich die Daten liegen.
+Der Token wird ausschließlich im Browser des jeweiligen Geräts gespeichert. Er landet nie im
+Repository, nie in einem Export und nie in der Sicherungsdatei.
 
-4. **Team anschließen.** Adresse des Datenspeichers (owner/repo/branch/pfad) darf ins
-   Repository – der Assistent liefert den fertigen Block für `assets/js/config.js`.
-   Der **Token gehört nicht dorthin**: entweder ihr gebt einen gemeinsamen Token intern
-   weiter, oder jede:r erzeugt sich einen eigenen. Er wird nur im Browser des jeweiligen
-   Geräts gespeichert und niemals exportiert.
+> Weil das Repository privat ist, kommt ohne gültigen Token niemand an die Trainingsdaten –
+> auch nicht über die Adresse, die im Programmcode steht.
+
+**Anderes Repository verwenden?** Unter **Einstellungen → Einrichtung ändern** führt der
+Assistent durch alle Angaben und prüft jeden Schritt gegen die echte API. Dabei gilt:
+der Datenbranch sollte **nicht** der Hauptbranch eines Repositories sein, das GitHub Pages
+ausliefert – sonst löst jedes Speichern einen Deploy aus. Ein noch leeres Repository wird
+beim ersten Verbinden automatisch eingerichtet.
 
 **Wie Konflikte behandelt werden:** Vor jedem Schreiben liest die App den aktuellen Stand
 frisch ein und mischt ihn mit dem lokalen. Speichert jemand zeitgleich, antwortet GitHub mit

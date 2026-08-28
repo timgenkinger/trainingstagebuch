@@ -1,5 +1,16 @@
 # Änderungsprotokoll
 
+## 1.2.0 – 2026-08-28
+- Gemeinsame Datenablage ist ab Werk hinterlegt (privates Repository
+  `timgenkinger/Trainingstagebuch-Fl-che`, Branch `daten`). Im Team muss nur noch
+  der persönliche Zugangs-Token eingetragen werden – dafür gibt es in den
+  Einstellungen ein eigenes Eingabefeld statt des Assistenten.
+- Fehler behoben: In einem **komplett leeren** Repository verweigert die Git-Data-API
+  die Arbeit ("Git Repository is empty"). Der Datenbranch wird dort jetzt zuerst über
+  die Contents-API angelegt und anschließend abgezweigt.
+- Eigener Zustand "Zugang fehlt" statt der irreführenden Meldung "Kein Abgleich";
+  die Einstellungen ziehen Statusänderungen des Abgleichs jetzt nach.
+
 ## 1.1.0 – 2026-08-28
 - **Online-Abgleich über ein GitHub-Repository** als zweites Verfahren neben Firestore –
   ohne zusätzliches Konto. Konflikte werden durch Lesen-Mischen-Wiederholen aufgelöst,

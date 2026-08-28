@@ -39,6 +39,8 @@ async function route(navigiert = true) {
 
   // Ungespeicherte Editor-Eingaben festschreiben, bevor die Ansicht wechselt.
   if (aktuelleView === vEditor && treffer.r.view !== vEditor) vEditor.flushEditor();
+  // Laufende Abonnements der verlassenen Ansicht beenden.
+  if (aktuelleView && aktuelleView !== treffer.r.view) aktuelleView.verlassen?.();
 
   aktuelleView = treffer.r.view;
   const view = document.getElementById('view');
@@ -65,9 +67,14 @@ function syncAnzeige() {
     if (!chip) return;
     chip.className = `sync-chip sync-chip--${s.zustand}`;
     const text =
-      { aus: 'Nur lokal', verbinde: 'Verbinde', aktiv: s.offen ? `${s.offen} offen` : 'Synchron', offline: 'Offline', fehler: 'Sync-Fehler' }[
-        s.zustand
-      ] || s.zustand;
+      {
+        aus: 'Nur lokal',
+        'kein-token': 'Token fehlt',
+        verbinde: 'Verbinde',
+        aktiv: s.offen ? `${s.offen} offen` : 'Synchron',
+        offline: 'Offline',
+        fehler: 'Sync-Fehler',
+      }[s.zustand] || s.zustand;
     chip.innerHTML = `<span class="punkt"></span><span>${esc(text)}</span>`;
     chip.title = s.text;
   });
