@@ -209,6 +209,10 @@ export function neueSuche(defaults = {}) {
   const heute = new Date().toISOString().slice(0, 10);
   return {
     type: 'suche',
+    // Solange eine Suche 'entwurf' ist, bleibt sie auf diesem Gerät.
+    // Erst mit 'abgeschlossen' wird sie für das Team hochgeladen.
+    status: 'entwurf',
+    abgeschlossenAm: null,
     datum: heute,
     ort: '',
     hundId: defaults.hundId || '',
@@ -272,4 +276,79 @@ export function gesamtScore(suche) {
     ...werteDerGruppe(suche, 'hf'),
   ];
   return mittelwert(alle);
+}
+
+/* ------------------------------------------------------------------ */
+/* Vollständigkeit einer Suche                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Welche Angaben ein Protokoll enthalten muss, damit es als vollständig
+ * ausgeführt gilt. Nur vollständige Suchen lassen sich abschließen und
+ * landen damit im gemeinsamen Datenbestand.
+ */
+export const PFLICHT = [
+  {
+    id: 'datum',
+    label: 'Datum',
+    pruefe: (s) => !!s.datum,
+  },
+  {
+    id: 'ort',
+    label: 'Ort',
+    pruefe: (s) => !!(s.ort || '').trim(),
+  },
+  {
+    id: 'hund',
+    label: 'Hund ausgewählt',
+    pruefe: (s) => !!s.hundId,
+  },
+  {
+    id: 'hf',
+    label: 'Hundeführer:in ausgewählt',
+    pruefe: (s) => !!s.hfId,
+  },
+  {
+    id: 'suchzeit',
+    label: 'Suchzeit eingetragen',
+    pruefe: (s) => Number(s.suchzeitMin) > 0,
+  },
+  {
+    id: 'versteck',
+    label: 'Mindestens eine Versteckperson mit Ergebnis (gefunden / nicht gefunden)',
+    pruefe: (s) => (s.helfer || []).some((h) => h.gefunden === true || h.gefunden === false),
+  },
+  {
+    id: 'team',
+    label: 'Team: Verlauf der Suche bewertet',
+    pruefe: (s) => werteDerGruppe(s, 'team').length > 0,
+  },
+  {
+    id: 'hundbewertung',
+    label: 'Verhalten Hund bewertet',
+    pruefe: (s) => werteDerGruppe(s, 'hund').length > 0,
+  },
+  {
+    id: 'hfbewertung',
+    label: 'Verhalten Hundeführer:in bewertet',
+    pruefe: (s) => werteDerGruppe(s, 'hf').length > 0,
+  },
+];
+
+/**
+ * @returns {{vollstaendig: boolean, offen: Array<{id,label}>, erfuellt: number, gesamt: number}}
+ */
+export function vollstaendigkeit(suche) {
+  const offen = PFLICHT.filter((p) => !p.pruefe(suche)).map(({ id, label }) => ({ id, label }));
+  return {
+    vollstaendig: offen.length === 0,
+    offen,
+    erfuellt: PFLICHT.length - offen.length,
+    gesamt: PFLICHT.length,
+  };
+}
+
+/** Datensätze ohne `status` stammen aus einer älteren Fassung und gelten als abgeschlossen. */
+export function istAbgeschlossen(suche) {
+  return suche?.type !== 'suche' || (suche.status ?? 'abgeschlossen') === 'abgeschlossen';
 }

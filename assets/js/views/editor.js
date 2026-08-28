@@ -94,7 +94,7 @@ function html() {
   <div class="editor">
     <div class="editor__kopf">
       <div>
-        <h1>Suche vom ${esc(formatDatum(suche.datum, true))}</h1>
+        <h1>Suche vom ${esc(formatDatum(suche.datum, true))} ${statusAbzeichen(suche)}</h1>
         <p class="editor__meta">
           <span data-speicherstatus>Gespeichert</span><span data-gesamtnote>${
             score != null ? ` · Gesamtnote <strong>${formatNote(score)}</strong>` : ''
@@ -202,10 +202,57 @@ function html() {
       </div>
     `)}
 
+    ${abschlussKarte()}
+
     <div class="editor__fuss">
-      <a class="btn btn--still" href="#/suchen">Fertig</a>
+      <a class="btn btn--still" href="#/suchen">Zur Übersicht</a>
     </div>
   </div>`;
+}
+
+function statusAbzeichen(s) {
+  return S.istAbgeschlossen(s)
+    ? '<span class="abz abz--fertig">abgeschlossen</span>'
+    : '<span class="abz abz--entwurf">Entwurf – nur auf diesem Gerät</span>';
+}
+
+/**
+ * Freigabe-Bereich: Eine Suche geht erst online, wenn ihr Protokoll
+ * vollständig ausgeführt und bewusst abgeschlossen wurde.
+ */
+function abschlussKarte() {
+  const v = S.vollstaendigkeit(suche);
+  const fertig = S.istAbgeschlossen(suche);
+
+  if (fertig) {
+    return karte('Protokoll abgeschlossen', `
+      <p class="abschluss__ok">Diese Suche ist vollständig ausgeführt und wird mit dem Team geteilt.${
+        suche.abgeschlossenAm ? ` Abgeschlossen am ${esc(formatDatum(String(suche.abgeschlossenAm).slice(0, 10)))}.` : ''
+      }</p>
+      <button type="button" class="btn btn--still" data-wieder-oeffnen>Wieder öffnen und bearbeiten</button>
+      <p class="karte__hint">Beim Wiederöffnen wird die Suche erneut zum Entwurf. Der bereits geteilte Stand
+        bleibt beim Team, bis du sie wieder abschließt.</p>
+    `, { klasse: 'karte--fertig' });
+  }
+
+  const liste = v.offen.length
+    ? `<ul class="offen-punkte">${v.offen.map((o) => `<li>${esc(o.label)}</li>`).join('')}</ul>`
+    : '';
+
+  return karte('Suche abschließen', `
+    <div class="fortschritt-zeile">
+      <span class="fortschritt-balken"><span style="width:${Math.round((v.erfuellt / v.gesamt) * 100)}%"></span></span>
+      <strong>${v.erfuellt} von ${v.gesamt}</strong>
+    </div>
+    ${v.vollstaendig
+      ? `<p class="abschluss__ok">Das Protokoll ist vollständig ausgeführt.</p>`
+      : `<p class="abschluss__offen">Dafür fehlen noch:</p>${liste}`}
+    <button type="button" class="btn btn--primaer" data-abschliessen ${v.vollstaendig ? '' : 'disabled'}>
+      Abschließen und mit dem Team teilen
+    </button>
+    <p class="karte__hint">Solange die Suche Entwurf ist, bleibt sie ausschließlich auf diesem Gerät.
+      Erst mit dem Abschließen wird sie hochgeladen.</p>
+  `, { klasse: 'karte--abschluss' });
 }
 
 function ampel(pfad, wert) {
@@ -411,6 +458,29 @@ function binde(wurzel) {
       return;
     }
 
+    if (t.closest('[data-abschliessen]')) {
+      const v = S.vollstaendigkeit(suche);
+      if (!v.vollstaendig) {
+        toast('Es fehlen noch Angaben – siehe Liste.', 'fehler');
+        return;
+      }
+      suche.status = 'abgeschlossen';
+      suche.abgeschlossenAm = new Date().toISOString();
+      speichereBald.sofort();
+      toast('Suche abgeschlossen – wird mit dem Team geteilt.');
+      neuZeichnen();
+      return;
+    }
+
+    if (t.closest('[data-wieder-oeffnen]')) {
+      if (await frage('Suche wieder als Entwurf öffnen? Sie wird dann erst nach erneutem Abschließen aktualisiert.', { ok: 'Wieder öffnen' })) {
+        suche.status = 'entwurf';
+        speichereBald.sofort();
+        neuZeichnen();
+      }
+      return;
+    }
+
     if (t.closest('[data-drucken]')) {
       window.print();
       return;
@@ -422,6 +492,8 @@ function binde(wurzel) {
       delete kopie.id;
       delete kopie.createdAt;
       kopie.datum = new Date().toISOString().slice(0, 10);
+      kopie.status = 'entwurf';
+      kopie.abgeschlossenAm = null;
       kopie.team = {};
       kopie.hund = {};
       kopie.hf = {};

@@ -5,21 +5,24 @@
    ========================================================================== */
 
 :root {
-  --gruen: #4d7a4d;
-  --gruen-hell: #7fa37f;
-  --gruen-blass: #e8efe5;
-  --gruen-dunkel: #2f5230;
+  /* Hausfarbe des Bayerischen Roten Kreuzes. Das Rotkreuz-Emblem selbst ist
+     nach den Genfer Abkommen geschuetzt und wird hier bewusst nicht verwendet. */
+  --marke: #e30613;
+  --marke-hell: #f2626b;
+  --marke-blass: #fdecee;
+  --marke-dunkel: #b3040f;
+  --marke-text: #ffffff;
   --blau: #1d6fb8;
   --rot: #c0392b;
   --orange: #c2761b;
 
-  --grund: #f6f7f3;
+  --grund: #f5f5f6;
   --flaeche: #ffffff;
-  --flaeche-2: #f0f2ec;
-  --text: #1f2620;
-  --text-leise: #63705f;
-  --rand: #dbe0d5;
-  --rand-stark: #c3ccbb;
+  --flaeche-2: #eeeff1;
+  --text: #22252a;
+  --text-leise: #666b73;
+  --rand: #dcdee2;
+  --rand-stark: #c2c6cc;
 
   --r: 12px;
   --r-gross: 16px;
@@ -32,16 +35,18 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --grund: #14171400;
-    --grund: #141714;
-    --flaeche: #1d211d;
-    --flaeche-2: #252a25;
-    --text: #e8ece6;
-    --text-leise: #9dab99;
-    --rand: #333a33;
-    --rand-stark: #46503f;
-    --gruen: #7fb07f;
-    --gruen-blass: #263026;
-    --gruen-dunkel: #a6c9a6;
+    --grund: #151618;
+    --flaeche: #1e2023;
+    --flaeche-2: #26292d;
+    --text: #e9eaec;
+    --text-leise: #a0a5ad;
+    --rand: #34373c;
+    --rand-stark: #474b52;
+    --marke: #f2545f;
+    --marke-hell: #f8848c;
+    --marke-blass: #33191c;
+    --marke-dunkel: #ff7079;
+    --marke-text: #1a0406;
     --blau: #6fa8e0;
     --schatten: 0 1px 2px rgba(0, 0, 0, .4), 0 4px 14px rgba(0, 0, 0, .25);
   }
@@ -69,7 +74,8 @@ body.laedt .inhalt > *:not(.start-laden) { display: none; }
 h1, h2, h3 { margin: 0; font-weight: 650; line-height: 1.25; }
 h1 { font-size: 1.35rem; }
 p { margin: 0 0 .6rem; }
-a { color: var(--gruen-dunkel); }
+a { color: var(--marke-dunkel); }
+.inhalt a { color: var(--marke-dunkel); }
 
 /* ---------------- Kopfzeile & Navigation ---------------- */
 
@@ -77,9 +83,10 @@ a { color: var(--gruen-dunkel); }
   position: sticky;
   top: 0;
   z-index: 30;
-  background: var(--flaeche);
-  border-bottom: 1px solid var(--rand);
+  background: var(--marke);
+  color: #fff;
   padding-top: env(safe-area-inset-top);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .18);
 }
 
 .kopf__inhalt {
@@ -97,12 +104,12 @@ a { color: var(--gruen-dunkel); }
   align-items: center;
   gap: .6rem;
   text-decoration: none;
-  color: var(--text);
+  color: #fff;
 }
-.marke__logo { width: 30px; height: 30px; color: var(--gruen); flex: none; }
+.marke__logo { width: 30px; height: 30px; color: #fff; flex: none; }
 .marke__text { display: flex; flex-direction: column; line-height: 1.1; }
 .marke__text strong { font-size: 1rem; letter-spacing: -.01em; }
-.marke__text small { font-size: .7rem; color: var(--text-leise); font-variant-numeric: tabular-nums; }
+.marke__text small { font-size: .7rem; color: rgba(255, 255, 255, .78); font-variant-numeric: tabular-nums; }
 
 .sync-chip {
   display: inline-flex;
@@ -111,18 +118,18 @@ a { color: var(--gruen-dunkel); }
   font-size: .75rem;
   padding: .3rem .6rem;
   border-radius: 999px;
-  background: var(--flaeche-2);
-  border: 1px solid var(--rand);
-  color: var(--text-leise);
+  background: rgba(255, 255, 255, .16);
+  border: 1px solid rgba(255, 255, 255, .3);
+  color: #fff;
   text-decoration: none;
   white-space: nowrap;
 }
 .punkt { width: 8px; height: 8px; border-radius: 50%; background: var(--rand-stark); flex: none; }
-.sync-chip--aktiv .punkt { background: #45a049; }
-.sync-chip--verbinde .punkt { background: var(--orange); animation: pulsieren 1.2s infinite; }
-.sync-chip--offline .punkt { background: var(--orange); }
+.sync-chip--aktiv .punkt { background: #7ee081; }
+.sync-chip--verbinde .punkt { background: #ffd166; animation: pulsieren 1.2s infinite; }
+.sync-chip--offline .punkt { background: #ffd166; }
 .sync-chip--fehler .punkt { background: var(--rot); }
-.sync-chip--fehler { border-color: var(--rot); color: var(--rot); }
+.sync-chip--fehler { background: #fff; color: #b3040f; border-color: #fff; font-weight: 650; }
 @keyframes pulsieren { 50% { opacity: .3; } }
 
 .tabs {
@@ -140,12 +147,13 @@ a { color: var(--gruen-dunkel); }
   padding: .55rem .7rem;
   font-size: .875rem;
   font-weight: 550;
-  color: var(--text-leise);
+  color: rgba(255, 255, 255, .8);
   text-decoration: none;
-  border-bottom: 2.5px solid transparent;
+  border-bottom: 3px solid transparent;
   white-space: nowrap;
 }
-.tabs a.tab--an { color: var(--gruen-dunkel); border-bottom-color: var(--gruen); }
+.tabs a:hover { color: #fff; }
+.tabs a.tab--an { color: #fff; font-weight: 700; border-bottom-color: #fff; }
 
 /* ---------------- Layout ---------------- */
 
@@ -235,7 +243,7 @@ a { color: var(--gruen-dunkel); }
   border-radius: var(--r);
   appearance: none;
 }
-.input:focus-visible { outline: 2px solid var(--gruen); outline-offset: 1px; border-color: var(--gruen); }
+.input:focus-visible { outline: 2px solid var(--marke); outline-offset: 1px; border-color: var(--marke); }
 .input--area { min-height: 5rem; resize: vertical; line-height: 1.5; }
 .input--schlank { min-height: 36px; padding: .3rem .5rem; font-size: .9rem; }
 .input--code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8rem; line-height: 1.45; }
@@ -262,10 +270,10 @@ select.input { background-image: none; padding-right: .7rem; }
   white-space: nowrap;
 }
 .btn:hover { background: var(--flaeche-2); }
-.btn--primaer { background: var(--gruen); border-color: var(--gruen); color: #fff; }
-.btn--primaer:hover { background: var(--gruen-dunkel); border-color: var(--gruen-dunkel); }
+.btn--primaer { background: var(--marke); border-color: var(--marke); color: #fff; }
+.btn--primaer:hover { background: var(--marke-dunkel); border-color: var(--marke-dunkel); }
 .btn--still { background: var(--flaeche-2); }
-.btn--hell { background: #fff; color: var(--gruen-dunkel); border-color: transparent; }
+.btn--hell { background: #fff; color: var(--marke-dunkel); border-color: transparent; }
 .btn--gefahr { background: var(--rot); border-color: var(--rot); color: #fff; }
 .btn--gefahr-still { color: var(--rot); border-color: color-mix(in srgb, var(--rot) 30%, var(--rand)); background: transparent; }
 .btn--mini { min-height: 32px; padding: .2rem .6rem; font-size: .8rem; border-radius: 8px; }
@@ -285,7 +293,7 @@ select.input { background-image: none; padding-right: .7rem; }
   color: var(--text);
   cursor: pointer;
 }
-.chip--an { background: var(--gruen-blass); border-color: var(--gruen); color: var(--gruen-dunkel); font-weight: 600; }
+.chip--an { background: var(--marke-blass); border-color: var(--marke); color: var(--marke-dunkel); font-weight: 600; }
 .mini-chip {
   padding: .25rem .55rem;
   font: inherit;
@@ -296,7 +304,7 @@ select.input { background-image: none; padding-right: .7rem; }
   color: var(--text-leise);
   cursor: pointer;
 }
-.mini-chip--an { background: var(--gruen-blass); border-color: var(--gruen); color: var(--gruen-dunkel); font-weight: 600; }
+.mini-chip--an { background: var(--marke-blass); border-color: var(--marke); color: var(--marke-dunkel); font-weight: 600; }
 .mini-chip--rot { background: color-mix(in srgb, var(--rot) 12%, transparent); border-color: var(--rot); color: var(--rot); }
 
 /* Checkliste (Problemverhalten) */
@@ -453,7 +461,7 @@ select.input { background-image: none; padding-right: .7rem; }
   color: inherit;
   box-shadow: var(--schatten);
 }
-.such-karte:hover { border-color: var(--gruen-hell); }
+.such-karte:hover { border-color: var(--marke-hell); }
 .such-karte__haupt { flex: 1; min-width: 0; }
 .such-karte__zeile1 { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
 .such-karte__ort { color: var(--text-leise); font-size: .9rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -526,7 +534,7 @@ select.input { background-image: none; padding-right: .7rem; }
 .stapel__teil { display: block; }
 .bilder-uebersicht { margin-bottom: .5rem; }
 .offen-liste { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .5rem; }
-.gut { color: var(--gruen-dunkel); font-size: .875rem; }
+.gut { color: var(--marke-dunkel); font-size: .875rem; }
 
 .tabelle-scroll { overflow-x: auto; margin: 0 -.4rem; padding: 0 .4rem; }
 .tabelle { width: 100%; border-collapse: collapse; font-size: .84rem; }
@@ -572,14 +580,14 @@ select.input { background-image: none; padding-right: .7rem; }
   border-bottom: 1px solid var(--rand);
 }
 .bild-zeile:last-child { border-bottom: none; }
-.bild-zeile--key { background: color-mix(in srgb, var(--gruen-blass) 55%, transparent); }
+.bild-zeile--key { background: color-mix(in srgb, var(--marke-blass) 55%, transparent); }
 .bild-zeile--key .bild-zeile__label > span { font-weight: 650; }
 .bild-zeile__label { min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
 .bild-zeile__label > span { font-size: .9rem; }
 .bild-zeile__label small { display: flex; gap: .3rem; flex-wrap: wrap; }
 .merkmal {
   font-size: .64rem; font-style: normal; text-transform: uppercase; letter-spacing: .04em;
-  background: var(--gruen); color: #fff; padding: .05rem .35rem; border-radius: 4px; font-weight: 700;
+  background: var(--marke); color: #fff; padding: .05rem .35rem; border-radius: 4px; font-weight: 700;
 }
 .merkmal--grau { background: var(--flaeche-2); color: var(--text-leise); border: 1px solid var(--rand); }
 .bild-zeile__stufen { display: flex; gap: .35rem; align-items: center; justify-content: flex-start; min-width: 137px; }
@@ -593,7 +601,7 @@ select.input { background-image: none; padding-right: .7rem; }
   display: grid;
   place-items: center;
 }
-.stufe--an { background: var(--gruen); border-color: var(--gruen); }
+.stufe--an { background: var(--marke); border-color: var(--marke); }
 .stufe--an::after { content: "✓"; color: #fff; font-size: .8rem; line-height: 1; }
 
 /* ---------------- Einstellungen ---------------- */
@@ -652,7 +660,7 @@ code {
   bottom: calc(1rem + env(safe-area-inset-bottom));
   width: 56px; height: 56px;
   border-radius: 50%;
-  background: var(--gruen);
+  background: var(--marke);
   color: #fff;
   display: grid;
   place-items: center;
@@ -662,12 +670,13 @@ code {
   box-shadow: 0 4px 16px rgba(0, 0, 0, .22);
   z-index: 25;
 }
-.fab:hover { background: var(--gruen-dunkel); }
+.fab:hover { background: var(--marke-dunkel); }
 
 .update-bar {
+  border-bottom: 1px solid rgba(0,0,0,.15);
   position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; justify-content: center; gap: .8rem;
-  background: var(--gruen); color: #fff;
+  background: var(--marke); color: #fff;
   padding: .5rem .9rem; font-size: .875rem;
 }
 
@@ -708,7 +717,7 @@ code {
 .start-laden { display: flex; align-items: center; gap: .6rem; justify-content: center; padding: 4rem 1rem; color: var(--text-leise); }
 .spinner {
   width: 18px; height: 18px; border-radius: 50%;
-  border: 2.5px solid var(--rand-stark); border-top-color: var(--gruen);
+  border: 2.5px solid var(--rand-stark); border-top-color: var(--marke);
   animation: dreh .8s linear infinite;
 }
 @keyframes dreh { to { transform: rotate(360deg); } }
@@ -726,3 +735,167 @@ code {
   .inhalt { padding: 0; max-width: none; }
   .input { border-color: #ccc; }
 }
+
+/* ==========================================================================
+   Freigabe-Schranke, Einrichtungs-Assistent und Abgleich-Protokoll
+   ========================================================================== */
+
+/* --- Statusabzeichen Entwurf / abgeschlossen --- */
+.abz {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: .15rem .5rem;
+  border-radius: 999px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.abz--entwurf { background: #fff3d4; color: #8a5d00; border: 1px solid #e8c877; }
+.abz--fertig { background: var(--marke-blass); color: var(--marke-dunkel); border: 1px solid var(--marke-hell); }
+.abz--klein { font-size: .62rem; padding: .1rem .4rem; }
+@media (prefers-color-scheme: dark) {
+  .abz--entwurf { background: #3a2f12; color: #f0cf7d; border-color: #6b5620; }
+}
+
+/* --- Abschluss-Karte im Editor --- */
+.karte--abschluss { border-color: var(--marke-hell); border-width: 2px; }
+.karte--fertig { border-color: var(--rand); background: var(--marke-blass); }
+.abschluss__ok { color: var(--marke-dunkel); font-weight: 600; }
+.abschluss__offen { font-weight: 600; margin-bottom: .3rem; }
+.offen-punkte {
+  margin: 0 0 .9rem;
+  padding-left: 1.1rem;
+  color: var(--text-leise);
+  font-size: .875rem;
+  line-height: 1.7;
+}
+.fortschritt-zeile { display: flex; align-items: center; gap: .7rem; margin-bottom: .7rem; }
+.fortschritt-balken {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--flaeche-2);
+  overflow: hidden;
+}
+.fortschritt-balken span { display: block; height: 100%; background: var(--marke); border-radius: 999px; transition: width .25s ease; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn[disabled]:hover { background: var(--marke); }
+
+.freigabe-info {
+  background: var(--flaeche-2);
+  border-radius: var(--r);
+  padding: .6rem .8rem;
+  font-size: .875rem;
+  margin-bottom: .8rem;
+}
+.freigabe-info small { display: block; color: var(--text-leise); font-size: .78rem; margin-top: .2rem; }
+
+/* --- Assistent: Schrittleiste --- */
+.schritte {
+  display: flex;
+  gap: .4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.schritte::-webkit-scrollbar { display: none; }
+.schritte li {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex: none;
+  font-size: .82rem;
+  color: var(--text-leise);
+  padding: .35rem .7rem .35rem .35rem;
+  border-radius: 999px;
+  background: var(--flaeche-2);
+  border: 1px solid var(--rand);
+}
+.schritte li span {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--rand);
+  color: var(--text-leise);
+  font-size: .72rem;
+  font-weight: 700;
+}
+.schritte .schritt--an { background: var(--marke-blass); border-color: var(--marke); color: var(--marke-dunkel); font-weight: 650; }
+.schritte .schritt--an span { background: var(--marke); color: var(--marke-text); }
+.schritte .schritt--fertig span { background: var(--marke-hell); color: var(--marke-text); }
+
+/* --- Assistent: Verfahrenswahl --- */
+.wahlen { display: grid; gap: .7rem; margin-bottom: .8rem; }
+@media (min-width: 700px) { .wahlen { grid-template-columns: 1fr 1fr; } }
+.wahl {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  text-align: left;
+  padding: .8rem .9rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--flaeche);
+  border: 2px solid var(--rand);
+  border-radius: var(--r);
+  cursor: pointer;
+}
+.wahl:hover { border-color: var(--marke-hell); }
+.wahl--an { border-color: var(--marke); background: var(--marke-blass); }
+.wahl strong { font-size: .98rem; }
+.wahl > span { font-size: .84rem; color: var(--text-leise); }
+.wahl__liste { list-style: none; margin: .4rem 0 0; padding: 0; font-size: .8rem; display: grid; gap: .2rem; }
+.wahl__liste li { padding-left: 1.3rem; position: relative; color: var(--text-leise); }
+.wahl__liste li::before { position: absolute; left: 0; font-weight: 700; }
+.wahl__liste .ja::before { content: "+"; color: #2e7d32; }
+.wahl__liste .nein::before { content: "−"; color: var(--text-leise); }
+
+/* --- Assistent: Anleitung --- */
+.anleitung { margin: 0 0 1rem; padding-left: 1.2rem; font-size: .9rem; line-height: 1.6; }
+.anleitung li { margin-bottom: .5rem; }
+.anleitung em { color: var(--text-leise); font-style: normal; }
+
+/* --- Assistent: Prüfliste --- */
+.pruefliste { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .5rem; }
+.pruef {
+  display: flex;
+  gap: .6rem;
+  align-items: flex-start;
+  padding: .6rem .7rem;
+  border-radius: var(--r);
+  border: 1px solid var(--rand);
+  background: var(--flaeche-2);
+  font-size: .875rem;
+}
+.pruef__zeichen {
+  width: 20px; height: 20px; flex: none;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: .75rem; font-weight: 700; color: #fff;
+  margin-top: .1rem;
+}
+.pruef__text em { display: block; color: var(--text-leise); font-style: normal; font-size: .82rem; margin-top: .15rem; }
+.pruef--ok .pruef__zeichen { background: #2e7d32; }
+.pruef--ok .pruef__zeichen::after { content: "✓"; }
+.pruef--warnung { border-color: #e8c877; background: #fff9ec; }
+.pruef--warnung .pruef__zeichen { background: #c88a00; }
+.pruef--warnung .pruef__zeichen::after { content: "!"; }
+.pruef--fehler { border-color: var(--marke); background: var(--marke-blass); }
+.pruef--fehler .pruef__zeichen { background: var(--marke); }
+.pruef--fehler .pruef__zeichen::after { content: "×"; }
+@media (prefers-color-scheme: dark) {
+  .pruef--warnung { background: #332c17; }
+}
+.pruef-laden { display: flex; align-items: center; gap: .6rem; padding: 1.5rem 0; color: var(--text-leise); }
+
+/* --- Abgleich-Protokoll --- */
+.protokoll { list-style: none; margin: 0; padding: 0; display: grid; gap: .25rem; font-size: .82rem; }
+.prot { display: flex; gap: .6rem; align-items: baseline; padding: .25rem .5rem; border-radius: 6px; }
+.prot__zeit { color: var(--text-leise); font-variant-numeric: tabular-nums; flex: none; font-size: .78rem; }
+.prot--fehler { background: var(--marke-blass); color: var(--marke-dunkel); }
+.prot--gesendet, .prot--empfangen { background: var(--flaeche-2); }
+.prot--info { color: var(--text-leise); }

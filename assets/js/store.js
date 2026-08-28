@@ -9,10 +9,14 @@
  *   3. Löschen erzeugt einen Grabstein (`deleted: true`), damit die Löschung
  *      synchronisierbar ist und kein Datensatz "wiederaufersteht".
  *   4. Ein App-Update tauscht nur den Programmcode aus – die Datenbank bleibt.
+ *   5. Freigabe-Schranke: Eine Suche verlässt das Gerät erst, wenn ihr Protokoll
+ *      abgeschlossen ist. Entwürfe bleiben lokal – so landen ausschließlich
+ *      vollständig ausgeführte Suchen im gemeinsamen Datenbestand.
  */
 
 import { alleRecords, schreibeRecords, metaGet, metaSet, leereAlles } from './idb.js';
 import { geraeteName } from './config.js';
+import { istAbgeschlossen } from './schema.js';
 
 const cache = new Map();
 const listeners = new Set();
@@ -155,12 +159,39 @@ export function papierkorb() {
 /* Abgleich mit der Cloud                                            */
 /* ---------------------------------------------------------------- */
 
+/**
+ * Datensätze, die tatsächlich hochgeladen werden dürfen.
+ * Entwürfe einer Suche bleiben zurück, bis sie abgeschlossen sind –
+ * sie verbleiben aber vorgemerkt und gehen mit, sobald sie freigegeben werden.
+ */
 export function offeneUploads() {
-  return [...pendingIds].map((id) => cache.get(id)).filter(Boolean);
+  return [...pendingIds]
+    .map((id) => cache.get(id))
+    .filter((r) => r && (r.deleted || istAbgeschlossen(r)));
+}
+
+/** Vorgemerkte Datensätze, die wegen fehlender Freigabe (noch) zurückgehalten werden. */
+export function zurueckgehalten() {
+  return [...pendingIds]
+    .map((id) => cache.get(id))
+    .filter((r) => r && !r.deleted && !istAbgeschlossen(r));
 }
 
 export function anzahlOffen() {
-  return pendingIds.size;
+  return offeneUploads().length;
+}
+
+export function anzahlZurueckgehalten() {
+  return zurueckgehalten().length;
+}
+
+/** Alle Datensätze, die zum gemeinsamen Bestand gehören (für dateibasierten Abgleich). */
+export function freigegebeneRecords() {
+  return [...cache.values()].filter((r) => r.deleted || istAbgeschlossen(r));
+}
+
+export function entwuerfe() {
+  return alle('suche').filter((r) => !istAbgeschlossen(r));
 }
 
 /**

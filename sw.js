@@ -6,7 +6,7 @@
  * ein Update tauscht nur den Cache aus, nicht die Datenbank.
  */
 
-const VERSION = '1.0.0'; // wird von scripts/release.sh gepflegt
+const VERSION = '1.1.0'; // wird von scripts/release.sh gepflegt
 const CACHE = `rhd-app-${VERSION}`;
 
 const DATEIEN = [
@@ -23,12 +23,15 @@ const DATEIEN = [
   './assets/js/schema.js',
   './assets/js/skizze.js',
   './assets/js/store.js',
-  './assets/js/sync.js',
   './assets/js/ui.js',
   './assets/js/version.js',
+  './assets/js/sync/index.js',
+  './assets/js/sync/github.js',
+  './assets/js/sync/firestore.js',
   './assets/js/views/bilder.js',
   './assets/js/views/dashboard.js',
   './assets/js/views/editor.js',
+  './assets/js/views/einrichtung.js',
   './assets/js/views/einstellungen.js',
   './assets/js/views/suchen.js',
 ];
@@ -58,7 +61,8 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET') return;
 
-  // Firebase/Google niemals aus dem Cache bedienen.
+  // Lebende Daten niemals aus dem Cache bedienen.
+  if (url.hostname === 'api.github.com') return;
   if (url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('firebaseio.com')) return;
 
   // Firebase-SDK: erst Netz, dann Cache (damit es offline weiterhin lädt).

@@ -1,7 +1,7 @@
 /** Anwendungsgerüst: Router, Kopfzeile, Sync-Anzeige, Update-Hinweis. */
 
 import * as store from './store.js';
-import * as sync from './sync.js';
+import * as sync from './sync/index.js';
 import { versionString, APP_NAME } from './version.js';
 import { esc } from './ui.js';
 
@@ -10,6 +10,7 @@ import * as vEditor from './views/editor.js';
 import * as vDashboard from './views/dashboard.js';
 import * as vBilder from './views/bilder.js';
 import * as vEinstellungen from './views/einstellungen.js';
+import * as vEinrichtung from './views/einrichtung.js';
 
 const ROUTEN = [
   { muster: /^#\/suchen$/, view: vSuchen, tab: 'suchen' },
@@ -18,6 +19,7 @@ const ROUTEN = [
   { muster: /^#\/dashboard$/, view: vDashboard, tab: 'dashboard' },
   { muster: /^#\/bilder$/, view: vBilder, tab: 'bilder' },
   { muster: /^#\/einstellungen$/, view: vEinstellungen, tab: 'mehr' },
+  { muster: /^#\/einrichtung$/, view: vEinrichtung, tab: 'mehr' },
 ];
 
 let aktuelleView = null;

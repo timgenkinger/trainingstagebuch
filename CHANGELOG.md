@@ -1,5 +1,18 @@
 # Änderungsprotokoll
 
+## 1.1.0 – 2026-08-28
+- **Online-Abgleich über ein GitHub-Repository** als zweites Verfahren neben Firestore –
+  ohne zusätzliches Konto. Konflikte werden durch Lesen-Mischen-Wiederholen aufgelöst,
+  die Daten liegen auf einem eigenen Branch und lösen keinen Pages-Deploy aus.
+- **Freigabe-Schranke:** Eine Suche geht erst online, wenn ihr Protokoll vollständig
+  ausgeführt und abgeschlossen ist. Entwürfe bleiben auf dem Gerät. Der Editor zeigt
+  laufend, welche Pflichtangaben noch fehlen.
+- **Einrichtungs-Assistent** für den Abgleich, der jeden Schritt gegen den echten Dienst
+  prüft und Fehler konkret benennt (Token abgelehnt, kein Schreibrecht, Repository öffentlich …).
+- Abgleich-Protokoll in den Einstellungen; Entwurf-Kennzeichnung in Liste und Dashboard.
+- Gestaltung auf die Hausfarben des Bayerischen Roten Kreuzes umgestellt
+  (ohne das geschützte Rotkreuz-Emblem).
+
 ## 1.0.0 – 2026-08-27
 - Erste Fassung: Suchen nach Vorlage des gedruckten Trainingstagebuchs erfassen
   (Seite 1 Rahmenbedingungen + Verlauf, Seite 2 Verhalten Hund/Hundeführer:in).

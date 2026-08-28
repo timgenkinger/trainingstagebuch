@@ -7,6 +7,10 @@ laufen in ein **Dashboard** zur Auswertung, und die Daten werden im Team
 
 Die App ist eine reine statische Web-App: **kein Build, keine Abhängigkeiten, kein Server.**
 Sie läuft über GitHub Pages, ist offlinefähig und lässt sich auf dem Handy als App installieren.
+Die Gestaltung folgt den Hausfarben des Bayerischen Roten Kreuzes.
+
+> **Zum Emblem:** Das Rotkreuz-Emblem ist nach den Genfer Abkommen und dem deutschen
+> Rotkreuzgesetz geschützt. Diese App verwendet ausschließlich die Hausfarben, nicht das Zeichen.
 
 ---
 
@@ -15,10 +19,11 @@ Sie läuft über GitHub Pages, ist offlinefähig und lässt sich auf dem Handy a
 1. [Funktionsumfang](#funktionsumfang)
 2. [Schnellstart lokal](#schnellstart-lokal)
 3. [Veröffentlichen über GitHub Pages](#veröffentlichen-über-github-pages)
-4. [Online-Abgleich einrichten (Firebase)](#online-abgleich-einrichten-firebase)
-5. [Versionsnummern und Updates](#versionsnummern-und-updates)
-6. [Wie die Speicherung funktioniert](#wie-die-speicherung-funktioniert)
-7. [Aufbau des Projekts](#aufbau-des-projekts)
+4. [Nur abgeschlossene Suchen gehen online](#nur-abgeschlossene-suchen-gehen-online)
+5. [Online-Abgleich einrichten](#online-abgleich-einrichten)
+6. [Versionsnummern und Updates](#versionsnummern-und-updates)
+7. [Wie die Speicherung funktioniert](#wie-die-speicherung-funktioniert)
+8. [Aufbau des Projekts](#aufbau-des-projekts)
 
 ---
 
@@ -100,21 +105,84 @@ und funktioniert auch ohne Empfang im Wald.
 
 ---
 
-## Online-Abgleich einrichten (Firebase)
+## Nur abgeschlossene Suchen gehen online
 
-Damit alle im Team dieselben Daten sehen, braucht es eine gemeinsame Datenbank.
-Die App nutzt **Cloud Firestore**; der kostenlose Tarif reicht für diesen Zweck bei Weitem.
+Eine Suche durchläuft zwei Zustände:
 
-### 1. Projekt anlegen
+| Zustand | Bedeutung |
+|---|---|
+| **Entwurf** | Wird gerade dokumentiert. Bleibt **ausschließlich auf diesem Gerät** und wird nie hochgeladen. |
+| **Abgeschlossen** | Das Protokoll ist vollständig ausgeführt und bewusst freigegeben. Erst jetzt geht die Suche ins Team. |
 
-1. <https://console.firebase.google.com> → **Projekt hinzufügen** (Google Analytics kann aus bleiben).
-2. Links **Build → Firestore Database → Datenbank erstellen**.
-   Standort: `eur3 (europe-west)`. Modus: *Produktion*.
-3. Links **Build → Authentication → Erste Schritte** → Anmeldemethode **Anonym** aktivieren.
+Damit landet im gemeinsamen Bestand nur, was auch wirklich fertig protokolliert ist –
+keine halb ausgefüllten Formulare, die in der Auswertung Unsinn erzeugen.
 
-### 2. Sicherheitsregeln setzen
+Abschließen lässt sich eine Suche erst, wenn alle Pflichtangaben vorliegen. Der Editor zeigt
+unten laufend, was noch fehlt:
 
-Firestore Database → Reiter **Regeln** → einfügen und veröffentlichen:
+* Datum, Ort, Hund und Hundeführer:in
+* Suchzeit
+* mindestens eine Versteckperson mit Ergebnis (gefunden / nicht gefunden)
+* mindestens je eine Bewertung bei Team, Hund und Hundeführer:in
+
+Wer eine abgeschlossene Suche nachträglich korrigieren will, öffnet sie wieder – sie wird dann
+erneut zum Entwurf. Der bereits geteilte Stand bleibt beim Team, bis sie wieder abgeschlossen wird.
+
+Im Dashboard werden standardmäßig nur abgeschlossene Suchen ausgewertet; Entwürfe lassen sich
+über einen Schalter einbeziehen.
+
+---
+
+## Online-Abgleich einrichten
+
+In der App unter **Einstellungen → Abgleich einrichten** führt ein Assistent durch die Einrichtung
+und prüft jeden Schritt gegen den echten Dienst. Zur Wahl stehen zwei Verfahren:
+
+| | GitHub-Repository | Cloud Firestore |
+|---|---|---|
+| Zusätzliches Konto | keines | Google-Konto |
+| Aktualisierung | alle 45 Sekunden | sofort |
+| Historie | jede Änderung als Commit nachvollziehbar | keine |
+| Pro Gerät nötig | ein Zugangs-Token | nichts |
+
+### Variante A – GitHub-Repository (ohne Google-Konto)
+
+Alle Datensätze liegen als eine JSON-Datei in einem Repository.
+
+1. **Repository wählen.** Am besten ein **eigenes, privates** Repository nur für die Daten
+   ([hier anlegen](https://github.com/new)). Ein leeres genügt.
+
+   > **Wichtig:** In einem *öffentlichen* Repository wären die Trainingsdaten für jeden im
+   > Internet lesbar – Hundenamen, Namen der Hundeführer:innen, Orte, Notizen. Der Assistent
+   > warnt, wenn das gewählte Repository öffentlich ist.
+
+2. **Token erzeugen.** Unter
+   [Fine-grained tokens](https://github.com/settings/personal-access-tokens/new)
+   nur dieses eine Repository auswählen und bei *Repository permissions* unter **Contents**
+   auf **Read and write** stellen. Alles andere bleibt auf *No access*.
+
+3. **Im Assistenten eintragen** – Kontoname, Repository, Branch, Dateiname und Token.
+   Der Branch sollte **nicht** der Hauptbranch sein (Vorgabe: `daten`), sonst löst jedes
+   Speichern einen Pages-Deploy aus. Der Branch wird beim ersten Verbinden automatisch
+   ohne Vorgeschichte angelegt, sodass dort ausschließlich die Daten liegen.
+
+4. **Team anschließen.** Adresse des Datenspeichers (owner/repo/branch/pfad) darf ins
+   Repository – der Assistent liefert den fertigen Block für `assets/js/config.js`.
+   Der **Token gehört nicht dorthin**: entweder ihr gebt einen gemeinsamen Token intern
+   weiter, oder jede:r erzeugt sich einen eigenen. Er wird nur im Browser des jeweiligen
+   Geräts gespeichert und niemals exportiert.
+
+**Wie Konflikte behandelt werden:** Vor jedem Schreiben liest die App den aktuellen Stand
+frisch ein und mischt ihn mit dem lokalen. Speichert jemand zeitgleich, antwortet GitHub mit
+einem Konflikt – dann wiederholt sich der Ablauf mit dem neuen Stand. Dadurch kann keine
+fremde Änderung überschrieben werden.
+
+### Variante B – Cloud Firestore (Echtzeit)
+
+1. In der [Firebase-Konsole](https://console.firebase.google.com) ein Projekt anlegen.
+2. **Build → Firestore Database** erstellen, Standort `eur3 (europe-west)`, Modus *Produktion*.
+3. **Build → Authentication** öffnen und die Anmeldemethode **Anonym** aktivieren.
+4. Unter **Regeln** einsetzen:
 
 ```
 rules_version = '2';
@@ -127,30 +195,16 @@ service cloud.firestore {
 }
 ```
 
-### 3. Web-App registrieren und Konfiguration eintragen
+5. **Projekteinstellungen → Meine Apps → Web-App** anlegen und die Konfiguration im
+   Assistenten einfügen.
 
-1. Projektübersicht → Zahnrad → **Projekteinstellungen** → Abschnitt *Meine Apps* → **Web-App** (`</>`) hinzufügen.
-2. Den angezeigten `firebaseConfig`-Block kopieren.
-3. In der App unter **Einstellungen → Online-Abgleich** in das Feld einfügen und auf
-   **Speichern & verbinden** klicken. Der Punkt oben rechts wird grün.
+Die Firebase-Web-Konfiguration ist kein Passwort, sondern eine Adresse. Der Schutz kommt aus
+den Regeln – und die erlauben jedem anonym Angemeldeten Zugriff. Bei einem öffentlichen
+Repository die Konfiguration deshalb **nicht** committen, sondern im Team weitergeben.
 
-### 4. Das Team anschließen – zwei Wege
+### Ohne Abgleich
 
-| Weg | Vorgehen | Wann sinnvoll |
-|---|---|---|
-| **A – jede:r trägt die Konfiguration einmal selbst ein** | Konfiguration im Team weitergeben (z.B. per Messenger), jede:r fügt sie einmal unter Einstellungen ein | **Empfohlen bei öffentlichem Repository.** Nur wer die Konfiguration bekommen hat, kann mitschreiben |
-| **B – Konfiguration ins Repository** | In der App auf **„config.js für das Team kopieren“** klicken und den Text in `assets/js/config.js` einsetzen, committen und pushen | Bequem – aber jede:r, der die Seite findet, kann mitschreiben. Nur bei privatem Repository verwenden |
-
-Der Grund: Die Firebase-Web-Konfiguration ist kein Passwort, sondern nur eine Adresse.
-Der Schutz kommt aus den Regeln oben – und die erlauben jedem angemeldeten (auch anonymen)
-Zugriff. Wer die Konfiguration nicht hat, kommt nicht an die Daten.
-
-> Aus demselben Grund: keine besonders schützenswerten personenbezogenen Daten in die
-> Notizfelder schreiben. Für ein Trainingstagebuch mit Vornamen ist das unkritisch.
-
-### Ohne Online-Abgleich
-
-Die App funktioniert vollständig ohne Firebase – dann liegen die Daten nur auf dem jeweiligen
+Die App funktioniert vollständig ohne beides – dann liegen die Daten nur auf dem jeweiligen
 Gerät. Zum Austausch gibt es unter **Einstellungen → Sicherung** Export und Import als JSON.
 Der Import mischt und überschreibt nie neuere Daten.
 
@@ -206,6 +260,8 @@ Deshalb arbeitet die App nach dem Prinzip **local first**:
    sobald wieder Verbindung besteht. Der Zähler oben rechts zeigt, wie viele noch warten.
 6. **Ein Update tauscht nur den Programmcode aus.** Der Service Worker verwaltet ausschließlich
    den Cache der Programmdateien und fasst die Datenbank nie an.
+7. **Freigabe-Schranke.** Eine Suche verlässt das Gerät erst, wenn ihr Protokoll abgeschlossen
+   ist. Entwürfe bleiben vorgemerkt und gehen automatisch mit, sobald sie freigegeben werden.
 
 Der Status oben rechts: grau *Nur lokal*, orange *Verbinde/Offline*, grün *Synchron*, rot *Fehler*
 (Titel antippen zeigt den Grund).
@@ -227,8 +283,10 @@ assets/js/
   schema.js                fachliches Modell: alle Kriterien und Helfer:in-Bilder aus dem Heft
   store.js                 lokal-zuerst-Speicher, Misch- und Löschregeln
   idb.js                   IndexedDB-Zugriff
-  sync.js                  Abgleich mit Firestore
-  config.js                Firebase-Konfiguration fürs Team
+  sync/index.js            Steuerung des Abgleichs, Freigabe-Schranke, Protokoll
+  sync/github.js           Abgleich über ein GitHub-Repository
+  sync/firestore.js        Abgleich über Cloud Firestore
+  config.js                Adresse des Datenspeichers (ohne Token)
   charts.js                Diagramme (selbst gezeichnetes SVG)
   skizze.js                Zeichenfeld für das Suchgebiet
   ui.js                    Bausteine: Skala, Chips, Karten, Meldungen
@@ -237,6 +295,7 @@ assets/js/
     editor.js              Erfassungsmaske einer Suche
     dashboard.js           Auswertung
     bilder.js              Helfer:in-Bilder
+    einrichtung.js         Assistent für den Online-Abgleich
     einstellungen.js       Sync, Stammdaten, Sicherung, Version
 
 scripts/release.sh         vergibt eine neue Versionsnummer

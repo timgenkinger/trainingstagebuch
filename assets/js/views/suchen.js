@@ -5,7 +5,7 @@ import * as S from '../schema.js';
 import { esc, formatDatum, formatNote, formatMinuten, leer, skalaFarbe } from '../ui.js';
 import { skizzeSvg } from '../skizze.js';
 
-const filter = { text: '', hundId: '', jahr: '' };
+const filter = { text: '', hundId: '', jahr: '', nurEntwuerfe: false };
 
 export async function render(wurzel) {
   zeichne(wurzel);
@@ -20,6 +20,7 @@ function zeichne(wurzel) {
 function gefiltert() {
   const t = filter.text.trim().toLowerCase();
   return store.suchen().filter((s) => {
+    if (filter.nurEntwuerfe && S.istAbgeschlossen(s)) return false;
     if (filter.hundId && s.hundId !== filter.hundId) return false;
     if (filter.jahr && !(s.datum || '').startsWith(filter.jahr)) return false;
     if (!t) return true;
@@ -33,6 +34,7 @@ function html() {
   const liste = gefiltert();
   const hunde = store.hunde();
   const jahre = [...new Set(alle.map((s) => (s.datum || '').slice(0, 4)).filter(Boolean))].sort().reverse();
+  const entwuerfe = alle.filter((s) => !S.istAbgeschlossen(s)).length;
 
   if (!alle.length) {
     return `<div class="seite">
@@ -59,6 +61,9 @@ function html() {
         <option value="">Alle Jahre</option>
         ${jahre.map((j) => `<option value="${esc(j)}"${filter.jahr === j ? ' selected' : ''}>${esc(j)}</option>`).join('')}
       </select>
+      <button type="button" class="chip${filter.nurEntwuerfe ? ' chip--an' : ''}" data-t="nurEntwuerfe">
+        nur Entwürfe${entwuerfe ? ` (${entwuerfe})` : ''}
+      </button>
     </div>
 
     ${liste.length ? `<div class="such-liste">${liste.map(karteFuer).join('')}</div>` : leer('Keine Suche passt zu diesem Filter.')}
@@ -84,6 +89,7 @@ function karteFuer(s) {
       <div class="such-karte__zeile1">
         <strong>${esc(formatDatum(s.datum))}</strong>
         <span class="such-karte__ort">${esc(s.ort || 'ohne Ortsangabe')}</span>
+        ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
         ${score != null ? `<span class="note" style="--n:${skalaFarbe(score)}">${formatNote(score)}</span>` : ''}
       </div>
       <div class="such-karte__zeile2">
@@ -114,6 +120,12 @@ function kuerze(t, n) {
 
 function binde(box, wurzel) {
   if (!box) return;
+  box.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-t]');
+    if (!t) return;
+    filter[t.dataset.t] = !filter[t.dataset.t];
+    zeichne(wurzel);
+  });
   box.addEventListener('input', (e) => {
     const el = e.target.closest('[data-f]');
     if (!el) return;

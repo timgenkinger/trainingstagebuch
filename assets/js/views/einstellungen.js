@@ -1,8 +1,9 @@
-/** Einstellungen: Online-Sync, Stammdaten, Sicherung, Papierkorb, Version. */
+/** Einstellungen: Abgleich, Stammdaten, Sicherung, Papierkorb, Version. */
 
 import * as store from '../store.js';
-import * as sync from '../sync.js';
-import { ladeConfig, speichereConfig, loescheLokaleConfig, geraeteName, setzeGeraeteName, STANDARD_CONFIG } from '../config.js';
+import * as sync from '../sync/index.js';
+import * as S from '../schema.js';
+import { ladeConfig, loescheLokaleConfig, speichereConfig, geraeteName, setzeGeraeteName, STANDARD_CONFIG } from '../config.js';
 import { RELEASE_DATE, BUILD, versionString } from '../version.js';
 import { esc, karte, feld, textInput, toast, frage, download, relativeZeit, formatDatum, leer } from '../ui.js';
 
@@ -17,11 +18,11 @@ function zeichne(wurzel) {
 
 function html() {
   const cfg = ladeConfig();
-  const konfiguriert = !!cfg.firebase?.apiKey;
   const s = sync.status;
   const hunde = store.hunde();
   const personen = store.personen();
   const muell = store.papierkorb();
+  const entwuerfe = store.entwuerfe();
 
   return `<div class="seite">
     <div class="seite__kopf"><h1>Einstellungen</h1></div>
@@ -30,38 +31,33 @@ function html() {
       <div class="sync-box sync-box--${esc(s.zustand)}">
         <span class="punkt"></span>
         <div>
-          <strong>${esc(zustandText(s.zustand))}</strong>
-          <small>${esc(s.text)}${s.offen ? ` · ${s.offen} Änderung(en) warten` : ''}</small>
-          <small>Letzter Empfang: ${esc(relativeZeit(s.letzterAbgleich))}</small>
+          <strong>${esc(zustandText(s.zustand))}${cfg.backend !== 'aus' ? ` · ${esc(verfahrenText(cfg.backend))}` : ''}</strong>
+          <small>${esc(s.text)}</small>
+          <small>Letzter Abgleich: ${esc(relativeZeit(s.letzterAbgleich))}</small>
         </div>
-        <button type="button" class="btn btn--mini" data-sync-jetzt>Jetzt abgleichen</button>
+        ${cfg.backend !== 'aus' ? '<button type="button" class="btn btn--mini" data-sync-jetzt>Jetzt abgleichen</button>' : ''}
       </div>
 
-      <p class="karte__hint">Alle Daten liegen zuerst auf diesem Gerät und werden dann mit der gemeinsamen
-        Firestore-Datenbank gemischt. Ein Abgleich überschreibt nie neuere lokale Daten, und ein leerer Server
-        löscht nichts – ein App-Update setzt daher niemals Daten zurück.</p>
+      ${ziel(cfg)}
 
-      ${feld('Firebase-Konfiguration (JSON)',
-        `<textarea class="input input--code" rows="9" data-firebase placeholder='{
-  "apiKey": "…",
-  "authDomain": "projekt.firebaseapp.com",
-  "projectId": "projekt",
-  "storageBucket": "projekt.appspot.com",
-  "messagingSenderId": "…",
-  "appId": "…"
-}'>${esc(cfg.firebase ? JSON.stringify(cfg.firebase, null, 2) : '')}</textarea>`,
-        { hint: 'aus der Firebase-Konsole → Projekteinstellungen → Web-App' })}
-
-      ${feld('Sammlung (Collection)', textInput('__collection', cfg.collection, { placeholder: 'trainingstagebuch' }))}
+      <div class="freigabe-info">
+        <strong>${entwuerfe.length}</strong> Entwurf/Entwürfe bleiben auf diesem Gerät,
+        <strong>${store.suchen().length - entwuerfe.length}</strong> abgeschlossene Suchen werden geteilt.
+        <small>Eine Suche wird erst hochgeladen, wenn ihr Protokoll vollständig ausgeführt und abgeschlossen ist.</small>
+      </div>
 
       <div class="btn-zeile">
-        <button type="button" class="btn btn--primaer" data-sync-speichern>Speichern &amp; verbinden</button>
-        <button type="button" class="btn btn--still" data-sync-config-kopieren>config.js für das Team kopieren</button>
-        ${konfiguriert ? `<button type="button" class="btn btn--gefahr-still" data-sync-trennen>Verbindung entfernen</button>` : ''}
+        <a class="btn btn--primaer" href="#/einrichtung">${cfg.backend === 'aus' ? 'Abgleich einrichten' : 'Einrichtung ändern'}</a>
+        ${cfg.backend !== 'aus' ? '<button type="button" class="btn btn--gefahr-still" data-sync-trennen>Verbindung entfernen</button>' : ''}
       </div>
-      <p class="karte__hint">Damit alle im Team automatisch dieselbe Datenbank nutzen, den kopierten Inhalt in
-        <code>assets/js/config.js</code> einsetzen und ins Repository committen. Die Web-Konfiguration ist kein Geheimnis –
-        der Schutz kommt aus den Firestore-Regeln (siehe README).</p>
+
+      ${s.protokoll.length ? `
+        <h3 class="unter">Abgleich-Protokoll</h3>
+        <ul class="protokoll">
+          ${s.protokoll.slice(0, 12).map((p) => `<li class="prot prot--${esc(p.art)}">
+            <span class="prot__zeit">${esc(uhrzeit(p.zeit))}</span>
+            <span>${esc(p.text)}</span></li>`).join('')}
+        </ul>` : ''}
     `)}
 
     ${karte('Dieses Gerät', feld('Gerätename', textInput('__geraet', geraeteName(), { placeholder: 'z.B. Handy Rainer' }),
@@ -69,7 +65,7 @@ function html() {
 
     ${karte('Hunde', `
       <div class="stamm-liste">
-        ${hunde.length ? hunde.map((h) => stammZeile(h, 'hund')).join('') : leer('Noch kein Hund angelegt.')}
+        ${hunde.length ? hunde.map((h) => stammZeile(h)).join('') : leer('Noch kein Hund angelegt.')}
       </div>
       <div class="btn-zeile">
         <input class="input" placeholder="Name des Hundes" data-neu-hund>
@@ -79,7 +75,7 @@ function html() {
 
     ${karte('Hundeführer:innen', `
       <div class="stamm-liste">
-        ${personen.length ? personen.map((p) => stammZeile(p, 'person')).join('') : leer('Noch keine Person angelegt.')}
+        ${personen.length ? personen.map((p) => stammZeile(p)).join('') : leer('Noch keine Person angelegt.')}
       </div>
       <div class="btn-zeile">
         <input class="input" placeholder="Name" data-neu-person>
@@ -93,18 +89,14 @@ function html() {
         <label class="btn btn--still">Import … <input type="file" accept="application/json,.json" hidden data-import></label>
       </div>
       <p class="karte__hint">Der Import mischt nur: bestehende neuere Datensätze bleiben erhalten.
-        Es liegen ${store.rohdaten().length} Datensätze auf diesem Gerät.</p>
+        Es liegen ${store.rohdaten().length} Datensätze auf diesem Gerät. Der Zugangs-Token wird nie mit exportiert.</p>
     `)}
 
     ${karte('Papierkorb', muell.length
-      ? `<div class="stamm-liste">${muell
-          .map(
-            (s) => `<div class="stamm">
-          <span>${esc(formatDatum(s.datum))} – ${esc(s.ort || 'ohne Ort')}</span>
-          <button type="button" class="btn btn--mini" data-restore="${esc(s.id)}">Wiederherstellen</button>
-        </div>`
-          )
-          .join('')}</div>`
+      ? `<div class="stamm-liste">${muell.map((x) => `<div class="stamm">
+          <span>${esc(formatDatum(x.datum))} – ${esc(x.ort || 'ohne Ort')}</span>
+          <button type="button" class="btn btn--mini" data-restore="${esc(x.id)}">Wiederherstellen</button>
+        </div>`).join('')}</div>`
       : leer('Papierkorb ist leer.'))}
 
     ${karte('Version', `
@@ -121,23 +113,43 @@ function html() {
 
     ${karte('Gefahrenzone', `
       <button type="button" class="btn btn--gefahr" data-reset>Lokale Daten auf diesem Gerät löschen</button>
-      <p class="karte__hint">Löscht nur die lokale Kopie. Bei aktivem Online-Abgleich werden die Daten anschließend
-        wieder vom Server geladen.</p>
+      <p class="karte__hint">Löscht nur die lokale Kopie. Bei aktivem Abgleich werden abgeschlossene Suchen
+        anschließend wieder geladen – <strong>lokale Entwürfe sind dann endgültig weg.</strong></p>
     `, { klasse: 'karte--gefahr' })}
   </div>`;
 }
 
-function zustandText(z) {
-  return (
-    { aus: 'Kein Online-Sync', verbinde: 'Verbinde …', aktiv: 'Verbunden', offline: 'Offline', fehler: 'Fehler' }[z] ||
-    z
-  );
+function ziel(cfg) {
+  if (cfg.backend === 'github') {
+    const g = cfg.github;
+    return `<p class="karte__hint">Datenspeicher: <code>${esc(g.owner)}/${esc(g.repo)}</code>,
+      Branch <code>${esc(g.branch)}</code>, Datei <code>${esc(g.pfad)}</code>.
+      Token ${g.token ? 'auf diesem Gerät hinterlegt' : '<strong>fehlt</strong>'}.</p>`;
+  }
+  if (cfg.backend === 'firebase') {
+    return `<p class="karte__hint">Datenspeicher: Firestore-Projekt <code>${esc(cfg.firebase?.projectId || '?')}</code>,
+      Sammlung <code>${esc(cfg.collection)}</code>.</p>`;
+  }
+  return `<p class="karte__hint">Ohne Abgleich bleiben alle Daten nur auf diesem Gerät.</p>`;
 }
 
-function stammZeile(r, typ) {
+function zustandText(z) {
+  return { aus: 'Kein Abgleich', verbinde: 'Verbinde …', aktiv: 'Verbunden', offline: 'Offline', fehler: 'Fehler' }[z] || z;
+}
+
+function verfahrenText(b) {
+  return { github: 'GitHub-Repository', firebase: 'Cloud Firestore' }[b] || b;
+}
+
+function uhrzeit(ts) {
+  const d = new Date(ts);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+function stammZeile(r) {
   return `<div class="stamm">
     <input class="input input--schlank" value="${esc(r.name || '')}" data-rename="${esc(r.id)}">
-    <button type="button" class="btn btn--mini btn--gefahr-still" data-del="${esc(r.id)}" data-typ="${typ}">×</button>
+    <button type="button" class="btn btn--mini btn--gefahr-still" data-del="${esc(r.id)}">×</button>
   </div>`;
 }
 
@@ -153,51 +165,13 @@ function binde(box, wurzel) {
       return;
     }
 
-    if (t.closest('[data-sync-speichern]')) {
-      const roh = box.querySelector('[data-firebase]').value.trim();
-      const collection = box.querySelector('[data-pfad="__collection"]').value.trim() || STANDARD_CONFIG.collection;
-      let firebase = null;
-      if (roh) {
-        try {
-          firebase = JSON.parse(normalisiere(roh));
-        } catch (err) {
-          toast('Die Firebase-Konfiguration ist kein gültiges JSON.', 'fehler');
-          return;
-        }
-        if (!firebase.apiKey || !firebase.projectId) {
-          toast('apiKey und projectId fehlen in der Konfiguration.', 'fehler');
-          return;
-        }
-      }
-      speichereConfig({ firebase, collection });
-      toast('Gespeichert – verbinde …');
-      await sync.neustart();
-      zeichne(wurzel);
-      return;
-    }
-
-    if (t.closest('[data-sync-config-kopieren]')) {
-      const cfg = ladeConfig();
-      const text = `export const STANDARD_CONFIG = ${JSON.stringify(
-        { firebase: cfg.firebase, collection: cfg.collection },
-        null,
-        2
-      )};`;
-      try {
-        await navigator.clipboard.writeText(text);
-        toast('In die Zwischenablage kopiert.');
-      } catch {
-        download('config-schnipsel.txt', text, 'text/plain');
-        toast('Zwischenablage nicht verfügbar – als Datei geladen.');
-      }
-      return;
-    }
-
     if (t.closest('[data-sync-trennen]')) {
-      if (await frage('Online-Abgleich auf diesem Gerät entfernen? Die lokalen Daten bleiben erhalten.', { ok: 'Entfernen', gefahr: true })) {
+      if (await frage('Abgleich auf diesem Gerät entfernen? Die lokalen Daten und der Token bleiben bzw. werden gelöscht, die Daten im Team bleiben unberührt.', { ok: 'Entfernen', gefahr: true })) {
+        await sync.stoppe();
         loescheLokaleConfig();
-        speichereConfig({ firebase: null, collection: STANDARD_CONFIG.collection });
-        toast('Verbindung entfernt. Seite neu laden, um die Verbindung vollständig zu trennen.');
+        speichereConfig({ ...STANDARD_CONFIG });
+        sync.setzeStatus('aus', 'Kein Online-Abgleich eingerichtet');
+        toast('Verbindung entfernt.');
         zeichne(wurzel);
       }
       return;
@@ -253,12 +227,11 @@ function binde(box, wurzel) {
     }
 
     if (t.closest('[data-reset]')) {
-      if (
-        await frage('Wirklich alle lokalen Daten dieses Geräts löschen? Ohne Online-Abgleich sind sie danach weg.', {
-          ok: 'Endgültig löschen',
-          gefahr: true,
-        })
-      ) {
+      const n = store.entwuerfe().length;
+      if (await frage(
+        `Wirklich alle lokalen Daten dieses Geräts löschen?${n ? ` ${n} Entwurf/Entwürfe sind noch nicht geteilt und wären endgültig verloren.` : ''}`,
+        { ok: 'Endgültig löschen', gefahr: true }
+      )) {
         await store.allesLoeschen();
         toast('Lokale Daten gelöscht.');
         location.hash = '#/suchen';
@@ -293,14 +266,4 @@ function binde(box, wurzel) {
       toast('Import fehlgeschlagen: ' + err.message, 'fehler');
     }
   });
-}
-
-/** Erlaubt auch das Einfügen des JS-Objekts aus der Firebase-Konsole. */
-function normalisiere(text) {
-  let t = text.trim();
-  const start = t.indexOf('{');
-  const ende = t.lastIndexOf('}');
-  if (start >= 0 && ende > start) t = t.slice(start, ende + 1);
-  t = t.replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)\s*:/g, '$1"$2":').replace(/'/g, '"').replace(/,(\s*[}\]])/g, '$1');
-  return t;
 }

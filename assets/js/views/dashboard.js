@@ -5,7 +5,7 @@ import * as S from '../schema.js';
 import { esc, karte, leer, formatNote, formatMinuten, runde, skalaFarbe, formatDatum } from '../ui.js';
 import { linienDiagramm, balken, stapel, sparkline } from '../charts.js';
 
-const filter = { hundId: '', zeitraum: 'alle', kriterium: 'gruppen' };
+const filter = { hundId: '', zeitraum: 'alle', kriterium: 'gruppen', mitEntwuerfen: false };
 
 const FARBE = { team: '#3c8a4f', hund: '#1d6fb8', hf: '#c2761b' };
 const GRUPPEN_LABEL = { team: 'Team', hund: 'Hund', hf: 'Hundeführer:in' };
@@ -29,7 +29,7 @@ function imZeitraum(s) {
 function datensatz() {
   return store
     .suchen()
-    .filter((s) => (!filter.hundId || s.hundId === filter.hundId) && imZeitraum(s))
+    .filter((s) => (filter.mitEntwuerfen || S.istAbgeschlossen(s)) && (!filter.hundId || s.hundId === filter.hundId) && imZeitraum(s))
     .sort((a, b) => (a.datum || '').localeCompare(b.datum || ''));
 }
 
@@ -44,6 +44,7 @@ function html() {
 
   const daten = datensatz();
   const hunde = store.hunde();
+  const entwuerfe = alle.filter((s) => !S.istAbgeschlossen(s)).length;
 
   return `<div class="seite">
     <div class="seite__kopf">
@@ -66,9 +67,11 @@ function html() {
           .map(([v, l]) => `<option value="${v}"${filter.zeitraum === v ? ' selected' : ''}>${l}</option>`)
           .join('')}
       </select>
+      ${entwuerfe ? `<button type="button" class="chip${filter.mitEntwuerfen ? ' chip--an' : ''}" data-t="mitEntwuerfen">
+        ${entwuerfe} Entwurf/Entwürfe einbeziehen</button>` : ''}
     </div>
 
-    ${daten.length ? inhalt(daten) : leer('Für diesen Filter gibt es keine Suchen.')}
+    ${daten.length ? inhalt(daten) : leer('Für diesen Filter gibt es keine abgeschlossenen Suchen.')}
   </div>`;
 }
 
@@ -380,6 +383,12 @@ function binde(box, wurzel) {
     const el = e.target.closest('[data-f]');
     if (!el) return;
     filter[el.dataset.f] = el.value;
+    zeichne(wurzel);
+  });
+  box.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-t]');
+    if (!t) return;
+    filter[t.dataset.t] = !filter[t.dataset.t];
     zeichne(wurzel);
   });
 }
