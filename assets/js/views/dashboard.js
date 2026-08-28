@@ -219,19 +219,26 @@ function radiusBlock(daten) {
   daten.forEach((s) => {
     if (s.radiusTyp) zaehler[s.radiusTyp] = (zaehler[s.radiusTyp] || 0) + 1;
   });
-  const anzeigen = {};
-  daten.flatMap((s) => s.helfer || []).forEach((h) => {
-    if (h.anzeige) anzeigen[h.anzeige] = (anzeigen[h.anzeige] || 0) + 1;
-  });
-
   const rTyp = S.RADIUS_TYPEN.filter((r) => zaehler[r.id]).map((r) => ({ label: r.label, wert: zaehler[r.id] }));
-  const aArt = S.ANZEIGE_ARTEN.filter((a) => anzeigen[a.id]).map((a) => ({ label: a.label, wert: anzeigen[a.id] }));
+
+  // Verteilung der Fundabstände – aussagekräftiger als die Anzeigeart,
+  // weil ausschließlich durch Bellen angezeigt wird.
+  const radien = daten.flatMap((s) => s.helfer || [])
+    .filter((h) => h.gefunden === true && Number(h.radiusM) > 0)
+    .map((h) => Number(h.radiusM));
+  const klassen = [
+    { label: 'bis 10 m', pruef: (m) => m <= 10 },
+    { label: '11 – 25 m', pruef: (m) => m > 10 && m <= 25 },
+    { label: '26 – 50 m', pruef: (m) => m > 25 && m <= 50 },
+    { label: 'über 50 m', pruef: (m) => m > 50 },
+  ].map((k) => ({ label: k.label, wert: radien.filter(k.pruef).length })).filter((k) => k.wert > 0);
 
   return karte(
-    'Radius & Anzeigeverhalten',
+    'Radius bei Fund',
     `${rTyp.length ? `<h3 class="unter">Radius (Einschätzung)</h3>${balken(rTyp)}` : ''}
-     ${aArt.length ? `<h3 class="unter">Art der Anzeige</h3>${balken(aArt, { farbe: 'var(--blau)' })}` : ''}
-     ${!rTyp.length && !aArt.length ? leer('Noch keine Angaben.') : ''}`
+     ${klassen.length ? `<h3 class="unter">Abstand zur Hundeführer:in beim Fund</h3>${balken(klassen, { farbe: 'var(--blau)' })}` : ''}
+     ${!rTyp.length && !klassen.length ? leer('Noch keine Angaben.') : ''}`,
+    { hint: 'Angezeigt wird durchgängig durch Bellen – ausgewertet wird deshalb der Abstand.' }
   );
 }
 

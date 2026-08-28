@@ -13,7 +13,8 @@
   --marke-dunkel: #b3040f;
   --marke-text: #ffffff;
   --blau: #1d6fb8;
-  --rot: #c0392b;
+  --rot: #c0392b;       /* Fläche hinter weißer Schrift */
+  --rot-text: #b8352a;  /* Schrift auf dem Seitengrund */
   --orange: #c2761b;
 
   --grund: #f5f5f6;
@@ -42,11 +43,14 @@
     --text-leise: #a0a5ad;
     --rand: #34373c;
     --rand-stark: #474b52;
-    --marke: #f2545f;
-    --marke-hell: #f8848c;
+    /* Die Fläche bleibt kräftig, damit weiße Schrift darauf lesbar ist
+       (4,9:1). Aufgehellt wird nur, was selbst als Schrift dient. */
+    --marke: #e30613;
+    --marke-hell: #f2545f;
     --marke-blass: #33191c;
     --marke-dunkel: #ff7079;
-    --marke-text: #1a0406;
+    --marke-text: #ffffff;
+    --rot-text: #f2705f;
     --blau: #6fa8e0;
     --schatten: 0 1px 2px rgba(0, 0, 0, .4), 0 4px 14px rgba(0, 0, 0, .25);
   }
@@ -75,7 +79,6 @@ h1, h2, h3 { margin: 0; font-weight: 650; line-height: 1.25; }
 h1 { font-size: 1.35rem; }
 p { margin: 0 0 .6rem; }
 a { color: var(--marke-dunkel); }
-.inhalt a { color: var(--marke-dunkel); }
 
 /* ---------------- Kopfzeile & Navigation ---------------- */
 
@@ -109,7 +112,7 @@ a { color: var(--marke-dunkel); }
 .marke__logo { width: 30px; height: 30px; color: #fff; flex: none; }
 .marke__text { display: flex; flex-direction: column; line-height: 1.1; }
 .marke__text strong { font-size: 1rem; letter-spacing: -.01em; }
-.marke__text small { font-size: .7rem; color: rgba(255, 255, 255, .78); font-variant-numeric: tabular-nums; }
+.marke__text small { font-size: .7rem; color: #fff; font-variant-numeric: tabular-nums; }
 
 .sync-chip {
   display: inline-flex;
@@ -118,8 +121,8 @@ a { color: var(--marke-dunkel); }
   font-size: .75rem;
   padding: .3rem .6rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, .16);
-  border: 1px solid rgba(255, 255, 255, .3);
+  background: rgba(255, 255, 255, .2);
+  border: 1px solid rgba(255, 255, 255, .55);
   color: #fff;
   text-decoration: none;
   white-space: nowrap;
@@ -147,13 +150,13 @@ a { color: var(--marke-dunkel); }
   padding: .55rem .7rem;
   font-size: .875rem;
   font-weight: 550;
-  color: rgba(255, 255, 255, .8);
+  color: #fff;
   text-decoration: none;
   border-bottom: 3px solid transparent;
   white-space: nowrap;
 }
-.tabs a:hover { color: #fff; }
-.tabs a.tab--an { color: #fff; font-weight: 700; border-bottom-color: #fff; }
+.tabs a:hover { border-bottom-color: rgba(255, 255, 255, .45); }
+.tabs a.tab--an { font-weight: 750; border-bottom-color: #fff; }
 
 /* ---------------- Layout ---------------- */
 
@@ -275,7 +278,7 @@ select.input { background-image: none; padding-right: .7rem; }
 .btn--still { background: var(--flaeche-2); }
 .btn--hell { background: #fff; color: var(--marke-dunkel); border-color: transparent; }
 .btn--gefahr { background: var(--rot); border-color: var(--rot); color: #fff; }
-.btn--gefahr-still { color: var(--rot); border-color: color-mix(in srgb, var(--rot) 30%, var(--rand)); background: transparent; }
+.btn--gefahr-still { color: var(--rot-text); border-color: color-mix(in srgb, var(--rot) 30%, var(--rand)); background: transparent; }
 .btn--mini { min-height: 32px; padding: .2rem .6rem; font-size: .8rem; border-radius: 8px; }
 .btn-zeile { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; margin: .6rem 0; }
 .btn-zeile .input { width: auto; flex: 1 1 12rem; }
@@ -305,7 +308,7 @@ select.input { background-image: none; padding-right: .7rem; }
   cursor: pointer;
 }
 .mini-chip--an { background: var(--marke-blass); border-color: var(--marke); color: var(--marke-dunkel); font-weight: 600; }
-.mini-chip--rot { background: color-mix(in srgb, var(--rot) 12%, transparent); border-color: var(--rot); color: var(--rot); }
+.mini-chip--rot { background: color-mix(in srgb, var(--rot) 12%, transparent); border-color: var(--rot); color: var(--rot-text); }
 
 /* Checkliste (Problemverhalten) */
 .checkliste { display: grid; gap: .4rem; margin-bottom: .7rem; }
@@ -373,7 +376,7 @@ select.input { background-image: none; padding-right: .7rem; }
   border-color: var(--dot);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot) 25%, transparent);
 }
-.dot--aktiv::after { content: "✓"; color: #fff; font-size: .8rem; line-height: 1; }
+.dot--aktiv::after { content: "✓"; color: #16181b; font-size: .8rem; line-height: 1; font-weight: 700; }
 .skala--klein .dot { width: 24px; height: 24px; }
 
 .ampel { display: inline-flex; gap: .25rem; margin-top: .2rem; }
@@ -480,7 +483,7 @@ select.input { background-image: none; padding-right: .7rem; }
   border: 1px solid var(--rand);
   white-space: nowrap;
 }
-.tag--warn { color: var(--rot); border-color: color-mix(in srgb, var(--rot) 30%, var(--rand)); }
+.tag--warn { color: var(--rot-text); border-color: color-mix(in srgb, var(--rot) 30%, var(--rand)); }
 .mininote { display: inline-flex; align-items: center; gap: .3rem; font-size: .76rem; color: var(--text-leise); }
 .mininote i { width: 9px; height: 9px; border-radius: 50%; }
 
@@ -488,7 +491,7 @@ select.input { background-image: none; padding-right: .7rem; }
   margin-left: auto;
   font-weight: 700;
   font-size: .85rem;
-  color: #fff;
+  color: #16181b;
   background: var(--n);
   padding: .1rem .5rem;
   border-radius: 999px;
@@ -825,8 +828,8 @@ code {
   font-weight: 700;
 }
 .schritte .schritt--an { background: var(--marke-blass); border-color: var(--marke); color: var(--marke-dunkel); font-weight: 650; }
-.schritte .schritt--an span { background: var(--marke); color: var(--marke-text); }
-.schritte .schritt--fertig span { background: var(--marke-hell); color: var(--marke-text); }
+.schritte .schritt--an span { background: var(--marke); color: #fff; }
+.schritte .schritt--fertig span { background: var(--marke); color: #fff; }
 
 /* --- Assistent: Verfahrenswahl --- */
 .wahlen { display: grid; gap: .7rem; margin-bottom: .8rem; }

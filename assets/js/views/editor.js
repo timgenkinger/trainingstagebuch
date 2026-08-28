@@ -35,6 +35,19 @@ function aktualisiereKopf() {
   el.innerHTML = n == null ? '' : ` \u00b7 Gesamtnote <strong>${formatNote(n)}</strong>`;
 }
 
+/**
+ * Zieht Abschlussbereich und Statusabzeichen nach.
+ * Muss bei JEDER Änderung laufen: sonst zeigt die Karte den Stand vom letzten
+ * Neuzeichnen, und die Suche liesse sich erst nach einem Neuladen abschliessen.
+ * Der Bereich enthält nur Schaltflächen – ein Ersetzen stört keine Eingabe.
+ */
+function aktualisiereAbschluss() {
+  const bereich = document.querySelector('[data-abschluss]');
+  if (bereich && !bereich.contains(document.activeElement)) bereich.innerHTML = abschlussKarte();
+  const abz = document.querySelector('[data-status-abz]');
+  if (abz) abz.innerHTML = statusAbzeichen(suche);
+}
+
 export function flushEditor() {
   if (dirty) speichereBald.sofort();
   entwurf = null; // unberührter Entwurf wird verworfen
@@ -80,6 +93,8 @@ function zeichne(wurzel) {
 function markiere() {
   dirty = true;
   statusSetzen('Speichere …');
+  aktualisiereAbschluss();
+  aktualisiereKopf();
   speichereBald();
 }
 
@@ -94,7 +109,7 @@ function html() {
   <div class="editor">
     <div class="editor__kopf">
       <div>
-        <h1>Suche vom ${esc(formatDatum(suche.datum, true))} ${statusAbzeichen(suche)}</h1>
+        <h1>Suche vom ${esc(formatDatum(suche.datum, true))} <span data-status-abz>${statusAbzeichen(suche)}</span></h1>
         <p class="editor__meta">
           <span data-speicherstatus>Gespeichert</span><span data-gesamtnote>${
             score != null ? ` · Gesamtnote <strong>${formatNote(score)}</strong>` : ''
@@ -148,7 +163,7 @@ function html() {
     `)}
 
     ${karte('Versteckpersonen & Funde', helferTabelle(), {
-      hint: 'Pro Versteckperson: Zeit bis zum Fund, gewähltes Helfer:in-Bild, Art der Anzeige und Abstand zur Hundeführer:in beim Fund.',
+      hint: `Pro Versteckperson: Zeit bis zum Fund, gewähltes Helfer:in-Bild und Abstand zur Hundeführer:in beim Fund. Angezeigt wird durchgängig durch ${S.ANZEIGE_ART}.`,
       aktion: `<button type="button" class="btn btn--mini" data-helfer-plus>+ Person</button>`,
     })}
 
@@ -202,7 +217,7 @@ function html() {
       </div>
     `)}
 
-    ${abschlussKarte()}
+    <div data-abschluss>${abschlussKarte()}</div>
 
     <div class="editor__fuss">
       <a class="btn btn--still" href="#/suchen">Zur Übersicht</a>
@@ -297,10 +312,9 @@ function helferTabelle() {
         </span>
         ${suche.helfer.length > 1 ? `<button type="button" class="btn btn--mini btn--gefahr-still" data-helfer-weg="${i}">×</button>` : ''}
       </div>
-      <div class="raster raster--4">
+      <div class="raster raster--3">
         ${feld('Helfer:in-Bild', select(`helfer.${i}.bildId`, h.bildId, S.HELFER_BILDER.map((b) => ({ id: b.id, label: b.label })), '– frei –'))}
         ${feld('Suchzeit bis (min)', textInput(`helfer.${i}.zeitBisMin`, h.zeitBisMin, { type: 'number', inputmode: 'decimal', min: 0, step: 0.5 }))}
-        ${feld('Anzeige', select(`helfer.${i}.anzeige`, h.anzeige, S.ANZEIGE_ARTEN, '– keine Angabe –'))}
         ${feld('Radius zur HF (m)', textInput(`helfer.${i}.radiusM`, h.radiusM, { type: 'number', inputmode: 'numeric', min: 0, step: 1 }))}
       </div>
       ${feld('Element / Bemerkung', textInput(`helfer.${i}.beschreibung`, h.beschreibung, { placeholder: 'z.B. Versteck unter Wurzelteller, Wind seitlich' }))}
@@ -466,17 +480,19 @@ function binde(wurzel) {
       }
       suche.status = 'abgeschlossen';
       suche.abgeschlossenAm = new Date().toISOString();
+      dirty = true;
       speichereBald.sofort();
+      aktualisiereAbschluss();
       toast('Suche abgeschlossen – wird mit dem Team geteilt.');
-      neuZeichnen();
       return;
     }
 
     if (t.closest('[data-wieder-oeffnen]')) {
       if (await frage('Suche wieder als Entwurf öffnen? Sie wird dann erst nach erneutem Abschließen aktualisiert.', { ok: 'Wieder öffnen' })) {
         suche.status = 'entwurf';
+        dirty = true;
         speichereBald.sofort();
-        neuZeichnen();
+        aktualisiereAbschluss();
       }
       return;
     }

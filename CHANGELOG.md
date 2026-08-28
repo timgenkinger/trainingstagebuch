@@ -1,5 +1,19 @@
 # Änderungsprotokoll
 
+## 1.3.0 – 2026-08-28
+- **Fehler behoben:** Eine Suche liess sich erst nach einem Neuladen des Browsers
+  abschliessen und damit uebermitteln. Ursache war die Optimierung aus 1.1.0, die
+  das Formular bei Klicks nicht mehr neu zeichnet – dabei blieb auch die
+  Abschluss-Karte auf dem Stand des letzten Zeichnens stehen. Sie laeuft jetzt bei
+  jeder Eingabe mit, ohne den Rest des Formulars anzufassen.
+- Die Auswahl der Anzeigeart entfaellt: Es wird durchgaengig durch Bellen angezeigt.
+  Im Dashboard steht an ihrer Stelle jetzt die Verteilung der Fundabstaende.
+- **Kontraste nach WCAG AA geprueft und korrigiert.** Behoben: dunkelrote Schrift auf
+  rotem Grund bei den Hauptknoepfen (1,5:1 – eine Regression aus der Farbumstellung),
+  weisse Noten auf hellen Skalenfarben (1,6:1), zu blasse Reiter in der Kopfzeile
+  (3,4:1) sowie im Dunkelmodus weisse Schrift auf aufgehelltem Rot (3,4:1) und
+  zu dunkle Warnhinweise (2,7:1). Beide Modi bestehen jetzt in allen Ansichten.
+
 ## 1.2.0 – 2026-08-28
 - Gemeinsame Datenablage ist ab Werk hinterlegt (privates Repository
   `timgenkinger/Trainingstagebuch-Fl-che`, Branch `daten`). Im Team muss nur noch

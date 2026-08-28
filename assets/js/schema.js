@@ -60,14 +60,11 @@ export const LICHT = [
 
 export const HIMMELSRICHTUNGEN = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'];
 
-export const ANZEIGE_ARTEN = [
-  { id: 'bellen', label: 'Bellen' },
-  { id: 'bringsel', label: 'Bringsel' },
-  { id: 'verweisen', label: 'Verweisen' },
-  { id: 'freiverweisen', label: 'Freiverweisen' },
-  { id: 'rueckverweisen', label: 'Rückverweisen' },
-  { id: 'keine', label: 'keine Anzeige' },
-];
+/**
+ * Die Staffel arbeitet ausschließlich mit Bellanzeige. Es gibt deshalb keine
+ * Auswahl im Formular; ob angezeigt wurde, steckt im Feld `gefunden`.
+ */
+export const ANZEIGE_ART = 'Bellen';
 
 /* ------------------------------------------------------------------ */
 /* Seite 1 – Team: Verlauf der Suche                                   */
@@ -200,7 +197,6 @@ export function neueHelferZeile(nr) {
     beschreibung: '',
     zeitBisMin: null,
     gefunden: null,
-    anzeige: '',
     radiusM: null,
   };
 }
