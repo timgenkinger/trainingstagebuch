@@ -919,3 +919,12 @@ code {
 .sync-box--kein-token .punkt { background: var(--marke); }
 .sync-chip--kein-token { background: #fff; color: #b3040f; border-color: #fff; font-weight: 650; }
 .sync-chip--kein-token .punkt { background: #b3040f; }
+
+/* --- Zweite Dokumentart: freie Dokumentation --- */
+.abz--art {
+  background: var(--flaeche-2);
+  color: var(--text-leise);
+  border: 1px solid var(--rand-stark);
+}
+.such-karte--frei { border-left: 4px solid var(--rand-stark); }
+.btn-zeile--mitte { justify-content: center; }

@@ -210,6 +210,9 @@ export function neueSuche(defaults = {}) {
     status: 'entwurf',
     abgeschlossenAm: null,
     datum: heute,
+    // Wartezeit im Auto vor dem Einsatz – beeinflusst Anspannung und Motivation
+    // des Hundes und gehört deshalb an den Anfang der Grundwerte.
+    wartezeitAutoMin: null,
     ort: '',
     hundId: defaults.hundId || '',
     hfId: defaults.hfId || '',
@@ -247,6 +250,38 @@ export function neueSuche(defaults = {}) {
     neuesZiel: '',
 
     eigeneKriterien: { team: [], hund: [], hf: [] },
+  };
+}
+
+/**
+ * Freie Dokumentation: dieselben Grundwerte wie bei einer Suche, dazu
+ * Zeichenfeld und Freitext. Für alles, was kein Suchprotokoll ist –
+ * Gehorsam, Geräteübungen, Theorie, Beobachtungen am Rand.
+ */
+export function neueFreieDoku(defaults = {}) {
+  const heute = new Date().toISOString().slice(0, 10);
+  return {
+    type: 'freidoku',
+    status: 'entwurf',
+    abgeschlossenAm: null,
+    datum: heute,
+    wartezeitAutoMin: null,
+    titel: '',
+    ort: '',
+    hundId: defaults.hundId || '',
+    hfId: defaults.hfId || '',
+
+    gelaende: [],
+    gelaendeSonstiges: '',
+    temperatur: [],
+    wind: [],
+    niederschlag: [],
+    licht: [],
+    wetterSonstiges: '',
+    windrichtung: '',
+
+    skizze: null,
+    text: '',
   };
 }
 
@@ -331,20 +366,45 @@ export const PFLICHT = [
   },
 ];
 
+/** Pflichtangaben einer freien Dokumentation – bewusst schlank gehalten. */
+export const PFLICHT_FREIDOKU = [
+  { id: 'datum', label: 'Datum', pruefe: (d) => !!d.datum },
+  { id: 'titel', label: 'Überschrift', pruefe: (d) => !!(d.titel || '').trim() },
+  { id: 'hund', label: 'Hund ausgewählt', pruefe: (d) => !!d.hundId },
+  {
+    id: 'inhalt',
+    label: 'Freitext oder Skizze',
+    pruefe: (d) => !!(d.text || '').trim() || (d.skizze?.striche?.length || 0) > 0,
+  },
+];
+
+/** Dokumentarten, die dem Abschluss-Verfahren unterliegen. */
+export const DOKUMENTARTEN = {
+  suche: { label: 'Suche', pflicht: PFLICHT },
+  freidoku: { label: 'Freie Dokumentation', pflicht: PFLICHT_FREIDOKU },
+};
+
 /**
  * @returns {{vollstaendig: boolean, offen: Array<{id,label}>, erfuellt: number, gesamt: number}}
  */
-export function vollstaendigkeit(suche) {
-  const offen = PFLICHT.filter((p) => !p.pruefe(suche)).map(({ id, label }) => ({ id, label }));
+export function vollstaendigkeit(rec) {
+  const pflicht = DOKUMENTARTEN[rec?.type]?.pflicht || PFLICHT;
+  const offen = pflicht.filter((p) => !p.pruefe(rec)).map(({ id, label }) => ({ id, label }));
   return {
     vollstaendig: offen.length === 0,
     offen,
-    erfuellt: PFLICHT.length - offen.length,
-    gesamt: PFLICHT.length,
+    erfuellt: pflicht.length - offen.length,
+    gesamt: pflicht.length,
   };
 }
 
 /** Datensätze ohne `status` stammen aus einer älteren Fassung und gelten als abgeschlossen. */
-export function istAbgeschlossen(suche) {
-  return suche?.type !== 'suche' || (suche.status ?? 'abgeschlossen') === 'abgeschlossen';
+export function istAbgeschlossen(rec) {
+  if (!DOKUMENTARTEN[rec?.type]) return true; // Stammdaten, Bildfortschritt usw.
+  return (rec.status ?? 'abgeschlossen') === 'abgeschlossen';
+}
+
+/** true für alles, was in der Dokumentenliste erscheint. */
+export function istDokument(rec) {
+  return !!DOKUMENTARTEN[rec?.type];
 }

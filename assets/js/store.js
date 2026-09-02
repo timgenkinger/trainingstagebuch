@@ -16,7 +16,7 @@
 
 import { alleRecords, schreibeRecords, metaGet, metaSet, leereAlles } from './idb.js';
 import { geraeteName } from './config.js';
-import { istAbgeschlossen } from './schema.js';
+import { istAbgeschlossen, istDokument } from './schema.js';
 
 const cache = new Map();
 const listeners = new Set();
@@ -86,6 +86,19 @@ export function suchen() {
   );
 }
 
+export function freieDokus() {
+  return alle('freidoku').sort(
+    (a, b) => (b.datum || '').localeCompare(a.datum || '') || (b.createdAt || 0) - (a.createdAt || 0)
+  );
+}
+
+/** Suchen und freie Dokumentationen gemeinsam, neueste zuerst. */
+export function dokumente() {
+  return [...alle('suche'), ...alle('freidoku')].sort(
+    (a, b) => (b.datum || '').localeCompare(a.datum || '') || (b.createdAt || 0) - (a.createdAt || 0)
+  );
+}
+
 export function hunde() {
   return alle('hund').sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
 }
@@ -151,7 +164,7 @@ export async function stelleWiederHer(id) {
 
 export function papierkorb() {
   return [...cache.values()]
-    .filter((r) => r.deleted && r.type === 'suche')
+    .filter((r) => r.deleted && istDokument(r))
     .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 }
 
@@ -191,7 +204,7 @@ export function freigegebeneRecords() {
 }
 
 export function entwuerfe() {
-  return alle('suche').filter((r) => !istAbgeschlossen(r));
+  return dokumente().filter((r) => !istAbgeschlossen(r));
 }
 
 /**

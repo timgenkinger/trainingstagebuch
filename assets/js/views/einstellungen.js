@@ -67,8 +67,9 @@ function html() {
 
       <div class="freigabe-info">
         <strong>${entwuerfe.length}</strong> Entwurf/Entwürfe bleiben auf diesem Gerät,
-        <strong>${store.suchen().length - entwuerfe.length}</strong> abgeschlossene Suchen werden geteilt.
-        <small>Eine Suche wird erst hochgeladen, wenn ihr Protokoll vollständig ausgeführt und abgeschlossen ist.</small>
+        <strong>${store.dokumente().length - entwuerfe.length}</strong> abgeschlossene Einträge werden geteilt.
+        <small>Ein Eintrag wird erst hochgeladen, wenn er vollständig ausgefüllt und abgeschlossen ist –
+        das gilt für Suchen wie für freie Dokumentationen.</small>
       </div>
 
       <div class="btn-zeile">

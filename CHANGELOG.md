@@ -1,5 +1,16 @@
 # Änderungsprotokoll
 
+## 1.4.0 – 2026-09-02
+- **Zweite Dokumentart: freie Dokumentation.** Grundwerte, Zeichenfeld und Freitext –
+  fuer alles, was kein Suchprotokoll ist (Gehorsam, Geraete, Theorie, Beobachtungen).
+  Sie unterliegt derselben Freigabe-Schranke, mit vier statt neun Pflichtangaben.
+- **Wartezeit im Auto bis zur Suche** steht in beiden Dokumentarten ganz oben in den
+  Grundwerten. Im Dashboard als eigene Kennzahl und als Bedingung in vier Stufen,
+  sodass sichtbar wird, ob lange Wartezeiten die Leistung druecken.
+- Die Grundwerte liegen jetzt in einem gemeinsamen Baustein statt doppelt in beiden
+  Masken – sonst waeren sie mit der Zeit auseinandergelaufen.
+- Uebersicht fuehrt beide Arten mit Filter; die Auswertung bleibt den Suchen vorbehalten.
+
 ## 1.3.0 – 2026-08-28
 - **Fehler behoben:** Eine Suche liess sich erst nach einem Neuladen des Browsers
   abschliessen und damit uebermitteln. Ursache war die Optimierung aus 1.1.0, die

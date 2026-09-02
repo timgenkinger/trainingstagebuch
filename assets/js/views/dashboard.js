@@ -45,6 +45,7 @@ function html() {
   const daten = datensatz();
   const hunde = store.hunde();
   const entwuerfe = alle.filter((s) => !S.istAbgeschlossen(s)).length;
+  const freie = store.freieDokus().filter((d) => S.istAbgeschlossen(d)).length;
 
   return `<div class="seite">
     <div class="seite__kopf">
@@ -71,6 +72,8 @@ function html() {
         ${entwuerfe} Entwurf/Entwürfe einbeziehen</button>` : ''}
     </div>
 
+    ${freie ? `<p class="karte__hint">${freie} freie Dokumentation(en) sind hier nicht enthalten –
+      sie tragen keine Bewertungen. <a href="#/suchen">In der Übersicht ansehen →</a></p>` : ''}
     ${daten.length ? inhalt(daten) : leer('Für diesen Filter gibt es keine abgeschlossenen Suchen.')}
   </div>`;
 }
@@ -91,6 +94,7 @@ function kacheln(daten) {
   const radien = funde.map((h) => Number(h.radiusM)).filter((v) => v > 0);
   const zeitBis = funde.map((h) => Number(h.zeitBisMin)).filter((v) => v > 0);
   const fehlanzeigen = daten.filter((s) => s.probleme?.fehlanzeige).length;
+  const warten = daten.map((s) => Number(s.wartezeitAutoMin)).filter((v) => v > 0);
 
   const k = (label, wert, sub, spark) => `<div class="kachel">
     <span class="kachel__label">${esc(label)}</span>
@@ -107,6 +111,8 @@ function kacheln(daten) {
     ${k('Ø Radius bei Fund', radien.length ? `${runde(S.mittelwert(radien), 0)} m` : '—', 'Abstand Hund ↔ Hundeführer:in')}
     ${k('Gesamte Suchzeit', zeiten.length ? formatMinuten(zeiten.reduce((a, b) => a + b, 0)) : '—', zeiten.length ? `Ø ${formatMinuten(S.mittelwert(zeiten))} pro Suche` : '')}
     ${k('Suchen mit Fehlanzeige', fehlanzeigen, daten.length ? `${Math.round((fehlanzeigen / daten.length) * 100)} % der Suchen` : '')}
+    ${k('Ø Wartezeit im Auto', warten.length ? formatMinuten(S.mittelwert(warten)) : '—',
+        warten.length ? `längste ${formatMinuten(Math.max(...warten))}` : 'nicht erfasst')}
   </div>`;
 }
 
@@ -285,6 +291,19 @@ function rahmenBlock(daten) {
     const scores = treffer.map(S.gesamtScore).filter((v) => v != null);
     if (scores.length >= 2) nachBedingung.push({ label: `${k.label} (${scores.length})`, wert: S.mittelwert(scores) });
   });
+  // Wartezeit im Auto als eigene Bedingung – oft der unterschätzte Faktor.
+  const warteklassen = [
+    { label: 'Wartezeit bis 30 min', pruef: (m) => m > 0 && m <= 30 },
+    { label: 'Wartezeit 31 – 60 min', pruef: (m) => m > 30 && m <= 60 },
+    { label: 'Wartezeit 61 – 120 min', pruef: (m) => m > 60 && m <= 120 },
+    { label: 'Wartezeit über 120 min', pruef: (m) => m > 120 },
+  ];
+  warteklassen.forEach((k) => {
+    const treffer = daten.filter((s) => k.pruef(Number(s.wartezeitAutoMin)));
+    const scores = treffer.map(S.gesamtScore).filter((v) => v != null);
+    if (scores.length >= 2) nachBedingung.push({ label: `${k.label} (${scores.length})`, wert: S.mittelwert(scores) });
+  });
+
   nachBedingung.sort((a, b) => a.wert - b.wert);
 
   return `<div class="raster raster--2 raster--karten">

@@ -7,6 +7,7 @@ import { esc } from './ui.js';
 
 import * as vSuchen from './views/suchen.js';
 import * as vEditor from './views/editor.js';
+import * as vFreidoku from './views/freidoku.js';
 import * as vDashboard from './views/dashboard.js';
 import * as vBilder from './views/bilder.js';
 import * as vEinstellungen from './views/einstellungen.js';
@@ -16,6 +17,8 @@ const ROUTEN = [
   { muster: /^#\/suchen$/, view: vSuchen, tab: 'suchen' },
   { muster: /^#\/suche\/neu$/, view: vEditor, tab: 'suchen', params: () => ({}) },
   { muster: /^#\/suche\/(.+)$/, view: vEditor, tab: 'suchen', params: (m) => ({ id: m[1] }) },
+  { muster: /^#\/doku\/neu$/, view: vFreidoku, tab: 'suchen', params: () => ({}) },
+  { muster: /^#\/doku\/(.+)$/, view: vFreidoku, tab: 'suchen', params: (m) => ({ id: m[1] }) },
   { muster: /^#\/dashboard$/, view: vDashboard, tab: 'dashboard' },
   { muster: /^#\/bilder$/, view: vBilder, tab: 'bilder' },
   { muster: /^#\/einstellungen$/, view: vEinstellungen, tab: 'mehr' },
@@ -39,6 +42,7 @@ async function route(navigiert = true) {
 
   // Ungespeicherte Editor-Eingaben festschreiben, bevor die Ansicht wechselt.
   if (aktuelleView === vEditor && treffer.r.view !== vEditor) vEditor.flushEditor();
+  if (aktuelleView === vFreidoku && treffer.r.view !== vFreidoku) vFreidoku.flushEditor();
   // Laufende Abonnements der verlassenen Ansicht beenden.
   if (aktuelleView && aktuelleView !== treffer.r.view) aktuelleView.verlassen?.();
 
@@ -48,7 +52,8 @@ async function route(navigiert = true) {
   markiereTab(treffer.r.tab);
   await treffer.r.view.render(view, treffer.r.params ? treffer.r.params(treffer.m) : {});
   // Beim Seitenwechsel nach oben, beim stillen Auffrischen die Position halten.
-  if (navigiert && treffer.r.view !== vEditor) window.scrollTo(0, 0);
+  const istEditor = treffer.r.view === vEditor || treffer.r.view === vFreidoku;
+  if (navigiert && !istEditor) window.scrollTo(0, 0);
   else if (!navigiert) window.scrollTo(0, y);
 }
 
@@ -122,7 +127,8 @@ async function start() {
   // Listenansichten aktualisieren, wenn extern Daten eintreffen.
   let timer;
   store.subscribe(() => {
-    if (aktuelleView === vEditor) return; // Editor niemals unter den Fingern neu zeichnen
+    // Masken mit Eingaben niemals unter den Fingern neu zeichnen
+    if (aktuelleView === vEditor || aktuelleView === vFreidoku) return;
     clearTimeout(timer);
     timer = setTimeout(() => route(false), 200);
   });
@@ -131,11 +137,13 @@ async function start() {
   serviceWorker();
 
   // Editor-Eingaben auch beim Schließen des Tabs sichern.
-  window.addEventListener('pagehide', () => {
+  const sichern = () => {
     if (aktuelleView === vEditor) vEditor.flushEditor();
-  });
+    if (aktuelleView === vFreidoku) vFreidoku.flushEditor();
+  };
+  window.addEventListener('pagehide', sichern);
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden' && aktuelleView === vEditor) vEditor.flushEditor();
+    if (document.visibilityState === 'hidden') sichern();
   });
 
   document.body.classList.remove('laedt');

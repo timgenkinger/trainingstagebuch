@@ -7,6 +7,7 @@ import {
   setPath, toast, frage, debounce, formatDatum, formatNote,
 } from '../ui.js';
 import { skizzeHtml, skizzeAktivieren } from '../skizze.js';
+import { kopfKarte, gelaendeKarte, wetterKarte, statusAbzeichen, abschlussKarte as abschlussBaustein } from './bausteine.js';
 
 let suche = null;
 let dirty = false;
@@ -123,35 +124,14 @@ function html() {
       </div>
     </div>
 
-    ${karte('Kopfdaten', `
-      <div class="raster raster--2">
-        ${feld('Datum', textInput('datum', suche.datum, { type: 'date' }))}
-        ${feld('Ort', textInput('ort', suche.ort, { placeholder: 'z.B. Waldstück Nordheide' }))}
-        ${feld('Hund', hunde.length
-          ? select('hundId', suche.hundId, hunde)
-          : `<span class="hinweis-inline">Noch kein Hund angelegt – unter <a href="#/einstellungen">Einstellungen</a> hinzufügen.</span>`)}
-        ${feld('Hundeführer:in', personen.length
-          ? select('hfId', suche.hfId, personen)
-          : `<span class="hinweis-inline">Noch keine Person angelegt – unter <a href="#/einstellungen">Einstellungen</a> hinzufügen.</span>`)}
-      </div>
-      ${feld('Trainingsziel', textArea('trainingsziel', suche.trainingsziel, { rows: 2, placeholder: 'Was soll in dieser Suche erreicht werden?' }))}
-    `)}
+    ${kopfKarte(suche, {
+      zusatz: feld('Trainingsziel', textArea('trainingsziel', suche.trainingsziel, {
+        rows: 2, placeholder: 'Was soll in dieser Suche erreicht werden?' })),
+    })}
 
-    ${karte('Geländebeschaffenheit', `
-      ${chipGruppe('gelaende', S.GELAENDE, suche.gelaende)}
-      ${feld('Sonstiges', textInput('gelaendeSonstiges', suche.gelaendeSonstiges, { placeholder: 'weitere Merkmale' }))}
-    `)}
+    ${gelaendeKarte(suche)}
 
-    ${karte('Temperatur / Wetter / Tageszeit', `
-      <div class="gruppe"><h3>Temperatur</h3>${chipGruppe('temperatur', S.TEMPERATUR, suche.temperatur)}</div>
-      <div class="gruppe"><h3>Wind</h3>${chipGruppe('wind', S.WIND, suche.wind)}</div>
-      <div class="gruppe"><h3>Niederschlag</h3>${chipGruppe('niederschlag', S.NIEDERSCHLAG, suche.niederschlag)}</div>
-      <div class="gruppe"><h3>Licht</h3>${chipGruppe('licht', S.LICHT, suche.licht)}</div>
-      <div class="raster raster--2">
-        ${feld('Windrichtung', select('windrichtung', suche.windrichtung, S.HIMMELSRICHTUNGEN.map((r) => ({ id: r, label: r })), '– keine Angabe –'))}
-        ${feld('Sonstiges', textInput('wetterSonstiges', suche.wetterSonstiges, { placeholder: 'z.B. Bodennebel' }))}
-      </div>
-    `)}
+    ${wetterKarte(suche)}
 
     ${karte('Suchgebiet', `
       <div class="raster raster--3">
@@ -225,49 +205,11 @@ function html() {
   </div>`;
 }
 
-function statusAbzeichen(s) {
-  return S.istAbgeschlossen(s)
-    ? '<span class="abz abz--fertig">abgeschlossen</span>'
-    : '<span class="abz abz--entwurf">Entwurf – nur auf diesem Gerät</span>';
-}
-
-/**
- * Freigabe-Bereich: Eine Suche geht erst online, wenn ihr Protokoll
- * vollständig ausgeführt und bewusst abgeschlossen wurde.
- */
 function abschlussKarte() {
-  const v = S.vollstaendigkeit(suche);
-  const fertig = S.istAbgeschlossen(suche);
-
-  if (fertig) {
-    return karte('Protokoll abgeschlossen', `
-      <p class="abschluss__ok">Diese Suche ist vollständig ausgeführt und wird mit dem Team geteilt.${
-        suche.abgeschlossenAm ? ` Abgeschlossen am ${esc(formatDatum(String(suche.abgeschlossenAm).slice(0, 10)))}.` : ''
-      }</p>
-      <button type="button" class="btn btn--still" data-wieder-oeffnen>Wieder öffnen und bearbeiten</button>
-      <p class="karte__hint">Beim Wiederöffnen wird die Suche erneut zum Entwurf. Der bereits geteilte Stand
-        bleibt beim Team, bis du sie wieder abschließt.</p>
-    `, { klasse: 'karte--fertig' });
-  }
-
-  const liste = v.offen.length
-    ? `<ul class="offen-punkte">${v.offen.map((o) => `<li>${esc(o.label)}</li>`).join('')}</ul>`
-    : '';
-
-  return karte('Suche abschließen', `
-    <div class="fortschritt-zeile">
-      <span class="fortschritt-balken"><span style="width:${Math.round((v.erfuellt / v.gesamt) * 100)}%"></span></span>
-      <strong>${v.erfuellt} von ${v.gesamt}</strong>
-    </div>
-    ${v.vollstaendig
-      ? `<p class="abschluss__ok">Das Protokoll ist vollständig ausgeführt.</p>`
-      : `<p class="abschluss__offen">Dafür fehlen noch:</p>${liste}`}
-    <button type="button" class="btn btn--primaer" data-abschliessen ${v.vollstaendig ? '' : 'disabled'}>
-      Abschließen und mit dem Team teilen
-    </button>
-    <p class="karte__hint">Solange die Suche Entwurf ist, bleibt sie ausschließlich auf diesem Gerät.
-      Erst mit dem Abschließen wird sie hochgeladen.</p>
-  `, { klasse: 'karte--abschluss' });
+  return abschlussBaustein(suche, {
+    wasIstEs: 'Suche',
+    geteiltText: 'Diese Suche ist vollständig ausgeführt und wird mit dem Team geteilt.',
+  });
 }
 
 function ampel(pfad, wert) {
@@ -325,7 +267,7 @@ function helferTabelle() {
 
 /* ---------------------------------------------------------------- */
 
-const ZAHLFELDER = new Set(['suchzeitMin', 'zeitBisMin', 'radiusM']);
+const ZAHLFELDER = new Set(['suchzeitMin', 'zeitBisMin', 'radiusM', 'wartezeitAutoMin']);
 
 function binde(wurzel) {
   const feldWert = (el) => {

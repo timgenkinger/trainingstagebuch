@@ -29,11 +29,24 @@ Die Gestaltung folgt den Hausfarben des Bayerischen Roten Kreuzes.
 
 ## Funktionsumfang
 
+### Zwei Dokumentarten
+
+| | **Suche** | **Freie Dokumentation** |
+|---|---|---|
+| Wofür | Suchprotokoll nach Vorlage des Hefts | alles andere: Gehorsam, Geräte, Theorie, Beobachtungen |
+| Inhalt | Grundwerte, Skizze, Versteckpersonen, drei Bewertungsblöcke, Konsequenz | Grundwerte, Skizze, Freitext |
+| Bewertung | 5er-Skalen, fließt ins Dashboard | keine – erscheint nur in der Übersicht |
+| Anlegen | „+ Neue Suche" | „+ Freie Doku" |
+
+Beide teilen sich denselben Block **Grundwerte**, der mit der **Wartezeit im Auto bis zur Suche**
+beginnt – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet.
+Danach folgen Datum, Ort, Hund, Hundeführer:in sowie Gelände und Wetter.
+
 **Suche erfassen** (bildet Seite 1 und 2 des Hefts ab)
 
 | Heft | App |
 |---|---|
-| Datum, Ort, Trainingsziel | Kopfdaten, zusätzlich Hund und Hundeführer:in |
+| Datum, Ort, Trainingsziel | Grundwerte, zusätzlich Wartezeit im Auto, Hund und Hundeführer:in |
 | Geländebeschaffenheit | Mehrfachauswahl (offen, dicht, Dornen, hügelig, steil …) |
 | Temperatur / Wetter / Tageszeit | getrennt nach Temperatur, Wind, Niederschlag, Licht + Windrichtung |
 | Skizzenfeld Suchgebiet | Zeichenfeld mit vier Stiften: Gebiet, Laufweg HF, Laufweg Hund, Helfer:in |
@@ -49,11 +62,12 @@ Zusätzlich: eigene Kriterien pro Bereich (die leeren Zeilen im Heft), Duplizier
 **Dashboard** – ersetzt die Übersichtsgraphen vorne im Heft
 
 * Kennzahlen: Anzahl Suchen, Ø Gesamtnote, Trefferquote, Ø Zeit bis Fund, Ø Radius bei Fund,
-  gesamte Suchzeit, Suchen mit Fehlanzeige
+  gesamte Suchzeit, Suchen mit Fehlanzeige, **Ø Wartezeit im Auto**
 * Leistungsentwicklung über die Zeit – für alle drei Bereiche oder ein einzelnes Kriterium
 * Durchschnitt je Kriterium, **schwächstes zuerst** (zeigt sofort, woran zu arbeiten ist)
 * Häufigkeit der Problemverhalten
-* Trainierte Bedingungen (zeigt Lücken im Trainingsplan) und Ø Note **je Bedingung**
+* Trainierte Bedingungen (zeigt Lücken im Trainingsplan) und Ø Note **je Bedingung** –
+  einschließlich der Wartezeit im Auto in vier Stufen
 * Fortschritt bei den Helfer:in-Bildern
 * Filter nach Hund und Zeitraum
 
@@ -107,23 +121,24 @@ und funktioniert auch ohne Empfang im Wald.
 
 ## Nur abgeschlossene Suchen gehen online
 
-Eine Suche durchläuft zwei Zustände:
+Beide Dokumentarten durchlaufen zwei Zustände:
 
 | Zustand | Bedeutung |
 |---|---|
 | **Entwurf** | Wird gerade dokumentiert. Bleibt **ausschließlich auf diesem Gerät** und wird nie hochgeladen. |
-| **Abgeschlossen** | Das Protokoll ist vollständig ausgeführt und bewusst freigegeben. Erst jetzt geht die Suche ins Team. |
+| **Abgeschlossen** | Vollständig ausgefüllt und bewusst freigegeben. Erst jetzt geht der Eintrag ins Team. |
 
 Damit landet im gemeinsamen Bestand nur, was auch wirklich fertig protokolliert ist –
 keine halb ausgefüllten Formulare, die in der Auswertung Unsinn erzeugen.
 
-Abschließen lässt sich eine Suche erst, wenn alle Pflichtangaben vorliegen. Der Editor zeigt
-unten laufend, was noch fehlt:
+Abschließen lässt sich ein Eintrag erst, wenn alle Pflichtangaben vorliegen. Die Maske zeigt
+unten laufend, was noch fehlt – und aktualisiert das bei jeder Eingabe.
 
-* Datum, Ort, Hund und Hundeführer:in
-* Suchzeit
-* mindestens eine Versteckperson mit Ergebnis (gefunden / nicht gefunden)
-* mindestens je eine Bewertung bei Team, Hund und Hundeführer:in
+**Suche (9 Angaben):** Datum, Ort, Hund, Hundeführer:in, Suchzeit, mindestens eine
+Versteckperson mit Ergebnis (gefunden / nicht gefunden) sowie mindestens je eine Bewertung
+bei Team, Hund und Hundeführer:in.
+
+**Freie Dokumentation (4 Angaben):** Datum, Überschrift, Hund sowie Freitext oder Skizze.
 
 Wer eine abgeschlossene Suche nachträglich korrigieren will, öffnet sie wieder – sie wird dann
 erneut zum Entwurf. Der bereits geteilte Stand bleibt beim Team, bis sie wieder abgeschlossen wird.
@@ -298,8 +313,10 @@ assets/js/
   skizze.js                Zeichenfeld für das Suchgebiet
   ui.js                    Bausteine: Skala, Chips, Karten, Meldungen
   views/
-    suchen.js              Übersicht aller Suchen
+    suchen.js              Übersicht beider Dokumentarten
+    bausteine.js           gemeinsame Bausteine beider Dokumentarten (Grundwerte, Abschluss)
     editor.js              Erfassungsmaske einer Suche
+    freidoku.js            Erfassungsmaske der freien Dokumentation
     dashboard.js           Auswertung
     bilder.js              Helfer:in-Bilder
     einrichtung.js         Assistent für den Online-Abgleich
