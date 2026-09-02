@@ -6,7 +6,7 @@
  * ein Update tauscht nur den Cache aus, nicht die Datenbank.
  */
 
-const VERSION = '1.5.0'; // wird von scripts/release.sh gepflegt
+const VERSION = '1.6.0'; // wird von scripts/release.sh gepflegt
 const CACHE = `rhd-app-${VERSION}`;
 
 const DATEIEN = [
@@ -23,6 +23,8 @@ const DATEIEN = [
   './assets/js/schema.js',
   './assets/js/skizze.js',
   './assets/js/store.js',
+  './assets/js/verbellen.js',
+  './assets/js/verbellen-plan.js',
   './assets/js/ui.js',
   './assets/js/version.js',
   './assets/js/sync/index.js',
@@ -36,6 +38,8 @@ const DATEIEN = [
   './assets/js/views/einstellungen.js',
   './assets/js/views/freidoku.js',
   './assets/js/views/suchen.js',
+  './assets/js/views/verbellen.js',
+  './assets/js/views/verbellen-editor.js',
 ];
 
 self.addEventListener('install', (e) => {

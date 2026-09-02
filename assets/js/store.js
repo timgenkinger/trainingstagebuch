@@ -92,9 +92,15 @@ export function freieDokus() {
   );
 }
 
-/** Suchen und freie Dokumentationen gemeinsam, neueste zuerst. */
+export function verbellenSitzungen() {
+  return alle('verbellen').sort(
+    (a, b) => (b.datum || '').localeCompare(a.datum || '') || (b.createdAt || 0) - (a.createdAt || 0)
+  );
+}
+
+/** Alle drei Dokumentarten gemeinsam, neueste zuerst. */
 export function dokumente() {
-  return [...alle('suche'), ...alle('freidoku')].sort(
+  return [...alle('suche'), ...alle('freidoku'), ...alle('verbellen')].sort(
     (a, b) => (b.datum || '').localeCompare(a.datum || '') || (b.createdAt || 0) - (a.createdAt || 0)
   );
 }

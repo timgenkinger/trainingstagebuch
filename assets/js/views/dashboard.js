@@ -4,6 +4,8 @@ import * as store from '../store.js';
 import * as S from '../schema.js';
 import { esc, karte, leer, formatNote, formatMinuten, runde, skalaFarbe, formatDatum } from '../ui.js';
 import { linienDiagramm, balken, stapel, sparkline } from '../charts.js';
+import * as V from '../verbellen.js';
+import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
 
 const filter = { hundId: '', zeitraum: 'alle', kriterium: 'gruppen', mitEntwuerfen: false };
 
@@ -79,7 +81,7 @@ function html() {
 }
 
 function inhalt(daten) {
-  return kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
+  return verbellenBlock() + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
 }
 
 /* -------------------- Kennzahlen -------------------- */
@@ -119,6 +121,57 @@ function kacheln(daten) {
 function zeitraumText(daten) {
   if (!daten.length) return '';
   return `${formatDatum(daten[0].datum)} – ${formatDatum(daten[daten.length - 1].datum)}`;
+}
+
+/* -------------------- Verbellen -------------------- */
+
+/**
+ * Verbellen-Stand im Dashboard. Ohne Hundefilter erscheint eine Zeile je Hund,
+ * damit die Übersicht über die ganze Staffel auf einen Blick da ist.
+ */
+function verbellenBlock() {
+  const hunde = filter.hundId ? [store.get(filter.hundId)].filter(Boolean) : store.hunde();
+  if (!hunde.length) return '';
+
+  const zeilen = hunde.map((h) => {
+    const kat = V.katalog(h.id);
+    const f = V.fortschritt(kat.stand, h);
+    const aktuell = V.aktuelleStufe(kat.stand, h);
+    const letzte = store.verbellenSitzungen().find((s) => s.hundId === h.id && S.istAbgeschlossen(s));
+    return { hund: h, f, aktuell, kat, letzte };
+  });
+
+  const etwasVorhanden = zeilen.some((z) => z.kat.sitzungen > 0);
+
+  return karte(
+    'Verbellen',
+    etwasVorhanden
+      ? `<div class="verbellen-uebersicht">
+          ${zeilen.map((z) => `<div class="vb-zeile">
+            <div class="vb-zeile__kopf">
+              <strong>${esc(z.hund.name)}</strong>
+              <span class="vb-zeile__wert">${z.f.fertig} / ${z.f.gesamt}
+                <small>${Math.round(z.f.anteil * 100)} %</small></span>
+            </div>
+            <span class="fortschritt-balken"><span style="width:${runde(z.f.anteil * 100, 1)}%"></span></span>
+            <div class="vb-zeile__zeile2">
+              <span class="tag">Box ${z.f.stufenFertig.box}/${VERBELLEN_PLAN.box.length} Stufen</span>
+              <span class="tag">Mensch ${z.f.stufenFertig.mensch}/${VERBELLEN_PLAN.mensch.length} Stufen</span>
+              <span class="tag">${z.kat.sitzungen} Sitzung(en)</span>
+              ${z.letzte ? `<span class="tag">zuletzt ${esc(formatDatum(z.letzte.datum))}</span>` : ''}
+              ${z.hund.boxUebersprungen ? '<span class="tag">Box übersprungen</span>' : ''}
+            </div>
+            ${z.aktuell
+              ? `<p class="vb-zeile__naechste">Als Nächstes: <strong>${esc(WEGE.find((w) => w.id === z.aktuell.weg).label)} ${z.aktuell.n}</strong>
+                 – ${esc(z.aktuell.titel)} (${z.aktuell.fertig}/${z.aktuell.gesamt})</p>`
+              : '<p class="vb-zeile__naechste gut">Plan vollständig durchgearbeitet 👍</p>'}
+          </div>`).join('')}
+        </div>
+        <p class="karte__hint"><a href="#/verbellen">Zum vollständigen Fortschritt →</a></p>`
+      : `<p class="karte__hint">Noch keine abgeschlossene Verbellen-Sitzung.
+         <a href="#/verbellen-sitzung/neu">Erste Sitzung anlegen →</a></p>`,
+    { hint: `Abgeleitet aus den Sitzungen · ${V.NOETIGE_WIEDERHOLUNGEN} gelungene Wiederholungen je Unterübung` }
+  );
 }
 
 /* -------------------- Leistungsverlauf -------------------- */

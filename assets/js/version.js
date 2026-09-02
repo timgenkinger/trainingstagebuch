@@ -1,6 +1,6 @@
 /* Wird von scripts/release.sh und vom GitHub-Workflow automatisch gepflegt.
    Nicht von Hand bearbeiten. */
-export const APP_VERSION = '1.5.0';
+export const APP_VERSION = '1.6.0';
 export const RELEASE_DATE = '2026-09-02';
 export const BUILD = 'lokal';
 export const APP_NAME = 'Rettungshund Trainingstagebuch';

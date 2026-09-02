@@ -285,6 +285,38 @@ export function neueFreieDoku(defaults = {}) {
   };
 }
 
+/**
+ * Verbellen-Sitzung: Grundwerte plus die an diesem Tag bearbeiteten Stufen.
+ * Der Fortschrittskatalog wird daraus abgeleitet (siehe verbellen.js) –
+ * es gibt also nur eine Wahrheit.
+ */
+export function neueVerbellenSitzung(defaults = {}) {
+  const heute = new Date().toISOString().slice(0, 10);
+  return {
+    type: 'verbellen',
+    status: 'entwurf',
+    abgeschlossenAm: null,
+    datum: heute,
+    wartezeitAutoMin: null,
+    ort: '',
+    hundId: defaults.hundId || '',
+    hfId: defaults.hfId || '',
+
+    gelaende: [],
+    gelaendeSonstiges: '',
+    temperatur: [],
+    wind: [],
+    niederschlag: [],
+    licht: [],
+    wetterSonstiges: '',
+    windrichtung: '',
+
+    /** [{ weg, stufeN, haken:{ '<index>': 0..3 }, zusatz:[{id,text,haken}], bemerkung:'' }] */
+    einheiten: [],
+    notizen: '',
+  };
+}
+
 /** Alle Bewertungen einer Gruppe als Zahlen-Array (nur gesetzte Werte). */
 export function werteDerGruppe(suche, gruppe) {
   const werte = Object.values(suche?.[gruppe] || {}).filter((v) => typeof v === 'number' && v > 0);
@@ -378,10 +410,32 @@ export const PFLICHT_FREIDOKU = [
   },
 ];
 
+/** Pflichtangaben einer Verbellen-Sitzung. */
+export const PFLICHT_VERBELLEN = [
+  { id: 'datum', label: 'Datum', pruefe: (v) => !!v.datum },
+  { id: 'hund', label: 'Hund ausgewählt', pruefe: (v) => !!v.hundId },
+  {
+    id: 'stufe',
+    label: 'Mindestens eine bearbeitete Stufe',
+    pruefe: (v) => (v.einheiten || []).length > 0,
+  },
+  {
+    id: 'haken',
+    label: 'Mindestens eine gelungene Wiederholung eingetragen',
+    pruefe: (v) =>
+      (v.einheiten || []).some(
+        (e) =>
+          Object.values(e.haken || {}).some((n) => n > 0) ||
+          (e.zusatz || []).some((z) => (z.text || '').trim() && z.haken > 0)
+      ),
+  },
+];
+
 /** Dokumentarten, die dem Abschluss-Verfahren unterliegen. */
 export const DOKUMENTARTEN = {
   suche: { label: 'Suche', pflicht: PFLICHT },
   freidoku: { label: 'Freie Dokumentation', pflicht: PFLICHT_FREIDOKU },
+  verbellen: { label: 'Verbellen', pflicht: PFLICHT_VERBELLEN },
 };
 
 /**

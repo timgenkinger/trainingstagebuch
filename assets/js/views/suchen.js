@@ -39,6 +39,7 @@ function html() {
   const entwuerfe = alle.filter((s) => !S.istAbgeschlossen(s)).length;
   const anzahlSuchen = alle.filter((s) => s.type === 'suche').length;
   const anzahlFrei = alle.filter((s) => s.type === 'freidoku').length;
+  const anzahlVerbellen = alle.filter((s) => s.type === 'verbellen').length;
 
   if (!alle.length) {
     return `<div class="seite">
@@ -56,6 +57,7 @@ function html() {
     <div class="seite__kopf">
       <h1>Dokumentation <span class="zaehler">${liste.length}/${alle.length}</span></h1>
       <div class="btn-zeile">
+        <a class="btn btn--still" href="#/verbellen-sitzung/neu">+ Verbellen</a>
         <a class="btn btn--still" href="#/doku/neu">+ Freie Doku</a>
         <a class="btn btn--primaer" href="#/suche/neu">+ Neue Suche</a>
       </div>
@@ -75,6 +77,7 @@ function html() {
         <option value="">Alle Arten</option>
         <option value="suche"${filter.art === 'suche' ? ' selected' : ''}>nur Suchen (${anzahlSuchen})</option>
         <option value="freidoku"${filter.art === 'freidoku' ? ' selected' : ''}>nur freie Doku (${anzahlFrei})</option>
+        <option value="verbellen"${filter.art === 'verbellen' ? ' selected' : ''}>nur Verbellen (${anzahlVerbellen})</option>
       </select>
       <button type="button" class="chip${filter.nurEntwuerfe ? ' chip--an' : ''}" data-t="nurEntwuerfe">
         nur Entwürfe${entwuerfe ? ` (${entwuerfe})` : ''}
@@ -86,7 +89,34 @@ function html() {
 }
 
 function karteFuer(s) {
-  return s.type === 'freidoku' ? karteFreidoku(s) : karteSuche(s);
+  if (s.type === 'freidoku') return karteFreidoku(s);
+  if (s.type === 'verbellen') return karteVerbellen(s);
+  return karteSuche(s);
+}
+
+function karteVerbellen(s) {
+  const einheiten = s.einheiten || [];
+  const wdh = einheiten.reduce(
+    (n, e) => n + Object.values(e.haken || {}).reduce((a, b) => a + Number(b || 0), 0)
+      + (e.zusatz || []).reduce((a, z) => a + Number(z.haken || 0), 0), 0
+  );
+  return `<a class="such-karte such-karte--verbellen" href="#/verbellen-sitzung/${esc(s.id)}">
+    <div class="such-karte__haupt">
+      <div class="such-karte__zeile1">
+        <strong>${esc(formatDatum(s.datum))}</strong>
+        <span class="such-karte__ort">${esc(s.ort || 'ohne Ortsangabe')}</span>
+        <span class="abz abz--art">Verbellen</span>
+        ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
+      </div>
+      <div class="such-karte__zeile2">
+        ${zeile2(s)}
+        <span class="tag">📚 ${einheiten.length} Stufe(n)</span>
+        <span class="tag">✓ ${wdh} Wiederholung(en)</span>
+      </div>
+      ${einheiten.length ? `<p class="such-karte__ziel">${esc(einheiten
+        .map((e) => `${e.weg === 'box' ? 'Box' : 'Mensch'} ${e.stufeN}`).join(', '))}</p>` : ''}
+    </div>
+  </a>`;
 }
 
 function zeile2(s) {

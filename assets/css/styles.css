@@ -948,3 +948,132 @@ code {
 .kopf-knopf svg { width: 19px; height: 19px; }
 .kopf-knopf--dreht { pointer-events: none; }
 .kopf-knopf--dreht svg { animation: dreh .7s linear infinite; }
+
+/* ==========================================================================
+   Verbellen: Sitzung und Fortschrittskatalog
+   ========================================================================== */
+
+.such-karte--verbellen { border-left: 4px solid var(--marke-hell); }
+
+/* --- Bearbeitete Stufen in der Sitzung --- */
+.einheit {
+  border: 1px solid var(--rand);
+  border-radius: var(--r);
+  background: var(--flaeche-2);
+  padding: .7rem .8rem;
+  margin-bottom: .8rem;
+}
+.einheit__kopf { display: flex; align-items: flex-start; gap: .6rem; margin-bottom: .6rem; }
+.einheit__kopf > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .2rem; }
+.einheit__kopf strong { font-size: .95rem; line-height: 1.3; }
+.einheit__kopf small { font-size: .75rem; color: var(--text-leise); }
+.einheit__kopf .abz { align-self: flex-start; }
+.gesperrt { font-style: normal; color: var(--rot-text); }
+
+.uebungen { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .6rem; }
+.uebung {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  padding: .4rem .55rem;
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+}
+.uebung--fertig { border-color: var(--marke-hell); background: var(--marke-blass); }
+.uebung--zusatz { border-style: dashed; }
+.uebung__text { flex: 1; min-width: 0; font-size: .85rem; line-height: 1.35; }
+.uebung__text small { display: block; font-size: .72rem; color: var(--text-leise); }
+.uebung__text .input { width: 100%; }
+.uebung__wdh { display: flex; gap: .3rem; align-items: center; flex: none; }
+
+.wdh {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--rand-stark);
+  background: var(--flaeche);
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+button.wdh:hover { border-color: var(--marke); }
+.wdh--heute { background: var(--marke); border-color: var(--marke); }
+.wdh--heute::after { content: "✓"; color: #fff; font-size: .72rem; font-weight: 700; }
+.wdh--frueher { background: var(--marke-hell); border-color: var(--marke-hell); }
+.wdh--frueher::after { content: "✓"; color: #16181b; font-size: .72rem; font-weight: 700; }
+.wdh[disabled] { cursor: default; }
+span.wdh { cursor: default; }
+
+/* --- Stufenauswahl --- */
+.modal--gross { max-width: 44rem; max-height: 82vh; display: flex; flex-direction: column; }
+.stufenwahl__liste { overflow-y: auto; flex: 1; margin: .5rem 0; }
+.stufenwahl__gruppe h3 {
+  font-size: .74rem; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text-leise); margin: .8rem 0 .4rem;
+}
+.stufenwahl {
+  display: flex; align-items: flex-start; gap: .6rem; width: 100%;
+  text-align: left; padding: .5rem .6rem; margin-bottom: .25rem;
+  font: inherit; color: var(--text);
+  background: var(--flaeche); border: 1px solid var(--rand); border-radius: 8px; cursor: pointer;
+}
+.stufenwahl:hover { border-color: var(--marke); }
+.stufenwahl--empfohlen { border-color: var(--marke); background: var(--marke-blass); }
+.stufenwahl--fertig { opacity: .62; }
+.stufenwahl__n {
+  width: 26px; height: 26px; flex: none; display: grid; place-items: center;
+  border-radius: 50%; background: var(--flaeche-2); font-size: .75rem; font-weight: 700;
+}
+.stufenwahl__text { font-size: .86rem; line-height: 1.35; }
+.stufenwahl__text small { display: block; font-size: .74rem; color: var(--text-leise); }
+
+/* --- Fortschrittskatalog --- */
+.kacheln--schlank { grid-template-columns: repeat(3, 1fr); margin: .7rem 0; }
+.schalter { display: flex; align-items: center; gap: .5rem; font-size: .84rem; margin-top: .6rem; }
+.schalter input { width: 20px; height: 20px; accent-color: var(--marke); flex: none; }
+
+.stufen-liste { display: flex; flex-direction: column; gap: .5rem; }
+.stufe-karte {
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--schatten);
+}
+.stufe-karte--fertig { border-color: var(--marke-hell); }
+.stufe-karte--gesperrt { opacity: .72; }
+.stufe-karte__kopf {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .6rem;
+  align-items: center;
+  width: 100%;
+  padding: .6rem .8rem;
+  font: inherit; text-align: left; color: var(--text);
+  background: none; border: none; cursor: pointer;
+}
+.stufe-karte__n {
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border-radius: 50%; background: var(--flaeche-2); font-weight: 700; font-size: .8rem;
+}
+.stufe-karte--fertig .stufe-karte__n { background: var(--marke); color: #fff; }
+.stufe-karte__text { min-width: 0; }
+.stufe-karte__text strong { display: block; font-size: .9rem; line-height: 1.3; }
+.stufe-karte__text small { font-size: .74rem; color: var(--text-leise); }
+.stufe-karte__balken {
+  grid-column: 1 / -1;
+  height: 5px; border-radius: 999px; background: var(--flaeche-2); overflow: hidden;
+}
+.stufe-karte__balken span { display: block; height: 100%; background: var(--marke); border-radius: 999px; }
+.stufe-karte__inhalt { padding: 0 .8rem .8rem; display: flex; flex-direction: column; gap: .3rem; }
+
+/* --- Dashboard-Block --- */
+.verbellen-uebersicht { display: flex; flex-direction: column; gap: .9rem; }
+.vb-zeile__kopf { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.vb-zeile__wert { font-weight: 700; font-variant-numeric: tabular-nums; }
+.vb-zeile__wert small { font-weight: 500; color: var(--text-leise); margin-left: .3rem; }
+.vb-zeile .fortschritt-balken { margin: .3rem 0; }
+.vb-zeile__zeile2 { display: flex; gap: .3rem; flex-wrap: wrap; }
+.vb-zeile__naechste { font-size: .82rem; color: var(--text-leise); margin: .35rem 0 0; }
+.leer--schlank { padding: 1.2rem 1rem; }

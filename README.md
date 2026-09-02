@@ -29,14 +29,14 @@ Die Gestaltung folgt den Hausfarben des Bayerischen Roten Kreuzes.
 
 ## Funktionsumfang
 
-### Zwei Dokumentarten
+### Drei Dokumentarten
 
-| | **Suche** | **Freie Dokumentation** |
-|---|---|---|
-| Wofür | Suchprotokoll nach Vorlage des Hefts | alles andere: Gehorsam, Geräte, Theorie, Beobachtungen |
-| Inhalt | Grundwerte, Skizze, Versteckpersonen, drei Bewertungsblöcke, Konsequenz | Grundwerte, Skizze, Freitext |
-| Bewertung | 5er-Skalen, fließt ins Dashboard | keine – erscheint nur in der Übersicht |
-| Anlegen | „+ Neue Suche" | „+ Freie Doku" |
+| | **Suche** | **Verbellen** | **Freie Dokumentation** |
+|---|---|---|---|
+| Wofür | Suchprotokoll nach Vorlage des Hefts | Trainingsplan Verbellen | alles andere: Gehorsam, Geräte, Theorie |
+| Inhalt | Grundwerte, Skizze, Versteckpersonen, drei Bewertungsblöcke, Konsequenz | Grundwerte, bearbeitete Stufen mit Wiederholungen, Notizen | Grundwerte, Skizze, Freitext |
+| Auswertung | 5er-Skalen im Dashboard | Fortschrittskatalog je Hund | keine – nur in der Übersicht |
+| Anlegen | „+ Neue Suche" | „+ Verbellen" | „+ Freie Doku" |
 
 Beide teilen sich denselben Block **Grundwerte**, der mit der **Wartezeit im Auto bis zur Suche**
 beginnt – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet.
@@ -119,6 +119,39 @@ und funktioniert auch ohne Empfang im Wald.
 
 ---
 
+## Verbellen
+
+Der Trainingsplan stammt aus `Trainingsplan_Verbellen.xlsx` und ist wortgetreu übernommen:
+zwei Wege mit zusammen **331 Unterübungen**.
+
+| Weg | Stufen | Unterübungen |
+|---|---|---|
+| Box – Aufbau an der Box | 33 | 148 |
+| Mensch – Übertrag auf die Versteckperson | 38 | 183 |
+
+**Eingegeben wird in Sitzungen, der Fortschritt wird daraus abgeleitet.** Das ist bewusst so:
+Gäbe es beides getrennt, könnten Sitzungsprotokoll und Fortschritt auseinanderlaufen. So gibt es
+genau eine Wahrheit.
+
+* Eine Unterübung gilt nach **drei gelungenen Wiederholungen** als sicher – wie in der Vorlage.
+  Eine Sitzung hält fest, wie viele davon an diesem Tag gelungen sind; der Katalog summiert über
+  alle abgeschlossenen Sitzungen. Was in früheren Sitzungen schon stand, wird in der Maske
+  ausgegraut angezeigt.
+* **Stufen sind frei wählbar.** Der Plan sperrt Mensch-Stufen, solange die zugehörigen
+  Box-Stufen offen sind – das ist in der App aber nur ein *Hinweis*, keine Blockade. Wer
+  abweichend trainiert, wählt die Stufe trotzdem.
+* **Eigene Zusatzübungen** lassen sich je Stufe frei ergänzen, mit derselben Zählweise.
+  Sie zählen nicht zum Planumfang von 331, erscheinen aber im Katalog bei ihrer Stufe.
+* Der Box-Weg lässt sich je Hund überspringen (Schalter unter *Verbellen → Stand*); dann sind
+  die Mensch-Stufen von vornherein frei.
+
+Unter **Verbellen** steht der Stand je Hund: Gesamtfortschritt, beide Wege getrennt, die Stufe,
+an der gerade gearbeitet wird, und je Stufe aufklappbar der Stand jeder Unterübung mit dem Datum,
+an dem sie sicher wurde. Im **Dashboard** erscheint der Verbellen-Stand aller Hunde zusammen mit
+den Suchstatistiken – die vollständige Übersicht auf einer Seite.
+
+---
+
 ## Nur abgeschlossene Suchen gehen online
 
 Beide Dokumentarten durchlaufen zwei Zustände:
@@ -139,6 +172,10 @@ Versteckperson mit Ergebnis (gefunden / nicht gefunden) sowie mindestens je eine
 bei Team, Hund und Hundeführer:in.
 
 **Freie Dokumentation (4 Angaben):** Datum, Überschrift, Hund sowie Freitext oder Skizze.
+
+**Verbellen-Sitzung (4 Angaben):** Datum, Hund, mindestens eine bearbeitete Stufe und mindestens
+eine gelungene Wiederholung. Solange eine Sitzung Entwurf ist, zählt sie auch nicht im
+Fortschrittskatalog.
 
 Wer eine abgeschlossene Suche nachträglich korrigieren will, öffnet sie wieder – sie wird dann
 erneut zum Entwurf. Der bereits geteilte Stand bleibt beim Team, bis sie wieder abgeschlossen wird.
@@ -315,6 +352,8 @@ assets/js/
   sync/firestore.js        Abgleich über Cloud Firestore
   config.js                Adresse des Datenspeichers (ohne Token)
   charts.js                Diagramme (selbst gezeichnetes SVG)
+  verbellen-plan.js        Trainingsplan Verbellen (wortgetreu aus der Vorlage)
+  verbellen.js             Ableitung des Fortschritts aus den Sitzungen
   skizze.js                Zeichenfeld für das Suchgebiet
   ui.js                    Bausteine: Skala, Chips, Karten, Meldungen
   views/
@@ -322,6 +361,8 @@ assets/js/
     bausteine.js           gemeinsame Bausteine beider Dokumentarten (Grundwerte, Abschluss)
     editor.js              Erfassungsmaske einer Suche
     freidoku.js            Erfassungsmaske der freien Dokumentation
+    verbellen-editor.js    Erfassungsmaske einer Verbellen-Sitzung
+    verbellen.js           Fortschrittskatalog Verbellen
     dashboard.js           Auswertung
     bilder.js              Helfer:in-Bilder
     einrichtung.js         Assistent für den Online-Abgleich

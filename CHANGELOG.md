@@ -1,5 +1,17 @@
 # Änderungsprotokoll
 
+## 1.6.0 – 2026-09-02
+- **Dritte Dokumentart: Verbellen.** Der Trainingsplan aus "Verbell App 2.0" ist wortgetreu
+  uebernommen (Box 33 Stufen/148 Unteruebungen, Mensch 38/183, Sperrlogik inklusive).
+- Eingegeben wird in **Sitzungen**, der Fortschrittskatalog wird daraus abgeleitet - eine
+  Wahrheit statt zweier Staende, die auseinanderlaufen koennen. Drei gelungene
+  Wiederholungen je Unteruebung wie in der Vorlage, ueber Sitzungen hinweg summiert.
+- **Stufen sind frei waehlbar**; die Sperre aus dem Plan ist nur ein Hinweis. **Eigene
+  Zusatzuebungen** lassen sich je Stufe frei ergaenzen. Der Box-Weg ist je Hund
+  ueberspringbar.
+- Neue Ansicht **Verbellen** mit dem Stand je Hund und aufklappbaren Stufen; im
+  **Dashboard** steht der Verbellen-Stand aller Hunde ueber den Suchstatistiken.
+
 ## 1.5.0 – 2026-09-02
 - **Aktualisieren-Knopf** in der Kopfzeile neben der Statusanzeige. Er ist sicherer als
   das Neuladen des Browsers: Zuerst werden offene Eingaben festgeschrieben, dann wird

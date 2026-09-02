@@ -8,6 +8,8 @@ import { esc } from './ui.js';
 import * as vSuchen from './views/suchen.js';
 import * as vEditor from './views/editor.js';
 import * as vFreidoku from './views/freidoku.js';
+import * as vVerbellen from './views/verbellen.js';
+import * as vVerbellenEditor from './views/verbellen-editor.js';
 import * as vDashboard from './views/dashboard.js';
 import * as vBilder from './views/bilder.js';
 import * as vEinstellungen from './views/einstellungen.js';
@@ -19,6 +21,9 @@ const ROUTEN = [
   { muster: /^#\/suche\/(.+)$/, view: vEditor, tab: 'suchen', params: (m) => ({ id: m[1] }) },
   { muster: /^#\/doku\/neu$/, view: vFreidoku, tab: 'suchen', params: () => ({}) },
   { muster: /^#\/doku\/(.+)$/, view: vFreidoku, tab: 'suchen', params: (m) => ({ id: m[1] }) },
+  { muster: /^#\/verbellen-sitzung\/neu$/, view: vVerbellenEditor, tab: 'verbellen', params: () => ({}) },
+  { muster: /^#\/verbellen-sitzung\/(.+)$/, view: vVerbellenEditor, tab: 'verbellen', params: (m) => ({ id: m[1] }) },
+  { muster: /^#\/verbellen$/, view: vVerbellen, tab: 'verbellen' },
   { muster: /^#\/dashboard$/, view: vDashboard, tab: 'dashboard' },
   { muster: /^#\/bilder$/, view: vBilder, tab: 'bilder' },
   { muster: /^#\/einstellungen$/, view: vEinstellungen, tab: 'mehr' },
@@ -43,6 +48,7 @@ async function route(navigiert = true) {
   // Ungespeicherte Editor-Eingaben festschreiben, bevor die Ansicht wechselt.
   if (aktuelleView === vEditor && treffer.r.view !== vEditor) vEditor.flushEditor();
   if (aktuelleView === vFreidoku && treffer.r.view !== vFreidoku) vFreidoku.flushEditor();
+  if (aktuelleView === vVerbellenEditor && treffer.r.view !== vVerbellenEditor) vVerbellenEditor.flushEditor();
   // Laufende Abonnements der verlassenen Ansicht beenden.
   if (aktuelleView && aktuelleView !== treffer.r.view) aktuelleView.verlassen?.();
 
@@ -52,7 +58,7 @@ async function route(navigiert = true) {
   markiereTab(treffer.r.tab);
   await treffer.r.view.render(view, treffer.r.params ? treffer.r.params(treffer.m) : {});
   // Beim Seitenwechsel nach oben, beim stillen Auffrischen die Position halten.
-  const istEditor = treffer.r.view === vEditor || treffer.r.view === vFreidoku;
+  const istEditor = [vEditor, vFreidoku, vVerbellenEditor].includes(treffer.r.view);
   if (navigiert && !istEditor) window.scrollTo(0, 0);
   else if (!navigiert) window.scrollTo(0, y);
 }
@@ -61,6 +67,7 @@ async function route(navigiert = true) {
 function sichern() {
   if (aktuelleView === vEditor) vEditor.flushEditor();
   if (aktuelleView === vFreidoku) vFreidoku.flushEditor();
+  if (aktuelleView === vVerbellenEditor) vVerbellenEditor.flushEditor();
 }
 
 /**
@@ -161,7 +168,7 @@ async function start() {
   let timer;
   store.subscribe(() => {
     // Masken mit Eingaben niemals unter den Fingern neu zeichnen
-    if (aktuelleView === vEditor || aktuelleView === vFreidoku) return;
+    if ([vEditor, vFreidoku, vVerbellenEditor].includes(aktuelleView)) return;
     clearTimeout(timer);
     timer = setTimeout(() => route(false), 200);
   });
