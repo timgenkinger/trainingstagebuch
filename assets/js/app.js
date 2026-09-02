@@ -57,6 +57,38 @@ async function route(navigiert = true) {
   else if (!navigiert) window.scrollTo(0, y);
 }
 
+/** Schreibt ungespeicherte Eingaben der aktuellen Maske fest. */
+function sichern() {
+  if (aktuelleView === vEditor) vEditor.flushEditor();
+  if (aktuelleView === vFreidoku) vFreidoku.flushEditor();
+}
+
+/**
+ * Manuelles Neuladen. Vorher werden Eingaben festgeschrieben, damit die
+ * letzten Sekunden Tipparbeit nicht verloren gehen; anschließend wird
+ * geprüft, ob eine neue Fassung bereitliegt, und diese gleich übernommen.
+ */
+async function neuLaden(btn) {
+  if (btn.dataset.laeuft) return;
+  btn.dataset.laeuft = '1';
+  btn.classList.add('kopf-knopf--dreht');
+  sichern();
+  await new Promise((r) => setTimeout(r, 250)); // Schreibvorgang abwarten
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration();
+    if (reg) {
+      await reg.update();
+      if (reg.waiting) {
+        reg.waiting.postMessage({ typ: 'UEBERNEHMEN' });
+        await new Promise((r) => setTimeout(r, 350));
+      }
+    }
+  } catch (e) {
+    console.warn('Update-Prüfung übersprungen:', e);
+  }
+  location.reload();
+}
+
 function markiereTab(tab) {
   document.querySelectorAll('[data-tab]').forEach((a) => {
     a.classList.toggle('tab--an', a.dataset.tab === tab);
@@ -121,6 +153,7 @@ async function start() {
 
   await store.init();
   syncAnzeige();
+  document.getElementById('neu-laden')?.addEventListener('click', (e) => neuLaden(e.currentTarget));
   window.addEventListener('hashchange', () => route(true));
   await route();
 
@@ -137,10 +170,6 @@ async function start() {
   serviceWorker();
 
   // Editor-Eingaben auch beim Schließen des Tabs sichern.
-  const sichern = () => {
-    if (aktuelleView === vEditor) vEditor.flushEditor();
-    if (aktuelleView === vFreidoku) vFreidoku.flushEditor();
-  };
   window.addEventListener('pagehide', sichern);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') sichern();

@@ -928,3 +928,23 @@ code {
 }
 .such-karte--frei { border-left: 4px solid var(--rand-stark); }
 .btn-zeile--mitte { justify-content: center; }
+
+/* --- Knopf zum manuellen Neuladen, neben der Statusanzeige --- */
+.kopf__rechts { display: flex; align-items: center; gap: .4rem; }
+.kopf-knopf {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .55);
+  background: rgba(255, 255, 255, .2);
+  color: #fff;
+  cursor: pointer;
+}
+.kopf-knopf:hover { background: rgba(255, 255, 255, .34); }
+.kopf-knopf svg { width: 19px; height: 19px; }
+.kopf-knopf--dreht { pointer-events: none; }
+.kopf-knopf--dreht svg { animation: dreh .7s linear infinite; }

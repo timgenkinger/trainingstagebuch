@@ -1,5 +1,12 @@
 # Änderungsprotokoll
 
+## 1.5.0 – 2026-09-02
+- **Aktualisieren-Knopf** in der Kopfzeile neben der Statusanzeige. Er ist sicherer als
+  das Neuladen des Browsers: Zuerst werden offene Eingaben festgeschrieben, dann wird
+  geprueft, ob eine neue Programmfassung bereitliegt, und diese gleich uebernommen.
+  Nachgewiesen: Text, der 80 ms vor dem Klick getippt wurde - also weit vor der
+  Speicherverzoegerung von 700 ms -, ueberlebt den Reload.
+
 ## 1.4.0 – 2026-09-02
 - **Zweite Dokumentart: freie Dokumentation.** Grundwerte, Zeichenfeld und Freitext –
   fuer alles, was kein Suchprotokoll ist (Gehorsam, Geraete, Theorie, Beobachtungen).

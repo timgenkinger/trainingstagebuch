@@ -288,6 +288,11 @@ Deshalb arbeitet die App nach dem Prinzip **local first**:
 Der Status oben rechts: grau *Nur lokal*, orange *Verbinde/Offline*, grün *Synchron*, rot *Fehler*
 (Titel antippen zeigt den Grund).
 
+Direkt daneben sitzt der **Aktualisieren-Knopf**. Er lädt die Seite neu und ist dabei sicherer
+als der Neu-laden-Knopf des Browsers: Er schreibt zuerst offene Eingaben fest, prüft dann, ob
+eine neue Programmfassung bereitliegt, und übernimmt sie gleich mit. Ungespeicherte Tipparbeit
+geht dabei nicht verloren.
+
 ---
 
 ## Aufbau des Projekts
