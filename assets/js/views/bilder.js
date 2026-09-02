@@ -2,10 +2,11 @@
 
 import * as store from '../store.js';
 import * as S from '../schema.js';
-import { esc, karte, leer } from '../ui.js';
+import { esc, karte, leer, formatDatum } from '../ui.js';
 import { stapel } from '../charts.js';
+import * as HB from '../helferbilder.js';
 
-const zustand = { hundId: '', nurOffen: false, nurWichtig: false };
+const zustand = { hundId: '', nurOffen: false, nurWichtig: false, nurUngeuebt: false };
 
 export async function render(wurzel) {
   const hunde = store.hunde();
@@ -27,30 +28,20 @@ function html() {
     )}</div>`;
   }
 
-  const fortschritt = store.bildFortschritt(zustand.hundId);
-  const stufenZaehler = [0, 0, 0, 0, 0];
-  S.HELFER_BILDER.forEach((b) => stufenZaehler[fortschritt[b.id]?.level || 0]++);
+  const bil = HB.bilanz(zustand.hundId);
 
   const segmente = [
-    { label: 'gemeistert', wert: stufenZaehler[4], farbe: '#3c8a4f' },
-    { label: 'längere Anzeige', wert: stufenZaehler[3], farbe: '#7fb37f' },
-    { label: 'kurze Anzeige', wert: stufenZaehler[2], farbe: '#c7d9a8' },
-    { label: 'kennengelernt', wert: stufenZaehler[1], farbe: '#efc766' },
-    { label: 'offen', wert: stufenZaehler[0], farbe: 'var(--rand)' },
+    { label: 'gemeistert', wert: bil.stufen[4], farbe: '#3c8a4f' },
+    { label: 'längere Anzeige', wert: bil.stufen[3], farbe: '#7fb37f' },
+    { label: 'kurze Anzeige', wert: bil.stufen[2], farbe: '#c7d9a8' },
+    { label: 'kennengelernt', wert: bil.stufen[1], farbe: '#efc766' },
+    { label: 'offen', wert: bil.stufen[0], farbe: 'var(--rand)' },
   ];
 
-  // Wie oft wurde ein Bild bereits in einer Suche eingesetzt?
-  const einsaetze = {};
-  store.suchen().forEach((s) => {
-    if (zustand.hundId && s.hundId !== zustand.hundId) return;
-    (s.helfer || []).forEach((h) => {
-      if (h.bildId) einsaetze[h.bildId] = (einsaetze[h.bildId] || 0) + 1;
-    });
-  });
-
   let liste = S.HELFER_BILDER;
-  if (zustand.nurWichtig) liste = liste.filter((b) => b.key);
-  if (zustand.nurOffen) liste = liste.filter((b) => !(fortschritt[b.id]?.level >= (b.keineAnzeige ? 1 : 4)));
+  if (zustand.nurWichtig) liste = liste.filter((x) => x.key);
+  if (zustand.nurUngeuebt) liste = liste.filter((x) => !bil.stand[x.id].einsatz);
+  if (zustand.nurOffen) liste = liste.filter((x) => bil.stand[x.id].stufe < (x.keineAnzeige ? 1 : 4));
 
   return `<div class="seite">
     <div class="seite__kopf">
@@ -66,13 +57,30 @@ function html() {
       </select>
       <button type="button" class="chip${zustand.nurWichtig ? ' chip--an' : ''}" data-t="nurWichtig">nur wichtige</button>
       <button type="button" class="chip${zustand.nurOffen ? ' chip--an' : ''}" data-t="nurOffen">nur offene</button>
+      <button type="button" class="chip${zustand.nurUngeuebt ? ' chip--an' : ''}" data-t="nurUngeuebt">
+        nie im Training${bil.nieEingesetzt.length ? ` (${bil.nieEingesetzt.length})` : ''}
+      </button>
     </div>
 
     ${karte(
       'Fortschritt',
-      `${stapel(segmente, S.HELFER_BILDER.length)}
-       <div class="ch-legende">${segmente.map((s) => `<span><i style="background:${s.farbe}"></i>${esc(s.label)} ${s.wert}</span>`).join('')}</div>
-       <p class="karte__hint">${stufenZaehler[4]} von ${S.HELFER_BILDER.length} Bildern gemeistert.</p>`
+      `${stapel(segmente, bil.gesamt)}
+       <div class="ch-legende">${segmente.map((x) => `<span><i style="background:${x.farbe}"></i>${esc(x.label)} ${x.wert}</span>`).join('')}</div>
+       <div class="kacheln kacheln--schlank">
+         <div class="kachel"><span class="kachel__label">Aus Suchen belegt</span>
+           <strong class="kachel__wert">${bil.ausSuchen}</strong>
+           <span class="kachel__sub">von ${bil.gesamt} Bildern</span></div>
+         <div class="kachel"><span class="kachel__label">Nie im Training</span>
+           <strong class="kachel__wert">${bil.nieEingesetzt.length}</strong>
+           <span class="kachel__sub">${bil.wichtigOffen.length} davon wichtig</span></div>
+         <div class="kachel"><span class="kachel__label">Gemeistert</span>
+           <strong class="kachel__wert">${bil.gemeistert}</strong>
+           <span class="kachel__sub">von Hand bewertet</span></div>
+       </div>
+       ${bil.wichtigOffen.length
+         ? `<p class="karte__hint">Wichtige Bilder ohne Einsatz: ${bil.wichtigOffen.map((x) => esc(x.label)).join(', ')}.</p>`
+         : '<p class="gut">Alle als wichtig markierten Bilder waren schon im Training. 👍</p>'}`,
+      { hint: 'Ein Bild gilt als kennengelernt, sobald es in einer abgeschlossenen Suche als Versteckperson vorkam. Die Stufen 2 bis 4 bleiben deine Einschätzung.' }
     )}
 
     <div class="bilder-liste">
@@ -82,31 +90,42 @@ function html() {
           ${S.BILD_STUFEN.map((s) => `<b title="${esc(s.label)}">${s.level}</b>`).join('')}
         </span>
       </div>
-      ${liste.map((b) => zeile(b, fortschritt[b.id], einsaetze[b.id] || 0)).join('')}
+      ${liste.map((x) => zeile(x, bil.stand[x.id])).join('')}
       ${!liste.length ? leer('Keine Bilder passen zum Filter.') : ''}
     </div>
   </div>`;
 }
 
-function zeile(bild, eintrag, einsaetze) {
-  const level = eintrag?.level || 0;
+function zeile(bild, e) {
+  const level = e.stufe;
   const stufen = bild.keineAnzeige ? [S.BILD_STUFEN[0]] : S.BILD_STUFEN;
-  return `<div class="bild-zeile${bild.key ? ' bild-zeile--key' : ''}">
+  const ein = e.einsatz;
+
+  return `<div class="bild-zeile${bild.key ? ' bild-zeile--key' : ''}${ein ? '' : ' bild-zeile--ungeuebt'}">
     <div class="bild-zeile__label">
       <span>${esc(bild.label)}</span>
       <small>
         ${bild.key ? '<em class="merkmal">wichtig</em>' : ''}
         ${bild.keineAnzeige ? '<em class="merkmal merkmal--grau">korrekt = keine Anzeige</em>' : ''}
-        ${einsaetze ? `<em class="merkmal merkmal--grau">${einsaetze}× im Training</em>` : ''}
+        ${ein
+          ? `<em class="merkmal merkmal--suche">${ein.anzahl}× in Suchen</em>
+             <em class="merkmal merkmal--grau">zuletzt ${esc(formatDatum(ein.letzteAm))}</em>
+             ${ein.gefunden + ein.nichtGefunden
+               ? `<em class="merkmal merkmal--grau">${ein.gefunden}/${ein.gefunden + ein.nichtGefunden} gefunden</em>`
+               : ''}`
+          : '<em class="merkmal merkmal--offen">noch nie im Training</em>'}
       </small>
     </div>
     <div class="bild-zeile__stufen">
       ${stufen
-        .map(
-          (s) => `<button type="button" class="stufe${level >= s.level ? ' stufe--an' : ''}"
-            data-bild="${esc(bild.id)}" data-level="${s.level}" title="${esc(s.label)}"
-            aria-label="${esc(bild.label)} – ${esc(s.label)}" aria-pressed="${level >= s.level}"></button>`
-        )
+        .map((st) => {
+          const an = level >= st.level;
+          const nurAusSuche = st.level === 1 && e.ausSuche && !e.vonHand;
+          return `<button type="button" class="stufe${an ? ' stufe--an' : ''}${nurAusSuche ? ' stufe--auto' : ''}"
+            data-bild="${esc(bild.id)}" data-level="${st.level}"
+            title="${esc(st.label)}${nurAusSuche ? ' – aus einer Suche übernommen' : ''}"
+            aria-label="${esc(bild.label)} – ${esc(st.label)}" aria-pressed="${an}"></button>`;
+        })
         .join('')}
     </div>
   </div>`;
@@ -139,6 +158,8 @@ function binde(box, wurzel) {
       type: 'helferbild',
       hundId: zustand.hundId,
       bildId,
+      // Nochmal auf dieselbe Stufe tippen nimmt die Bewertung zurueck.
+      // Stufe 1 aus einer Suche bleibt davon unberuehrt – sie ist belegt.
       level: alt === level ? level - 1 : level,
     });
     zeichne(wurzel);

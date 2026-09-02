@@ -5,6 +5,7 @@ import * as S from '../schema.js';
 import { esc, karte, leer, formatNote, formatMinuten, runde, skalaFarbe, formatDatum } from '../ui.js';
 import { linienDiagramm, balken, stapel, sparkline } from '../charts.js';
 import * as V from '../verbellen.js';
+import * as HB from '../helferbilder.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
 
 const filter = { hundId: '', zeitraum: 'alle', kriterium: 'gruppen', mitEntwuerfen: false };
@@ -376,48 +377,45 @@ function rahmenBlock(daten) {
 
 function bilderBlock(daten) {
   const hundId = filter.hundId;
-  const fortschritt = store.bildFortschritt(hundId);
-  const stufen = [0, 0, 0, 0, 0];
-  S.HELFER_BILDER.forEach((b) => {
-    const lvl = fortschritt[b.id]?.level || 0;
-    stufen[lvl] = (stufen[lvl] || 0) + 1;
-  });
-
-  const trainiert = {};
-  daten.flatMap((s) => s.helfer || []).forEach((h) => {
-    if (h.bildId) trainiert[h.bildId] = (trainiert[h.bildId] || 0) + 1;
-  });
-
-  const nieTrainiert = S.HELFER_BILDER.filter((b) => !trainiert[b.id] && !(fortschritt[b.id]?.level > 0));
-  const wichtigeOffen = nieTrainiert.filter((b) => b.key);
+  const b = HB.bilanz(hundId);
 
   const segmente = [
-    { label: 'gemeistert', wert: stufen[4], farbe: '#3c8a4f' },
-    { label: 'längere Anzeige', wert: stufen[3], farbe: '#7fb37f' },
-    { label: 'kurze Anzeige', wert: stufen[2], farbe: '#c7d9a8' },
-    { label: 'kennengelernt', wert: stufen[1], farbe: '#efc766' },
-    { label: 'offen', wert: stufen[0], farbe: 'var(--rand)' },
+    { label: 'gemeistert', wert: b.stufen[4], farbe: '#3c8a4f' },
+    { label: 'längere Anzeige', wert: b.stufen[3], farbe: '#7fb37f' },
+    { label: 'kurze Anzeige', wert: b.stufen[2], farbe: '#c7d9a8' },
+    { label: 'kennengelernt', wert: b.stufen[1], farbe: '#efc766' },
+    { label: 'nie im Training', wert: b.stufen[0], farbe: 'var(--rand)' },
   ];
 
-  const top = Object.entries(trainiert)
-    .sort((a, b) => b[1] - a[1])
+  // Häufigkeit aus den Suchen des gewählten Zeitraums
+  const imZeitraum = {};
+  daten.flatMap((s) => s.helfer || []).forEach((h) => {
+    if (h.bildId) imZeitraum[h.bildId] = (imZeitraum[h.bildId] || 0) + 1;
+  });
+  const top = Object.entries(imZeitraum)
+    .sort((a, c) => c[1] - a[1])
     .slice(0, 8)
     .map(([id, n]) => ({ label: S.BILDER_BY_ID[id]?.label || id, wert: n }));
 
   return karte(
     'Helfer:in-Bilder',
     `<div class="bilder-uebersicht">
-      ${stapel(segmente, S.HELFER_BILDER.length)}
-      <div class="ch-legende">${segmente.map((s) => `<span><i style="background:${s.farbe}"></i>${esc(s.label)} ${s.wert}</span>`).join('')}</div>
+      ${stapel(segmente, b.gesamt)}
+      <div class="ch-legende">${segmente.map((x) => `<span><i style="background:${x.farbe}"></i>${esc(x.label)} ${x.wert}</span>`).join('')}</div>
     </div>
-    ${top.length ? `<h3 class="unter">Am häufigsten trainiert</h3>${balken(top, { farbe: 'var(--gruen)' })}` : ''}
-    ${wichtigeOffen.length
-      ? `<h3 class="unter">Wichtige Bilder noch offen (${wichtigeOffen.length})</h3>
-         <div class="offen-liste">${wichtigeOffen.map((b) => `<span class="tag tag--warn">${esc(b.label)}</span>`).join('')}</div>`
-      : `<p class="gut">Alle als besonders relevant markierten Bilder wurden begonnen. 👍</p>`}
-    <p class="karte__hint">Insgesamt noch nicht begonnen: ${nieTrainiert.length} von ${S.HELFER_BILDER.length}.
-      <a href="#/bilder">Zur Checkliste →</a></p>`,
-    { hint: hundId ? `Fortschritt für ${store.get(hundId)?.name || ''}` : 'Fortschritt über alle Hunde – für einzelne Hunde oben filtern.' }
+    <p class="karte__hint"><strong>${b.ausSuchen}</strong> von ${b.gesamt} Bildern sind durch Suchen belegt,
+      <strong>${b.nieEingesetzt.length}</strong> waren noch nie im Training.</p>
+    ${top.length ? `<h3 class="unter">Am häufigsten im gewählten Zeitraum</h3>${balken(top, { farbe: 'var(--marke)' })}` : ''}
+    ${b.wichtigOffen.length
+      ? `<h3 class="unter">Wichtige Bilder noch nie geübt (${b.wichtigOffen.length})</h3>
+         <div class="offen-liste">${b.wichtigOffen.map((x) => `<span class="tag tag--warn">${esc(x.label)}</span>`).join('')}</div>`
+      : `<p class="gut">Alle als wichtig markierten Bilder waren schon im Training. 👍</p>`}
+    <p class="karte__hint"><a href="#/bilder">Zur vollständigen Übersicht →</a></p>`,
+    {
+      hint: hundId
+        ? `Für ${store.get(hundId)?.name || ''} – abgeleitet aus den abgeschlossenen Suchen`
+        : 'Über alle Hunde – für einzelne Hunde oben filtern',
+    }
   );
 }
 

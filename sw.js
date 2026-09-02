@@ -6,7 +6,7 @@
  * ein Update tauscht nur den Cache aus, nicht die Datenbank.
  */
 
-const VERSION = '1.6.0'; // wird von scripts/release.sh gepflegt
+const VERSION = '1.7.0'; // wird von scripts/release.sh gepflegt
 const CACHE = `rhd-app-${VERSION}`;
 
 const DATEIEN = [
@@ -19,6 +19,7 @@ const DATEIEN = [
   './assets/js/app.js',
   './assets/js/charts.js',
   './assets/js/config.js',
+  './assets/js/helferbilder.js',
   './assets/js/idb.js',
   './assets/js/schema.js',
   './assets/js/skizze.js',

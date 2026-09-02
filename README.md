@@ -76,6 +76,17 @@ vier Stufen (kennengelernt / kurze Anzeige / längere Anzeige / gemeistert). Die
 fett gedruckten Bilder sind als **wichtig** markiert. Bilder, bei denen korrektes Verhalten
 *keine* Anzeige ist (Attrappen), haben nur die erste Stufe.
 
+**Die Übersicht speist sich aus den Suchen.** Wird bei einer Versteckperson ein
+Helfer:in-Bild gewählt, gilt dieses Bild ab der abgeschlossenen Suche als **kennengelernt** –
+niemand muss es zusätzlich abhaken. Jede Zeile zeigt, wie oft das Bild vorkam, wann zuletzt
+und wie oft der Hund es gefunden hat; Bilder ohne Einsatz sind als *noch nie im Training*
+gekennzeichnet und über einen eigenen Filter zusammen sichtbar.
+
+Bewusst automatisch ist **nur Stufe 1**: Dass ein Bild vorkam, steht im Protokoll. Ob die
+Anzeige kurz, länger oder gemeistert war, ist eine Einschätzung und bleibt Handarbeit – die
+App erfindet keine Bewertung. Eine Handbewertung hebt die Stufe an; nimmt man sie zurück,
+bleibt der Beleg aus der Suche bestehen.
+
 ---
 
 ## Schnellstart lokal
@@ -354,6 +365,7 @@ assets/js/
   charts.js                Diagramme (selbst gezeichnetes SVG)
   verbellen-plan.js        Trainingsplan Verbellen (wortgetreu aus der Vorlage)
   verbellen.js             Ableitung des Fortschritts aus den Sitzungen
+  helferbilder.js          Ableitung der Helfer:in-Bilder aus den Suchen
   skizze.js                Zeichenfeld für das Suchgebiet
   ui.js                    Bausteine: Skala, Chips, Karten, Meldungen
   views/

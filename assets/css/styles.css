@@ -1077,3 +1077,10 @@ span.wdh { cursor: default; }
 .vb-zeile__zeile2 { display: flex; gap: .3rem; flex-wrap: wrap; }
 .vb-zeile__naechste { font-size: .82rem; color: var(--text-leise); margin: .35rem 0 0; }
 .leer--schlank { padding: 1.2rem 1rem; }
+
+/* --- Helfer:in-Bilder: Herkunft der Angabe sichtbar machen --- */
+.bild-zeile--ungeuebt .bild-zeile__label > span { color: var(--text-leise); }
+.merkmal--suche { background: var(--blau); color: #fff; border: none; }
+.merkmal--offen { background: transparent; color: var(--rot-text); border: 1px dashed currentColor; }
+.stufe--auto { background: var(--marke-hell); border-color: var(--marke-hell); }
+.stufe--auto::after { content: "✓"; color: #16181b; font-size: .8rem; line-height: 1; }

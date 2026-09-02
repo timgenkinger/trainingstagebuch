@@ -1,5 +1,16 @@
 # Änderungsprotokoll
 
+## 1.7.0 – 2026-09-02
+- **Helfer:in-Bilder speisen sich jetzt aus den Suchen.** Ein bei einer Versteckperson
+  gewaehltes Bild gilt ab der abgeschlossenen Suche als kennengelernt - kein zusaetzliches
+  Abhaken mehr. Je Zeile: wie oft eingesetzt, wann zuletzt und wie oft gefunden.
+- Bilder ohne Einsatz sind als "noch nie im Training" gekennzeichnet und ueber einen
+  eigenen Filter zusammen sichtbar; Kennzahlen dazu in Uebersicht und Dashboard.
+- Bewusst automatisch ist nur Stufe 1. Die Stufen 2 bis 4 bleiben Einschaetzung des
+  Hundefuehrers, weil die Dauer der Anzeige nicht protokolliert wird. Eine Handbewertung
+  hebt die Stufe an; ihre Ruecknahme laesst den Beleg aus der Suche bestehen.
+- Entwuerfe zaehlen nicht mit - wie bei Verbellen zaehlt nur, was abgeschlossen ist.
+
 ## 1.6.0 – 2026-09-02
 - **Dritte Dokumentart: Verbellen.** Der Trainingsplan aus "Verbell App 2.0" ist wortgetreu
   uebernommen (Box 33 Stufen/148 Unteruebungen, Mensch 38/183, Sperrlogik inklusive).
