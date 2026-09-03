@@ -10,6 +10,7 @@
 import * as store from '../store.js';
 import { bestaetigungsKarte, bestaetigungKlick } from './bestaetigung.js';
 import * as S from '../schema.js';
+import * as R from '../rollen.js';
 import * as V from '../verbellen.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
 import { esc, feld, textArea, textInput, select, karte, toast, frage, debounce, formatDatum, setPath } from '../ui.js';
@@ -47,8 +48,10 @@ export async function render(wurzel, params) {
     const letzte = store.verbellenSitzungen()[0] || store.suchen()[0];
     entwurf = {
       ...S.neueVerbellenSitzung({
-        hundId: letzte?.hundId || store.hunde()[0]?.id,
-        hfId: letzte?.hfId || store.personen()[0]?.id,
+        // Vorauswahl: Hund und Hundeführer:in dieses Geräts,
+        // ersatzweise der zuletzt dokumentierte Stand.
+        hundId: R.standardHundId() || letzte?.hundId || R.meineHunde()[0]?.id,
+        hfId: R.standardHfId() || letzte?.hfId,
       }),
       id: store.uid(),
     };

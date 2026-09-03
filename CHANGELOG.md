@@ -1,5 +1,16 @@
 # Änderungsprotokoll
 
+## 1.9.0 – 2026-09-03
+- **Ein neues Gerät ist immer Hundeführer:in ohne Zuordnung.** Die bisherige Rueckfallregel,
+  nach der ein nicht zugeordnetes Geraet alles sah, ist entfallen. Stattdessen fuehren
+  Uebersicht und Einstellungen deutlich zum ersten Schritt.
+- **Hund und Hundeführer:in des Geräts sind in jeder Erfassungsmaske vorausgewählt.**
+- **Fremde Hunde kann nur die Ausbildung erfassen**: In der Hundeauswahl stehen einer
+  Hundefuehrer:in ausschliesslich die eigenen Hunde. Die Hundefuehrer:in selbst ist fest auf
+  das Geraet eingestellt und nur fuer die Ausbildung frei waehlbar.
+- Ein bereits eingetragener fremder Hund bleibt in der Auswahl sichtbar, damit das Oeffnen
+  eines bestehenden Eintrags ihn nicht stillschweigend umschreibt.
+
 ## 1.8.1 – 2026-09-03
 - **Der Wechsel in die Ausbilder-Rolle verlangt jetzt ein Passwort.** Der Weg zurueck
   zur Hundefuehrer:in-Rolle bleibt frei.

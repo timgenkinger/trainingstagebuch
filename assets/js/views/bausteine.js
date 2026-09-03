@@ -7,6 +7,7 @@
 
 import * as store from '../store.js';
 import * as S from '../schema.js';
+import * as R from '../rollen.js';
 import { esc, feld, textInput, textArea, select, karte, chipGruppe, formatDatum } from '../ui.js';
 
 /** Wartezeit im Auto – steht in beiden Masken ganz oben. */
@@ -30,8 +31,23 @@ export function wartezeitFeld(rec) {
  * @param {{zusatz?: string, titel?: boolean}} opts
  */
 export function kopfKarte(rec, opts = {}) {
-  const hunde = store.hunde().map((h) => ({ id: h.id, label: h.name }));
+  // Hundeführer:innen erfassen ausschließlich ihre eigenen Hunde.
+  const hunde = R.waehlbareHunde(rec.hundId).map((h) => ({ id: h.id, label: h.name }));
   const personen = store.personen().map((p) => ({ id: p.id, label: p.name }));
+  const eigenePerson = store.get(rec.hfId);
+
+  const hundFeld = hunde.length
+    ? select('hundId', rec.hundId, hunde)
+    : `<span class="hinweis-inline">${R.eingerichtet()
+        ? 'Dir ist noch kein Hund zugeordnet – das macht die Ausbildung unter Einstellungen.'
+        : 'Dieses Gerät ist noch niemandem zugeordnet – bitte unter <a href="#/einstellungen">Einstellungen</a> auswählen.'}</span>`;
+
+  const hfFeld = R.darfHfWaehlen()
+    ? (personen.length
+        ? select('hfId', rec.hfId, personen)
+        : `<span class="hinweis-inline">Noch keine Person angelegt – unter <a href="#/einstellungen">Einstellungen</a> hinzufügen.</span>`)
+    : `<div class="feld-fest">${esc(eigenePerson?.name || 'nicht zugeordnet')}
+        <small>fest auf dieses Gerät eingestellt</small></div>`;
 
   return karte('Grundwerte', `
     ${wartezeitFeld(rec)}
@@ -41,12 +57,8 @@ export function kopfKarte(rec, opts = {}) {
     <div class="raster raster--2">
       ${feld('Datum', textInput('datum', rec.datum, { type: 'date' }))}
       ${feld('Ort', textInput('ort', rec.ort, { placeholder: 'z.B. Waldstück Nordheide' }))}
-      ${feld('Hund', hunde.length
-        ? select('hundId', rec.hundId, hunde)
-        : `<span class="hinweis-inline">Noch kein Hund angelegt – unter <a href="#/einstellungen">Einstellungen</a> hinzufügen.</span>`)}
-      ${feld('Hundeführer:in', personen.length
-        ? select('hfId', rec.hfId, personen)
-        : `<span class="hinweis-inline">Noch keine Person angelegt – unter <a href="#/einstellungen">Einstellungen</a> hinzufügen.</span>`)}
+      ${feld('Hund', hundFeld)}
+      ${feld('Hundeführer:in', hfFeld)}
     </div>
     ${opts.zusatz || ''}
   `);

@@ -135,6 +135,10 @@ und funktioniert auch ohne Empfang im Wald.
 Unter **Einstellungen → Dieses Gerät** wird festgelegt, wer daran arbeitet und in welcher Rolle.
 Beides sind Geräte-Einstellungen und werden nicht mit abgeglichen.
 
+**Ein neues Gerät startet immer als Hundeführer:in ohne Zuordnung** und zeigt deshalb zunächst
+weder Hunde noch Dokumentation – der erste Schritt führt in die Einstellungen. Erst wenn dort
+eine Person ausgewählt ist und die Ausbildung ihr Hunde zugeordnet hat, ist die App nutzbar.
+
 | | **Hundeführer:in** | **Ausbilder:in** |
 |---|---|---|
 | Sichtbare Hunde | nur die zugeordneten | alle |
@@ -154,6 +158,16 @@ Entwicklerwerkzeugen umgehen.
 Die Zuordnung Hund → Hundeführer:in erfolgt unter **Einstellungen → Hunde**. Ein Hund kann
 mehreren Personen zugeordnet sein, eine Person mehreren Hunden. Ein Hund ohne Zuordnung ist
 nur für die Ausbildung sichtbar.
+
+### Was in den Erfassungsmasken vorbelegt ist
+
+Bei jedem neuen Eintrag sind **Hund und Hundeführer:in des Geräts vorausgewählt**. Die
+Hundeführer:in steht dabei fest auf der Person, der das Gerät zugeordnet ist; frei wählbar ist
+sie nur für die Ausbildung. Bei der Hundeauswahl stehen einer Hundeführer:in **ausschließlich
+die eigenen Hunde** zur Verfügung – fremde Hunde kann nur die Ausbildung erfassen.
+
+Ist an einem bestehenden Eintrag ein Hund hinterlegt, der nicht zur eigenen Auswahl gehört,
+bleibt er in der Liste sichtbar. So schreibt ein Öffnen des Eintrags ihn nicht stillschweigend um.
 
 Ob Hundeführer:innen die Auswertungen **ihrer eigenen** Hunde einsehen dürfen, entscheidet die
 Ausbildung mit einem Schalter; ab Werk ist das aus.

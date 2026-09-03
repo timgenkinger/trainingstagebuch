@@ -101,7 +101,7 @@ export function istAusbilder() {
   return meineRolle() === 'ausbilder';
 }
 
-/** Solange niemand zugeordnet ist, wird nichts eingeschränkt – sonst steht man vor einer leeren App. */
+/** Ist diesem Gerät eine Person zugeordnet? */
 export function eingerichtet() {
   return !!meinePersonId();
 }
@@ -128,12 +128,47 @@ export async function setzeTeamEinstellung(werte) {
 /* Sichtbarkeit                                                      */
 /* ---------------------------------------------------------------- */
 
-/** Hunde, die diesem Gerät zugeordnet sind. Ausbilder:innen sehen alle. */
+/**
+ * Hunde, die diesem Gerät zugeordnet sind. Ausbilder:innen sehen alle.
+ * Ein frisch eingerichtetes Gerät ist Hundeführer:in ohne Zuordnung und
+ * sieht daher zunächst nichts – der Weg führt über die Einstellungen.
+ */
 export function meineHunde() {
   const alle = store.hunde();
-  if (istAusbilder() || !eingerichtet()) return alle;
+  if (istAusbilder()) return alle;
+  if (!eingerichtet()) return [];
   const ich = meinePersonId();
   return alle.filter((h) => (h.hfIds || []).includes(ich));
+}
+
+/**
+ * Auswahlliste für die Hund-Auswahl in den Erfassungsmasken.
+ * Hundeführer:innen können ausschließlich ihre eigenen Hunde erfassen;
+ * ein bereits eingetragener fremder Hund bleibt sichtbar, damit ein
+ * bestehender Datensatz nicht stillschweigend umgeschrieben wird.
+ */
+export function waehlbareHunde(aktuellerHundId) {
+  const liste = meineHunde();
+  if (aktuellerHundId && !liste.some((h) => h.id === aktuellerHundId)) {
+    const h = store.get(aktuellerHundId);
+    if (h) return [h, ...liste];
+  }
+  return liste;
+}
+
+/** Vorauswahl für neue Einträge: Hund und Hundeführer:in dieses Geräts. */
+export function standardHfId() {
+  return meinePersonId() || '';
+}
+
+export function standardHundId() {
+  const meine = meineHunde();
+  return meine.length === 1 ? meine[0].id : '';
+}
+
+/** Darf die Hundeführer:in frei gewählt werden? Nur die Ausbildung. */
+export function darfHfWaehlen() {
+  return istAusbilder() || !eingerichtet();
 }
 
 export function sichtbareHundIds() {
@@ -142,7 +177,7 @@ export function sichtbareHundIds() {
 
 /** Darf dieses Dokument angezeigt werden? */
 export function darfSehen(rec) {
-  if (istAusbilder() || !eingerichtet()) return true;
+  if (istAusbilder()) return true;
   if (!rec) return false;
   const ids = sichtbareHundIds();
   // Ohne zugeordneten Hund gilt: sichtbar für die Person, die ihn angelegt hat.
@@ -151,13 +186,13 @@ export function darfSehen(rec) {
 }
 
 export function filtereDokumente(liste) {
-  if (istAusbilder() || !eingerichtet()) return liste;
+  if (istAusbilder()) return liste;
   return liste.filter(darfSehen);
 }
 
 /** Auswertungen: Ausbilder:innen immer, Hundeführer:innen nur wenn freigegeben. */
 export function darfAuswertungSehen() {
-  if (istAusbilder() || !eingerichtet()) return true;
+  if (istAusbilder()) return true;
   return teamEinstellung().eigenerStandSichtbar;
 }
 

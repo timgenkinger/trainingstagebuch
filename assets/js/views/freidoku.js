@@ -9,6 +9,7 @@
 import * as store from '../store.js';
 import { bestaetigungsKarte, bestaetigungKlick } from './bestaetigung.js';
 import * as S from '../schema.js';
+import * as R from '../rollen.js';
 import { esc, feld, textArea, karte, toast, frage, debounce, formatDatum } from '../ui.js';
 import { skizzeHtml, skizzeAktivieren } from '../skizze.js';
 import { kopfKarte, gelaendeKarte, wetterKarte, statusAbzeichen, abschlussKarte } from './bausteine.js';
@@ -45,8 +46,10 @@ export async function render(wurzel, params) {
     const letzte = store.freieDokus()[0] || store.suchen()[0];
     entwurf = {
       ...S.neueFreieDoku({
-        hundId: letzte?.hundId || store.hunde()[0]?.id,
-        hfId: letzte?.hfId || store.personen()[0]?.id,
+        // Vorauswahl: Hund und Hundeführer:in dieses Geräts,
+        // ersatzweise der zuletzt dokumentierte Stand.
+        hundId: R.standardHundId() || letzte?.hundId || R.meineHunde()[0]?.id,
+        hfId: R.standardHfId() || letzte?.hfId,
       }),
       id: store.uid(),
     };

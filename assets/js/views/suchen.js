@@ -37,6 +37,19 @@ function gefiltert() {
 }
 
 function html() {
+  if (!R.eingerichtet()) {
+    return `<div class="seite">${leer(
+      'Dieses Gerät ist noch niemandem zugeordnet. Wähle unter Einstellungen aus, wer damit arbeitet – danach erscheinen deine Hunde und deren Dokumentation.',
+      '<a class="btn btn--primaer" href="#/einstellungen">Zu den Einstellungen</a>'
+    )}</div>`;
+  }
+  if (!R.istAusbilder() && !R.meineHunde().length) {
+    return `<div class="seite">${leer(
+      'Dir ist noch kein Hund zugeordnet. Die Ausbildung stellt das unter Einstellungen ein.',
+      '<a class="btn btn--still" href="#/einstellungen">Einstellungen öffnen</a>'
+    )}</div>`;
+  }
+
   const alle = R.filtereDokumente(store.dokumente());
   const liste = gefiltert();
   const hunde = R.meineHunde();

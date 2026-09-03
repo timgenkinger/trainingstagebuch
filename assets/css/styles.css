@@ -1145,3 +1145,27 @@ span.wdh { cursor: default; }
 /* --- Passwortabfrage --- */
 .modal .input[type="password"] { margin-bottom: .5rem; }
 .modal__fehler { color: var(--rot-text); font-size: .85rem; margin: 0 0 .5rem; font-weight: 600; }
+
+/* --- Festes, nicht wählbares Feld (z.B. Hundeführer:in am eigenen Gerät) --- */
+.feld-fest {
+  min-height: var(--tap);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: .45rem .7rem;
+  background: var(--flaeche-2);
+  border: 1px dashed var(--rand-stark);
+  border-radius: var(--r);
+  font-size: .95rem;
+}
+.feld-fest small { color: var(--text-leise); font-size: .72rem; }
+
+/* --- Einstiegs-Hinweis --- */
+.hinweis-kasten {
+  border: 2px solid var(--marke);
+  background: var(--marke-blass);
+  border-radius: var(--r-gross);
+  padding: .9rem 1rem;
+}
+.hinweis-kasten strong { display: block; margin-bottom: .3rem; }
+.hinweis-kasten p { margin: 0; font-size: .88rem; }

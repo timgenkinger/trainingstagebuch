@@ -63,6 +63,13 @@ function html() {
   return `<div class="seite">
     <div class="seite__kopf"><h1>Einstellungen</h1></div>
 
+    ${!R.eingerichtet() ? `<div class="hinweis-kasten">
+      <strong>Erster Schritt: Wer arbeitet an diesem Gerät?</strong>
+      <p>Solange niemand zugeordnet ist, zeigt die App keine Hunde und keine Dokumentation.
+        Die Auswahl steht weiter unten unter „Dieses Gerät“. Neue Geräte starten immer als
+        Hundeführer:in; die Ausbilder-Rolle ist passwortgeschützt.</p>
+    </div>` : ''}
+
     ${karte('Online-Abgleich', `
       <div class="sync-box sync-box--${esc(s.zustand)}">
         <span class="punkt"></span>
