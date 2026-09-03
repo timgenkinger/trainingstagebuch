@@ -307,8 +307,29 @@ git add -A && git commit -m "Version 1.0.1" && git push
 Der GitHub-Workflow ergänzt beim Veröffentlichen automatisch die Buildnummer,
 sodass in der App z.B. `v1.0.1 (Build 14 · a1b2c3d)` steht.
 
-Läuft die App bei jemandem gerade, erscheint oben ein Balken **„Eine neue Version ist
-verfügbar“**. Ein Klick lädt sie neu – **die Daten bleiben dabei unangetastet.**
+Läuft die App bei jemandem gerade, erscheint oben ein Balken „Neue Version … verfügbar“
+mit beiden Versionsnummern. Ein Klick lädt sie neu – **die Daten bleiben dabei unangetastet.**
+
+### Wie die Aktualisierung abläuft
+
+Geprüft wird **bei jeder Rückkehr in den Vordergrund**, nicht nach Uhrzeit. Das ist wichtig für
+die zum Home-Bildschirm hinzugefügte iPhone-App: Sie wird beim Verlassen nur schlafen gelegt,
+Zeitgeber laufen dort nicht weiter.
+
+Drei Dinge müssen zusammenspielen, und jedes davon war einmal die Ursache eines Fehlers:
+
+* Der Service Worker wird mit `updateViaCache: 'none'` registriert. Sonst holt der Browser
+  `sw.js` aus dem HTTP-Cache (GitHub Pages liefert `max-age=600`) und bemerkt neue Fassungen nicht.
+* Beim Installieren lädt er seine Dateien mit `cache: 'reload'`. Sonst legt ein neuer Worker
+  die *alten* Dateien in seinen *neuen* Cache – die Übernahme sieht dann korrekt aus, die App
+  zeigt aber weiter die alte Fassung.
+* Unabhängig davon vergleicht die App die ausgelieferte `version.json` mit ihrer eingebauten
+  Version. Klemmt der Service Worker, meldet sie die neue Fassung trotzdem.
+
+Unter **Einstellungen → Version** steht der komplette Programmstand: installierte Version,
+Stand auf dem Server, Zustand des Offline-Speichers und Zeitpunkt der letzten Prüfung. Ganz
+unten lässt sich der Offline-Speicher zurücksetzen, falls doch einmal etwas klemmt – die Daten
+liegen in der Datenbank und bleiben davon unberührt.
 
 ---
 
