@@ -6,7 +6,7 @@
  * ein Update tauscht nur den Cache aus, nicht die Datenbank.
  */
 
-const VERSION = '1.7.2'; // wird von scripts/release.sh gepflegt
+const VERSION = '1.7.3'; // wird von scripts/release.sh gepflegt
 const CACHE = `rhd-app-${VERSION}`;
 
 const DATEIEN = [
@@ -46,7 +46,25 @@ const DATEIEN = [
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(DATEIEN)).catch((err) => console.warn('Cache unvollständig', err))
+    (async () => {
+      const c = await caches.open(CACHE);
+      // ENTSCHEIDEND: `cache: 'reload'` umgeht den HTTP-Cache des Browsers.
+      // Ohne das legt ein neuer Service Worker die ALTEN Dateien in seinen
+      // neuen Cache - GitHub Pages liefert mit max-age=600 -, und die App
+      // zeigt nach dem Update weiterhin die alte Fassung.
+      await Promise.all(
+        DATEIEN.map(async (pfad) => {
+          try {
+            const res = await fetch(new Request(pfad, { cache: 'reload' }));
+            if (res.ok) await c.put(pfad, res);
+          } catch (err) {
+            // Einzelne Ausfälle dürfen die Installation nicht verhindern,
+            // sonst bleibt die alte Fassung für immer stehen.
+            console.warn('nicht zwischengespeichert:', pfad, err);
+          }
+        })
+      );
+    })()
   );
 });
 
@@ -112,8 +130,10 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== location.origin) return;
 
   // Eigene Dateien: Cache zuerst, im Hintergrund auffrischen.
+  // Bewusst nur im Cache DIESER Fassung suchen: `caches.match` durchsucht alle
+  // Caches in Anlegereihenfolge und würde sonst den älteren Stand bevorzugen.
   e.respondWith(
-    caches.match(e.request).then((treffer) => {
+    caches.open(CACHE).then((c) => c.match(e.request)).then((treffer) => {
       const netz = fetch(e.request)
         .then((res) => {
           if (res.ok) {

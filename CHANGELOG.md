@@ -1,5 +1,19 @@
 # Änderungsprotokoll
 
+## 1.7.3 – 2026-09-03
+- **Sechste und entscheidende Ursache der iPhone-Update-Probleme gefunden:** Der
+  Service Worker fuellte seinen Cache beim Installieren mit `cache.addAll(...)`.
+  Diese Abrufe gehen durch den HTTP-Cache des Browsers - GitHub Pages liefert mit
+  `max-age=600`. Ein neuer Worker legte sich damit die ALTEN Dateien in seinen
+  neuen Cache: Uebernahme und Neuladen liefen sauber, die App zeigte danach
+  trotzdem die alte Fassung. Jetzt wird mit `cache: 'reload'` am HTTP-Cache
+  vorbei geladen.
+- Faellt eine einzelne Datei aus, bricht die Installation nicht mehr komplett ab -
+  sonst bliebe die alte Fassung dauerhaft stehen.
+- Die Cache-Suche greift nur noch auf den Cache der laufenden Fassung zu.
+  `caches.match` durchsucht alle Caches in Anlegereihenfolge und haette in der
+  Uebergangszeit den aelteren Stand bevorzugt.
+
 ## 1.7.2 – 2026-09-03
 - Nachweis der Update-Übernahme
 
