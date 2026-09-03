@@ -5,12 +5,23 @@ import * as sync from '../sync/index.js';
 import * as S from '../schema.js';
 import { ladeConfig, loescheLokaleConfig, speichereConfig, speichereToken, geraeteName, setzeGeraeteName, STANDARD_CONFIG } from '../config.js';
 import { RELEASE_DATE, BUILD, versionString } from '../version.js';
+import * as update from '../update.js';
 import { esc, karte, feld, textInput, toast, frage, download, relativeZeit, formatDatum, leer } from '../ui.js';
 
 let statusAbmelden = null;
+let updateAbmelden = null;
 
 export async function render(wurzel) {
   zeichne(wurzel);
+  // Auch die Versionsprüfung läuft asynchron – die Karte zieht nach.
+  updateAbmelden?.();
+  let letzterStand = null;
+  updateAbmelden = update.onUpdate((z) => {
+    const kennung = `${z.serverVersion}|${z.updateBereit}|${z.letzteRuefung}`;
+    if (kennung === letzterStand) return;
+    letzterStand = kennung;
+    if (document.getElementById('view')?.contains(wurzel.querySelector('.seite'))) zeichne(wurzel);
+  });
   // Der Abgleich meldet seinen Zustand asynchron – die Seite zieht nach.
   statusAbmelden?.();
   let letzter = null;
@@ -25,6 +36,8 @@ export async function render(wurzel) {
 export function verlassen() {
   statusAbmelden?.();
   statusAbmelden = null;
+  updateAbmelden?.();
+  updateAbmelden = null;
 }
 
 function zeichne(wurzel) {
@@ -134,11 +147,27 @@ function html() {
         <strong>${esc(versionString())}</strong>
         <span>Release ${esc(formatDatum(RELEASE_DATE))}${BUILD && BUILD !== 'lokal' ? ` · Build ${esc(BUILD)}` : ''}</span>
       </div>
+      <dl class="programmstand">
+        <dt>Installiert</dt><dd>${esc(update.zustand.laufendeVersion)}</dd>
+        <dt>Auf dem Server</dt><dd>${esc(update.zustand.serverVersion || 'noch nicht geprüft')}</dd>
+        <dt>Offline-Speicher</dt><dd data-sw-status>wird geprüft …</dd>
+        <dt>Zuletzt geprüft</dt><dd>${esc(update.zustand.letzteRuefung ? relativeZeit(update.zustand.letzteRuefung) : 'noch nie')}</dd>
+      </dl>
+      ${update.zustand.updateBereit
+        ? `<p class="abschluss__offen">Eine neue Fassung steht bereit.</p>
+           <button type="button" class="btn btn--primaer" data-update-uebernehmen>Jetzt aktualisieren</button>`
+        : ''}
       <div class="btn-zeile">
         <button type="button" class="btn btn--still" data-update-pruefen>Auf Update prüfen</button>
         <a class="btn btn--still" href="CHANGELOG.md" target="_blank" rel="noopener">Änderungsprotokoll</a>
       </div>
       <p class="karte__hint">Ein Update tauscht nur den Programmcode aus. Die Datenbank auf dem Gerät bleibt unberührt.</p>
+      <details class="notfall">
+        <summary>Aktualisierung klemmt trotzdem?</summary>
+        <p class="karte__hint">Setzt den Offline-Speicher zurück und lädt die App frisch vom Server.
+          Deine Daten bleiben unberührt – sie liegen in der Datenbank, nicht im Offline-Speicher.</p>
+        <button type="button" class="btn btn--gefahr-still" data-update-notfall>Offline-Speicher zurücksetzen</button>
+      </details>
     `)}
 
     ${karte('Gefahrenzone', `
@@ -290,13 +319,26 @@ function binde(box, wurzel) {
     }
 
     if (t.closest('[data-update-pruefen]')) {
-      const reg = await navigator.serviceWorker?.getRegistration();
-      if (!reg) {
-        toast('Kein Offline-Speicher aktiv (läuft die App über http://?).');
-        return;
+      toast('Prüfe …');
+      const z = await update.pruefe({ erzwingen: true });
+      zeichne(wurzel);
+      toast(
+        z.updateBereit
+          ? `Neue Fassung ${z.serverVersion || ''} steht bereit.`
+          : `Aktuell – installiert ist ${z.laufendeVersion}.`
+      );
+      return;
+    }
+
+    if (t.closest('[data-update-uebernehmen]')) {
+      await update.uebernehmenUndNeuLaden();
+      return;
+    }
+
+    if (t.closest('[data-update-notfall]')) {
+      if (await frage('Offline-Speicher zurücksetzen und App neu laden? Deine Daten bleiben erhalten.', { ok: 'Zurücksetzen' })) {
+        await update.notfallZuruecksetzen();
       }
-      await reg.update();
-      toast('Update-Prüfung läuft. Bei neuer Version erscheint ein Hinweis.');
       return;
     }
 
@@ -326,6 +368,19 @@ function binde(box, wurzel) {
       toast('Gerätename gespeichert.');
     }
   });
+
+  // Zustand des Offline-Speichers nachtragen – rein informativ, hilft bei der Ferndiagnose.
+  (async () => {
+    const el = box.querySelector('[data-sw-status]');
+    if (!el) return;
+    if (!('serviceWorker' in navigator)) { el.textContent = 'vom Browser nicht unterstützt'; return; }
+    const reg = await navigator.serviceWorker.getRegistration();
+    const caches_ = await caches.keys().catch(() => []);
+    const eigen = caches_.filter((c) => c.startsWith('rhd-app-'));
+    if (!reg) { el.textContent = 'nicht aktiv' + (location.protocol === 'http:' ? ' (nur über https)' : ''); return; }
+    el.textContent = `${reg.active ? 'aktiv' : 'inaktiv'}${reg.waiting ? ' · Update wartet' : ''}` +
+      (eigen.length ? ` · ${eigen.join(', ')}` : '');
+  })();
 
   const datei = box.querySelector('[data-import]');
   datei?.addEventListener('change', async () => {

@@ -6,7 +6,7 @@
  * ein Update tauscht nur den Cache aus, nicht die Datenbank.
  */
 
-const VERSION = '1.7.0'; // wird von scripts/release.sh gepflegt
+const VERSION = '1.7.1'; // wird von scripts/release.sh gepflegt
 const CACHE = `rhd-app-${VERSION}`;
 
 const DATEIEN = [
@@ -21,6 +21,7 @@ const DATEIEN = [
   './assets/js/config.js',
   './assets/js/helferbilder.js',
   './assets/js/idb.js',
+  './assets/js/update.js',
   './assets/js/schema.js',
   './assets/js/skizze.js',
   './assets/js/store.js',
@@ -70,6 +71,28 @@ self.addEventListener('fetch', (e) => {
 
   // Lebende Daten niemals aus dem Cache bedienen.
   if (url.hostname === 'api.github.com') return;
+
+  // Die Versionsdatei ist das Sicherheitsnetz der App-Aktualisierung und darf
+  // deshalb niemals aus dem Cache kommen.
+  if (url.origin === location.origin && url.pathname.endsWith('/version.json')) {
+    e.respondWith(fetch(e.request, { cache: 'no-store' }).catch(() => caches.match(e.request)));
+    return;
+  }
+
+  // Seitenaufrufe zuerst aus dem Netz. Klemmt der Service Worker einmal,
+  // liefert er dadurch nicht endlos die alte Seite aus.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request)
+        .then((res) => {
+          const kopie = res.clone();
+          caches.open(CACHE).then((c) => c.put('./index.html', kopie));
+          return res;
+        })
+        .catch(() => caches.match('./index.html').then((t) => t || caches.match('./')))
+    );
+    return;
+  }
   if (url.hostname.endsWith('googleapis.com') || url.hostname.endsWith('firebaseio.com')) return;
 
   // Firebase-SDK: erst Netz, dann Cache (damit es offline weiterhin lädt).

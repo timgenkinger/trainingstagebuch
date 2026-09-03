@@ -1084,3 +1084,17 @@ span.wdh { cursor: default; }
 .merkmal--offen { background: transparent; color: var(--rot-text); border: 1px dashed currentColor; }
 .stufe--auto { background: var(--marke-hell); border-color: var(--marke-hell); }
 .stufe--auto::after { content: "✓"; color: #16181b; font-size: .8rem; line-height: 1; }
+
+/* --- Programmstand in den Einstellungen --- */
+.programmstand {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .2rem .7rem;
+  margin: .6rem 0;
+  font-size: .82rem;
+}
+.programmstand dt { color: var(--text-leise); }
+.programmstand dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.notfall { margin-top: .8rem; border-top: 1px solid var(--rand); padding-top: .6rem; }
+.notfall summary { font-size: .84rem; color: var(--text-leise); cursor: pointer; }
+.notfall p { margin-top: .5rem; }

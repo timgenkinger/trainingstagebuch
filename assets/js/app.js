@@ -4,6 +4,7 @@ import * as store from './store.js';
 import * as sync from './sync/index.js';
 import { versionString, APP_NAME } from './version.js';
 import { esc } from './ui.js';
+import * as update from './update.js';
 
 import * as vSuchen from './views/suchen.js';
 import * as vEditor from './views/editor.js';
@@ -81,19 +82,8 @@ async function neuLaden(btn) {
   btn.classList.add('kopf-knopf--dreht');
   sichern();
   await new Promise((r) => setTimeout(r, 250)); // Schreibvorgang abwarten
-  try {
-    const reg = await navigator.serviceWorker?.getRegistration();
-    if (reg) {
-      await reg.update();
-      if (reg.waiting) {
-        reg.waiting.postMessage({ typ: 'UEBERNEHMEN' });
-        await new Promise((r) => setTimeout(r, 350));
-      }
-    }
-  } catch (e) {
-    console.warn('Update-Prüfung übersprungen:', e);
-  }
-  location.reload();
+  await update.pruefe({ erzwingen: true });
+  await update.uebernehmenUndNeuLaden();
 }
 
 function markiereTab(tab) {
@@ -124,35 +114,27 @@ function syncAnzeige() {
   });
 }
 
-/* ---------------- Service Worker ---------------- */
+/* ---------------- Programm-Aktualisierung ---------------- */
 
-async function serviceWorker() {
-  if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
-  try {
-    const reg = await navigator.serviceWorker.register('sw.js', { scope: './' });
-    reg.addEventListener('updatefound', () => {
-      const neu = reg.installing;
-      neu?.addEventListener('statechange', () => {
-        if (neu.state === 'installed' && navigator.serviceWorker.controller) zeigeUpdate(reg);
-      });
-    });
-    setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
-  } catch (e) {
-    console.warn('Service Worker nicht registriert:', e);
-  }
-}
-
-function zeigeUpdate(reg) {
+function updateAnzeige() {
   const bar = document.getElementById('update-bar');
-  if (!bar) return;
-  bar.hidden = false;
-  bar.querySelector('button').onclick = () => {
-    reg.waiting?.postMessage({ typ: 'UEBERNEHMEN' });
-    setTimeout(() => location.reload(), 300);
-  };
+  update.onUpdate((z) => {
+    if (!bar) return;
+    bar.hidden = !z.updateBereit;
+    const text = bar.querySelector('span');
+    if (text) {
+      text.textContent = z.serverVersion && z.serverVersion !== z.laufendeVersion
+        ? `Neue Version ${z.serverVersion} verfügbar (installiert: ${z.laufendeVersion}).`
+        : 'Eine neue Version ist verfügbar.';
+    }
+  });
+  bar?.querySelector('button')?.addEventListener('click', () => {
+    sichern();
+    update.uebernehmenUndNeuLaden();
+  });
 }
 
-/* ---------------- Start ---------------- */
+/* ---------------- Start ---------------- *//* ---------------- Start ---------------- */
 
 async function start() {
   document.getElementById('version-badge').textContent = versionString();
@@ -174,7 +156,8 @@ async function start() {
   });
 
   sync.starte();
-  serviceWorker();
+  updateAnzeige();
+  update.starte();
 
   // Editor-Eingaben auch beim Schließen des Tabs sichern.
   window.addEventListener('pagehide', sichern);

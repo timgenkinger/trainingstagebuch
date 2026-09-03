@@ -1,5 +1,27 @@
 # Änderungsprotokoll
 
+## 1.7.1 – 2026-09-03
+- **Fehler behoben: Die Aktualisierung der zum Home-Bildschirm hinzugefuegten
+  iPhone-App funktionierte nicht zuverlaessig.** Fuenf Ursachen:
+  1. Bei der Registrierung fehlte `updateViaCache: 'none'`. GitHub Pages liefert
+     sw.js mit `max-age=600`, der Browser bediente die Update-Pruefung also aus
+     dem HTTP-Cache und bemerkte neue Fassungen gar nicht.
+  2. Direkt nach `update()` wurde `registration.waiting` abgefragt - zu frueh,
+     der neue Worker ist dann meist noch `installing`. Die Uebernahme wurde
+     deshalb uebersprungen und das Neuladen brachte wieder die alte Fassung.
+  3. Statt auf den Reglerwechsel zu warten, wurden 350 ms geraten.
+  4. Die Pruefung lief per Stundentakt. Eine Standalone-App wird beim Verlassen
+     schlafen gelegt, Zeitgeber laufen nicht weiter - gepruefft wird jetzt bei
+     jeder Rueckkehr in den Vordergrund.
+  5. `location.reload()` konnte das Dokument aus dem Cache holen.
+- Sicherheitsnetz: Die ausgelieferte version.json wird ohne Cache abgeglichen.
+  Klemmt der Service Worker, meldet die App die neue Fassung trotzdem.
+- Seitenaufrufe holt der Service Worker jetzt zuerst aus dem Netz, damit er im
+  Klemmfall nicht endlos die alte Seite ausliefert.
+- Einstellungen zeigen den Programmstand (installiert, auf dem Server, Zustand
+  des Offline-Speichers, letzte Pruefung) und bieten als letzte Moeglichkeit ein
+  Zuruecksetzen des Offline-Speichers - ohne die Daten anzutasten.
+
 ## 1.7.0 – 2026-09-02
 - **Helfer:in-Bilder speisen sich jetzt aus den Suchen.** Ein bei einer Versteckperson
   gewaehltes Bild gilt ab der abgeschlossenen Suche als kennengelernt - kein zusaetzliches
