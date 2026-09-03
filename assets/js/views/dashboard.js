@@ -396,7 +396,7 @@ function bilderBlock(daten) {
   const top = Object.entries(imZeitraum)
     .sort((a, c) => c[1] - a[1])
     .slice(0, 8)
-    .map(([id, n]) => ({ label: S.BILDER_BY_ID[id]?.label || id, wert: n }));
+    .map(([id, n]) => ({ label: HB.bilderById()[id]?.label || id, wert: n }));
 
   return karte(
     'Helfer:in-Bilder',

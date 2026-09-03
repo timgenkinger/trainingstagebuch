@@ -3,7 +3,7 @@
 import * as store from '../store.js';
 import * as R from '../rollen.js';
 import * as S from '../schema.js';
-import { esc, karte, leer, formatDatum } from '../ui.js';
+import { esc, karte, leer, formatDatum, toast, frage } from '../ui.js';
 import { stapel } from '../charts.js';
 import * as HB from '../helferbilder.js';
 
@@ -30,6 +30,7 @@ function html() {
   }
 
   const bil = HB.bilanz(zustand.hundId);
+  const eigene = HB.alleBilder().filter((b) => b.eigen);
 
   const segmente = [
     { label: 'gemeistert', wert: bil.stufen[4], farbe: '#3c8a4f' },
@@ -39,7 +40,7 @@ function html() {
     { label: 'offen', wert: bil.stufen[0], farbe: 'var(--rand)' },
   ];
 
-  let liste = S.HELFER_BILDER;
+  let liste = HB.alleBilder();
   if (zustand.nurWichtig) liste = liste.filter((x) => x.key);
   if (zustand.nurUngeuebt) liste = liste.filter((x) => !bil.stand[x.id].einsatz);
   if (zustand.nurOffen) liste = liste.filter((x) => bil.stand[x.id].stufe < (x.keineAnzeige ? 1 : 4));
@@ -84,12 +85,28 @@ function html() {
       { hint: 'Ein Bild gilt als kennengelernt, sobald es in einer abgeschlossenen Suche als Versteckperson vorkam. Die Stufen 2 bis 4 bleiben deine Einschätzung.' }
     )}
 
+    ${karte('Eigenes Helfer:in-Bild anlegen', `
+      <p class="karte__hint">Bilder, die in eurer Staffel vorkommen, aber nicht in der Heftliste stehen.
+        Sie stehen anschließend in jeder Sucherfassung zur Auswahl und zählen im Fortschritt mit.</p>
+      <div class="btn-zeile">
+        <input class="input" placeholder="z.B. Person auf Hochsitz" data-neu-bild maxlength="80">
+        <label class="schalter schalter--knapp">
+          <input type="checkbox" data-neu-bild-wichtig>
+          <span>als wichtig markieren</span>
+        </label>
+        <button type="button" class="btn btn--primaer" data-add-bild>Hinzufügen</button>
+      </div>
+      ${eigene.length ? `<p class="karte__hint">${eigene.length} eigene(s) Bild(er) im Katalog –
+        in der Liste unten mit <em class="merkmal merkmal--eigen">eigenes</em> gekennzeichnet.</p>` : ''}
+    `)}
+
     <div class="bilder-liste">
       <div class="bilder-kopf">
         <span>Helfer:in-Bild</span>
         <span class="bild-zeile__stufen">
           ${S.BILD_STUFEN.map((s) => `<b title="${esc(s.label)}">${s.level}</b>`).join('')}
         </span>
+        <span></span>
       </div>
       ${liste.map((x) => zeile(x, bil.stand[x.id])).join('')}
       ${!liste.length ? leer('Keine Bilder passen zum Filter.') : ''}
@@ -107,6 +124,7 @@ function zeile(bild, e) {
       <span>${esc(bild.label)}</span>
       <small>
         ${bild.key ? '<em class="merkmal">wichtig</em>' : ''}
+        ${bild.eigen ? '<em class="merkmal merkmal--eigen">eigenes</em>' : ''}
         ${bild.keineAnzeige ? '<em class="merkmal merkmal--grau">korrekt = keine Anzeige</em>' : ''}
         ${ein
           ? `<em class="merkmal merkmal--suche">${ein.anzahl}× in Suchen</em>
@@ -129,6 +147,11 @@ function zeile(bild, e) {
         })
         .join('')}
     </div>
+    <span class="bild-zeile__weg">${bild.eigen
+      ? `<button type="button" class="btn btn--mini btn--gefahr-still"
+          data-bild-weg="${esc(bild.id)}" aria-label="${esc(bild.label)} entfernen"
+          title="Eigenes Bild entfernen">×</button>`
+      : ''}</span>
   </div>`;
 }
 
@@ -148,6 +171,44 @@ function binde(box, wurzel) {
       zeichne(wurzel);
       return;
     }
+    if (e.target.closest('[data-add-bild]')) {
+      const feld = box.querySelector('[data-neu-bild]');
+      const name = feld.value.trim();
+      if (!name) {
+        toast('Bitte einen Namen eingeben.', 'fehler');
+        return;
+      }
+      if (HB.alleBilder().some((x) => x.label.toLowerCase() === name.toLowerCase())) {
+        toast('Ein Bild mit diesem Namen gibt es schon.', 'fehler');
+        return;
+      }
+      await store.put({
+        type: HB.EIGENES_BILD,
+        label: name,
+        key: !!box.querySelector('[data-neu-bild-wichtig]')?.checked,
+      });
+      toast(`„${name}“ steht ab sofort in der Sucherfassung zur Auswahl.`);
+      zeichne(wurzel);
+      return;
+    }
+
+    const weg = e.target.closest('[data-bild-weg]');
+    if (weg) {
+      const id = weg.dataset.bildWeg;
+      const name = HB.bilderById()[id]?.label || 'Bild';
+      const genutzt = HB.verwendungen(id);
+      if (genutzt) {
+        toast(`„${name}“ steht in ${genutzt} Suche(n) und lässt sich deshalb nicht entfernen.`, 'fehler');
+        return;
+      }
+      if (await frage(`Eigenes Bild „${name}“ entfernen?`, { ok: 'Entfernen', gefahr: true })) {
+        await store.entferne(id);
+        toast('Bild entfernt.');
+        zeichne(wurzel);
+      }
+      return;
+    }
+
     const b = e.target.closest('[data-bild]');
     if (!b) return;
     const bildId = b.dataset.bild;

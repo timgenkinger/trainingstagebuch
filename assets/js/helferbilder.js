@@ -17,6 +17,33 @@ import * as R from './rollen.js';
 /** Stufe, die sich allein aus dem Einsatz in einer Suche ergibt. */
 export const STUFE_AUS_SUCHE = 1;
 
+/** Datensatztyp der selbst angelegten Bilder. Sie werden mit abgeglichen. */
+export const EIGENES_BILD = 'eigenesbild';
+
+/**
+ * Katalog der Vorlage plus der selbst angelegten Bilder.
+ * Die Zusammenführung liegt hier und nicht im Schema, weil das Schema
+ * bewusst nichts über den Datenspeicher weiß (store.js baut darauf auf).
+ */
+export function alleBilder() {
+  const eigene = store
+    .alle(EIGENES_BILD)
+    .map((b) => ({ id: b.id, label: b.label || 'Ohne Namen', key: !!b.key, eigen: true }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'de'));
+  return [...HELFER_BILDER, ...eigene];
+}
+
+export function bilderById() {
+  return Object.fromEntries(alleBilder().map((b) => [b.id, b]));
+}
+
+/** Wie oft kommt ein Bild in Suchen vor? Schützt vor dem Löschen benutzter Bilder. */
+export function verwendungen(bildId) {
+  return store
+    .suchen()
+    .reduce((n, s) => n + (s.helfer || []).filter((h) => h.bildId === bildId).length, 0);
+}
+
 /**
  * @returns {Object} bildId -> { anzahl, gefunden, nichtGefunden, ersteAm, letzteAm, orte:Set }
  */
@@ -52,7 +79,7 @@ export function stand(hundId) {
   const eins = einsaetze(hundId);
   const handisch = store.bildFortschritt(hundId);
   const out = {};
-  for (const b of HELFER_BILDER) {
+  for (const b of alleBilder()) {
     const vonHand = handisch[b.id]?.level || 0;
     const ausSuche = eins[b.id] ? STUFE_AUS_SUCHE : 0;
     out[b.id] = {
@@ -68,12 +95,13 @@ export function stand(hundId) {
 /** Kennzahlen fuer Uebersicht und Dashboard. */
 export function bilanz(hundId) {
   const s = stand(hundId);
+  const katalog = alleBilder();
   const stufen = [0, 0, 0, 0, 0];
   let ausSuchen = 0;
   let nieEingesetzt = [];
   let wichtigOffen = [];
 
-  for (const b of HELFER_BILDER) {
+  for (const b of katalog) {
     const e = s[b.id];
     stufen[e.stufe]++;
     if (e.einsatz) ausSuchen++;
@@ -85,11 +113,11 @@ export function bilanz(hundId) {
   return {
     stand: s,
     stufen,
-    gesamt: HELFER_BILDER.length,
+    gesamt: katalog.length,
     ausSuchen,
     nieEingesetzt,
     wichtigOffen,
     gemeistert: stufen[4],
-    begonnen: HELFER_BILDER.length - stufen[0],
+    begonnen: katalog.length - stufen[0],
   };
 }

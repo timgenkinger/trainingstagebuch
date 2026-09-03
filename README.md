@@ -74,10 +74,17 @@ Zusätzlich: eigene Kriterien pro Bereich (die leeren Zeilen im Heft), Duplizier
 * Fortschritt bei den Helfer:in-Bildern
 * Filter nach Hund und Zeitraum
 
-**Helfer:in-Bilder** – alle 39 Bilder der Heftliste als Fortschrittskatalog je Hund,
+**Helfer:in-Bilder** – die 39 Bilder der Heftliste plus selbst angelegte, als Fortschrittskatalog je Hund,
 vier Stufen (kennengelernt / kurze Anzeige / längere Anzeige / gemeistert). Die im Heft
 fett gedruckten Bilder sind als **wichtig** markiert. Bilder, bei denen korrektes Verhalten
 *keine* Anzeige ist (Attrappen), haben nur die erste Stufe.
+
+**Eigene Bilder ergänzen.** Kommt in eurer Staffel ein Helfer:in-Bild vor, das nicht in der
+Heftliste steht, lässt es sich unter **Helfer:in-Bilder** anlegen – wahlweise gleich als
+*wichtig* markiert. Es steht danach in jeder Sucherfassung zur Auswahl (dort mit dem Zusatz
+*eigenes*), zählt im Fortschritt mit und wird im Team abgeglichen. Entfernen geht nur, solange
+das Bild in keiner Suche vorkommt; sonst würde ein bestehendes Protokoll auf einen Namen
+zeigen, den es nicht mehr gibt.
 
 **Die Übersicht speist sich aus den Suchen.** Wird bei einer Versteckperson ein
 Helfer:in-Bild gewählt, gilt dieses Bild ab der abgeschlossenen Suche als **kennengelernt** –

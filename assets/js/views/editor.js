@@ -3,6 +3,7 @@
 import * as store from '../store.js';
 import { bestaetigungsKarte, bestaetigungKlick } from './bestaetigung.js';
 import * as S from '../schema.js';
+import * as HB from '../helferbilder.js';
 import * as R from '../rollen.js';
 import {
   esc, feld, textInput, textArea, select, karte, chipGruppe, skala, skalaZeile,
@@ -261,7 +262,7 @@ function helferTabelle() {
         ${suche.helfer.length > 1 ? `<button type="button" class="btn btn--mini btn--gefahr-still" data-helfer-weg="${i}">×</button>` : ''}
       </div>
       <div class="raster raster--3">
-        ${feld('Helfer:in-Bild', select(`helfer.${i}.bildId`, h.bildId, S.HELFER_BILDER.map((b) => ({ id: b.id, label: b.label })), '– frei –'))}
+        ${feld('Helfer:in-Bild', select(`helfer.${i}.bildId`, h.bildId, HB.alleBilder().map((b) => ({ id: b.id, label: b.eigen ? b.label + ' (eigenes)' : b.label })), '– frei –'))}
         ${feld('Suchzeit bis (min)', textInput(`helfer.${i}.zeitBisMin`, h.zeitBisMin, { type: 'number', inputmode: 'decimal', min: 0, step: 0.5 }))}
         ${feld('Radius zur HF (m)', textInput(`helfer.${i}.radiusM`, h.radiusM, { type: 'number', inputmode: 'numeric', min: 0, step: 1 }))}
       </div>

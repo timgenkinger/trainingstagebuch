@@ -13,6 +13,7 @@
   --marke-dunkel: #b3040f;
   --marke-text: #ffffff;
   --blau: #1d6fb8;
+  --blau-flaeche: #1d6fb8; /* Fläche hinter weißer Schrift – bleibt in beiden Modi kräftig */
   --rot: #c0392b;       /* Fläche hinter weißer Schrift */
   --rot-text: #b8352a;  /* Schrift auf dem Seitengrund */
   --orange: #c2761b;
@@ -52,6 +53,7 @@
     --marke-text: #ffffff;
     --rot-text: #f2705f;
     --blau: #6fa8e0;
+    --blau-flaeche: #1d6fb8;
     --schatten: 0 1px 2px rgba(0, 0, 0, .4), 0 4px 14px rgba(0, 0, 0, .25);
   }
 }
@@ -561,7 +563,7 @@ select.input { background-image: none; padding-right: .7rem; }
 }
 .bilder-kopf {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr max-content 28px;
   gap: .5rem;
   align-items: center;
   padding: .5rem .8rem;
@@ -1080,7 +1082,7 @@ span.wdh { cursor: default; }
 
 /* --- Helfer:in-Bilder: Herkunft der Angabe sichtbar machen --- */
 .bild-zeile--ungeuebt .bild-zeile__label > span { color: var(--text-leise); }
-.merkmal--suche { background: var(--blau); color: #fff; border: none; }
+.merkmal--suche { background: var(--blau-flaeche); color: #fff; border: none; }
 .merkmal--offen { background: transparent; color: var(--rot-text); border: 1px dashed currentColor; }
 .stufe--auto { background: var(--marke-hell); border-color: var(--marke-hell); }
 .stufe--auto::after { content: "✓"; color: #16181b; font-size: .8rem; line-height: 1; }
@@ -1212,3 +1214,10 @@ span.wdh { cursor: default; }
 .zuordnung__tag button:hover { background: color-mix(in srgb, var(--marke) 20%, transparent); }
 .zuordnung__auswahl { max-width: 22rem; }
 .zuordnung__fertig { font-size: .76rem; color: var(--text-leise); }
+
+/* --- Selbst angelegte Helfer:in-Bilder --- */
+.merkmal--eigen { background: var(--blau-flaeche); color: #fff; border: none; }
+.bild-zeile { grid-template-columns: 1fr max-content 28px; }
+.bild-zeile__weg { display: grid; place-items: center; }
+.schalter--knapp { font-size: .82rem; white-space: nowrap; }
+.schalter--knapp input { width: 18px; height: 18px; }

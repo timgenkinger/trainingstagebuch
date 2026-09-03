@@ -1,5 +1,16 @@
 # Änderungsprotokoll
 
+## 1.10.0 – 2026-09-03
+- **Eigene Helfer:in-Bilder** lassen sich in der Uebersicht anlegen, wahlweise gleich als
+  wichtig markiert. Sie stehen danach in jeder Sucherfassung zur Auswahl (mit dem Zusatz
+  „eigenes“), zaehlen im Fortschritt mit und werden im Team abgeglichen.
+- Entfernen ist nur moeglich, solange ein Bild in keiner Suche vorkommt – sonst zeigte ein
+  bestehendes Protokoll auf einen Namen, den es nicht mehr gibt. Doppelte Namen werden
+  abgewiesen.
+- Kontrast im Dunkelmodus korrigiert: Die blauen Marken nutzten eine Farbe, die dort als
+  Schriftfarbe aufgehellt ist (2,51:1 mit weisser Schrift). Fuell- und Schriftrolle sind jetzt
+  auch beim Blau getrennt (5,2:1).
+
 ## 1.9.2 – 2026-09-03
 - **Handbuch als PDF** (11 Seiten): Bedienungsanleitung fuer Hundefuehrer:innen und
   Ausbildung, im Hausdesign. Verlinkt in der App unter Einstellungen – Version.
