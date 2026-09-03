@@ -14,6 +14,9 @@ Die Gestaltung folgt den Hausfarben des Bayerischen Roten Kreuzes.
 
 ---
 
+**[Handbuch als PDF](Handbuch-Trainingstagebuch.pdf)** – Bedienungsanleitung für Hundeführer:innen
+und Ausbildung. Neu erzeugen mit `python3 scripts/handbuch.py` (benötigt `reportlab`).
+
 ## Inhalt
 
 1. [Funktionsumfang](#funktionsumfang)
@@ -473,6 +476,7 @@ assets/js/
     einstellungen.js       Sync, Stammdaten, Sicherung, Version
 
 scripts/release.sh         vergibt eine neue Versionsnummer
+scripts/handbuch.py        erzeugt das Handbuch als PDF
 scripts/dev-server.py      lokaler Testserver
 .github/workflows/deploy.yml   Veröffentlichung auf GitHub Pages
 ```

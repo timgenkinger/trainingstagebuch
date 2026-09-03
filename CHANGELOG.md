@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 1.9.2 – 2026-09-03
+- **Handbuch als PDF** (11 Seiten): Bedienungsanleitung fuer Hundefuehrer:innen und
+  Ausbildung, im Hausdesign. Verlinkt in der App unter Einstellungen – Version.
+- Erzeugt wird es aus `scripts/handbuch.py` und traegt automatisch die Versionsnummer
+  aus `version.json`; nach Aenderungen laesst es sich neu erzeugen.
+
 ## 1.9.1 – 2026-09-03
 - Die Zuordnung Hundefuehrer:in → Hund erfolgt jetzt ueber ein **Auswahlmenü** statt einer
   Liste aller Namen; angeboten werden nur die noch nicht zugeordneten Personen.

@@ -205,6 +205,7 @@ function html() {
         : ''}
       <div class="btn-zeile">
         <button type="button" class="btn btn--still" data-update-pruefen>Auf Update prüfen</button>
+        <a class="btn btn--still" href="Handbuch-Trainingstagebuch.pdf" target="_blank" rel="noopener">Handbuch (PDF)</a>
         <a class="btn btn--still" href="CHANGELOG.md" target="_blank" rel="noopener">Änderungsprotokoll</a>
       </div>
       <p class="karte__hint">Ein Update tauscht nur den Programmcode aus. Die Datenbank auf dem Gerät bleibt unberührt.</p>
