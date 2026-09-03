@@ -1,5 +1,8 @@
 # Änderungsprotokoll
 
+## 1.7.2 – 2026-09-03
+- Nachweis der Update-Übernahme
+
 ## 1.7.1 – 2026-09-03
 - **Fehler behoben: Die Aktualisierung der zum Home-Bildschirm hinzugefuegten
   iPhone-App funktionierte nicht zuverlaessig.** Fuenf Ursachen:
