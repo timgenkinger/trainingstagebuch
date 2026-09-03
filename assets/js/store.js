@@ -106,7 +106,9 @@ export function dokumente() {
 }
 
 export function hunde() {
-  return alle('hund').sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
+  return alle('hund')
+    .map((h) => ({ ...h, hfIds: h.hfIds || [] }))
+    .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
 }
 
 export function personen() {

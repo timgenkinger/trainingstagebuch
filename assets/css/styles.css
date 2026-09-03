@@ -121,7 +121,7 @@ a { color: var(--marke-dunkel); }
   font-size: .75rem;
   padding: .3rem .6rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, .2);
+  background: rgba(0, 0, 0, .2);
   border: 1px solid rgba(255, 255, 255, .55);
   color: #fff;
   text-decoration: none;
@@ -940,11 +940,11 @@ code {
   padding: 0;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, .55);
-  background: rgba(255, 255, 255, .2);
+  background: rgba(0, 0, 0, .2);
   color: #fff;
   cursor: pointer;
 }
-.kopf-knopf:hover { background: rgba(255, 255, 255, .34); }
+.kopf-knopf:hover { background: rgba(0, 0, 0, .34); }
 .kopf-knopf svg { width: 19px; height: 19px; }
 .kopf-knopf--dreht { pointer-events: none; }
 .kopf-knopf--dreht svg { animation: dreh .7s linear infinite; }
@@ -1098,3 +1098,46 @@ span.wdh { cursor: default; }
 .notfall { margin-top: .8rem; border-top: 1px solid var(--rand); padding-top: .6rem; }
 .notfall summary { font-size: .84rem; color: var(--text-leise); cursor: pointer; }
 .notfall p { margin-top: .5rem; }
+
+/* ==========================================================================
+   Rollen und Bestätigung
+   ========================================================================== */
+
+.rollen-abz {
+  font-size: .72rem;
+  font-weight: 650;
+  padding: .25rem .55rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .2);
+  border: 1px solid rgba(255, 255, 255, .55);
+  color: #fff;
+  white-space: nowrap;
+  max-width: 9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rollen-abz--ausbilder { background: #fff; color: #b3040f; border-color: #fff; }
+
+.abz--bestaetigt { background: #dff0e3; color: #1f5c33; border: 1px solid #9ecdae; }
+.abz--offen-best { background: #fff3d4; color: #7a5300; border: 1px solid #e8c877; }
+@media (prefers-color-scheme: dark) {
+  .abz--bestaetigt { background: #16301f; color: #8fd8a6; border-color: #2f5c3d; }
+  .abz--offen-best { background: #3a2f12; color: #f0cf7d; border-color: #6b5620; }
+}
+
+.karte--bestaetigt { border-color: #9ecdae; background: color-mix(in srgb, #dff0e3 45%, var(--flaeche)); }
+.karte--bestaetigen { border-color: var(--marke); border-width: 2px; }
+.karte--wartet { border-style: dashed; }
+.bestaetigung__bemerkung {
+  font-style: italic;
+  color: var(--text-leise);
+  border-left: 3px solid var(--rand-stark);
+  padding-left: .7rem;
+  margin: .5rem 0;
+}
+
+.stamm--hund { flex-direction: column; align-items: stretch; gap: .35rem; padding-bottom: .5rem; border-bottom: 1px solid var(--rand); }
+.stamm__zeile { display: flex; gap: .5rem; align-items: center; }
+.stamm__zeile .input { flex: 1; }
+.chips--schlank { gap: .25rem; }
+.stamm__warnung { font-size: .74rem; color: var(--rot-text); }

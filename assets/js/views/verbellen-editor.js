@@ -8,6 +8,7 @@
  */
 
 import * as store from '../store.js';
+import { bestaetigungsKarte, bestaetigungKlick } from './bestaetigung.js';
 import * as S from '../schema.js';
 import * as V from '../verbellen.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
@@ -128,6 +129,8 @@ function html() {
     ${karte('Notizen zur Sitzung', textArea('notizen', sitzung.notizen, {
       rows: 5, placeholder: 'Was lief gut, wo hakt es, was nimmst du dir vor?',
     }))}
+
+    <div data-bestaetigung>${bestaetigungsKarte(sitzung)}</div>
 
     <div data-abschluss>${karteFuerAbschluss()}</div>
 
@@ -252,6 +255,8 @@ function binde(wurzel) {
   });
 
   wurzel.addEventListener('click', async (e) => {
+    if (await bestaetigungKlick(e, sitzung, () => neuZeichnenBestaetigung())) return;
+
     const chip = e.target.closest('[data-chip]');
     if (chip) {
       const arr = new Set(sitzung[chip.dataset.chip] || []);
@@ -404,4 +409,10 @@ function stufeWaehlen() {
       };
     });
   });
+}
+
+/** Nur den Bestätigungsbereich neu zeichnen. */
+function neuZeichnenBestaetigung() {
+  const b = document.querySelector('[data-bestaetigung]');
+  if (b) b.innerHTML = bestaetigungsKarte(sitzung);
 }

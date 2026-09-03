@@ -5,6 +5,7 @@ import * as sync from './sync/index.js';
 import { versionString, APP_NAME } from './version.js';
 import { esc } from './ui.js';
 import * as update from './update.js';
+import * as R from './rollen.js';
 
 import * as vSuchen from './views/suchen.js';
 import * as vEditor from './views/editor.js';
@@ -17,7 +18,8 @@ import * as vEinstellungen from './views/einstellungen.js';
 import * as vEinrichtung from './views/einrichtung.js';
 
 const ROUTEN = [
-  { muster: /^#\/suchen$/, view: vSuchen, tab: 'suchen' },
+  { muster: /^#\/suchen$/, view: vSuchen, tab: 'suchen', params: () => ({ nurUnbestaetigt: false }) },
+  { muster: /^#\/bestaetigungen$/, view: vSuchen, tab: 'suchen', params: () => ({ nurUnbestaetigt: true }) },
   { muster: /^#\/suche\/neu$/, view: vEditor, tab: 'suchen', params: () => ({}) },
   { muster: /^#\/suche\/(.+)$/, view: vEditor, tab: 'suchen', params: (m) => ({ id: m[1] }) },
   { muster: /^#\/doku\/neu$/, view: vFreidoku, tab: 'suchen', params: () => ({}) },
@@ -37,6 +39,9 @@ let aktuelleView = null;
  * @param {boolean} navigiert  true = echter Seitenwechsel (dann nach oben scrollen),
  *                             false = stille Auffrischung, z.B. weil neue Daten eintrafen.
  */
+/** Ansichten, die nur mit Auswertungsrecht offenstehen. */
+const NUR_AUSWERTUNG = new Set(['dashboard', 'verbellen', 'bilder']);
+
 async function route(navigiert = true) {
   const hash = location.hash || '#/suchen';
   const treffer = ROUTEN.map((r) => ({ r, m: hash.match(r.muster) })).find((x) => x.m);
@@ -52,6 +57,20 @@ async function route(navigiert = true) {
   if (aktuelleView === vVerbellenEditor && treffer.r.view !== vVerbellenEditor) vVerbellenEditor.flushEditor();
   // Laufende Abonnements der verlassenen Ansicht beenden.
   if (aktuelleView && aktuelleView !== treffer.r.view) aktuelleView.verlassen?.();
+
+  // Zugriff auf die Auswertungen prüfen, bevor die Ansicht gebaut wird.
+  if (NUR_AUSWERTUNG.has(treffer.r.tab) && !R.darfAuswertungSehen()) {
+    aktuelleView = null;
+    markiereTab('');
+    document.getElementById('view').innerHTML = `<div class="seite"><div class="leer">
+      <p>Diese Auswertung ist der Ausbildung vorbehalten.</p>
+      <p class="karte__hint">Wenn du sie für deine eigenen Hunde brauchst, kann die Ausbildung
+        das unter Einstellungen freigeben.</p>
+      <a class="btn btn--primaer" href="#/suchen">Zur Dokumentation</a>
+    </div></div>`;
+    aktualisiereNavigation();
+    return;
+  }
 
   aktuelleView = treffer.r.view;
   const view = document.getElementById('view');
@@ -84,6 +103,21 @@ async function neuLaden(btn) {
   await new Promise((r) => setTimeout(r, 250)); // Schreibvorgang abwarten
   await update.pruefe({ erzwingen: true });
   await update.uebernehmenUndNeuLaden();
+}
+
+/** Nicht zugängliche Reiter ausblenden statt ins Leere zeigen zu lassen. */
+function aktualisiereNavigation() {
+  const erlaubt = R.darfAuswertungSehen();
+  document.querySelectorAll('[data-tab]').forEach((a) => {
+    if (NUR_AUSWERTUNG.has(a.dataset.tab)) a.hidden = !erlaubt;
+  });
+  const rolle = document.getElementById('rollen-abzeichen');
+  if (rolle) {
+    const p = R.meinePerson();
+    rolle.hidden = !R.eingerichtet();
+    rolle.textContent = R.istAusbilder() ? 'Ausbildung' : (p?.name || '');
+    rolle.className = 'rollen-abz' + (R.istAusbilder() ? ' rollen-abz--ausbilder' : '');
+  }
 }
 
 function markiereTab(tab) {
@@ -144,6 +178,7 @@ async function start() {
   syncAnzeige();
   document.getElementById('neu-laden')?.addEventListener('click', (e) => neuLaden(e.currentTarget));
   window.addEventListener('hashchange', () => route(true));
+  aktualisiereNavigation();
   await route();
 
   // Listenansichten aktualisieren, wenn extern Daten eintreffen.
@@ -152,7 +187,10 @@ async function start() {
     // Masken mit Eingaben niemals unter den Fingern neu zeichnen
     if ([vEditor, vFreidoku, vVerbellenEditor].includes(aktuelleView)) return;
     clearTimeout(timer);
-    timer = setTimeout(() => route(false), 200);
+    timer = setTimeout(() => {
+      aktualisiereNavigation();
+      route(false);
+    }, 200);
   });
 
   sync.starte();

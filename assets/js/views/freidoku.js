@@ -7,6 +7,7 @@
  */
 
 import * as store from '../store.js';
+import { bestaetigungsKarte, bestaetigungKlick } from './bestaetigung.js';
 import * as S from '../schema.js';
 import { esc, feld, textArea, karte, toast, frage, debounce, formatDatum } from '../ui.js';
 import { skizzeHtml, skizzeAktivieren } from '../skizze.js';
@@ -120,6 +121,8 @@ function html() {
       placeholder: 'Was wurde geübt, was ist aufgefallen, was nimmst du mit?',
     })))}
 
+    <div data-bestaetigung>${bestaetigungsKarte(doku)}</div>
+
     <div data-abschluss>${karteFuerAbschluss()}</div>
 
     <div class="editor__fuss">
@@ -158,6 +161,8 @@ function binde(wurzel) {
   });
 
   wurzel.addEventListener('click', async (e) => {
+    if (await bestaetigungKlick(e, doku, () => neuZeichnenBestaetigung())) return;
+
     const chip = e.target.closest('[data-chip]');
     if (chip) {
       const arr = new Set(doku[chip.dataset.chip] || []);
@@ -207,4 +212,10 @@ function binde(wurzel) {
       }
     }
   });
+}
+
+/** Nur den Bestätigungsbereich neu zeichnen. */
+function neuZeichnenBestaetigung() {
+  const b = document.querySelector('[data-bestaetigung]');
+  if (b) b.innerHTML = bestaetigungsKarte(doku);
 }

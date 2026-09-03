@@ -1,6 +1,7 @@
 /** Helfer:in-Bilder – Fortschrittskatalog je Hund (4 Stufen wie im Heft). */
 
 import * as store from '../store.js';
+import * as R from '../rollen.js';
 import * as S from '../schema.js';
 import { esc, karte, leer, formatDatum } from '../ui.js';
 import { stapel } from '../charts.js';
@@ -9,7 +10,7 @@ import * as HB from '../helferbilder.js';
 const zustand = { hundId: '', nurOffen: false, nurWichtig: false, nurUngeuebt: false };
 
 export async function render(wurzel) {
-  const hunde = store.hunde();
+  const hunde = R.meineHunde();
   if (!zustand.hundId && hunde.length) zustand.hundId = hunde[0].id;
   zeichne(wurzel);
 }
@@ -20,7 +21,7 @@ function zeichne(wurzel) {
 }
 
 function html() {
-  const hunde = store.hunde();
+  const hunde = R.meineHunde();
   if (!hunde.length) {
     return `<div class="seite">${leer(
       'Lege zuerst einen Hund an – der Fortschritt bei den Helfer:in-Bildern wird je Hund geführt.',
@@ -53,7 +54,7 @@ function html() {
 
     <div class="filterleiste">
       <select class="input" data-f="hundId">
-        ${store.hunde().map((h) => `<option value="${esc(h.id)}"${zustand.hundId === h.id ? ' selected' : ''}>${esc(h.name)}</option>`).join('')}
+        ${R.meineHunde().map((h) => `<option value="${esc(h.id)}"${zustand.hundId === h.id ? ' selected' : ''}>${esc(h.name)}</option>`).join('')}
       </select>
       <button type="button" class="chip${zustand.nurWichtig ? ' chip--an' : ''}" data-t="nurWichtig">nur wichtige</button>
       <button type="button" class="chip${zustand.nurOffen ? ' chip--an' : ''}" data-t="nurOffen">nur offene</button>

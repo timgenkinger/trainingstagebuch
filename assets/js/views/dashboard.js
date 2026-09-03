@@ -1,6 +1,7 @@
 /** Auswertung aller Suchen – ersetzt die "Übersichtsgraphen vorne im Heft". */
 
 import * as store from '../store.js';
+import * as R from '../rollen.js';
 import * as S from '../schema.js';
 import { esc, karte, leer, formatNote, formatMinuten, runde, skalaFarbe, formatDatum } from '../ui.js';
 import { linienDiagramm, balken, stapel, sparkline } from '../charts.js';
@@ -30,8 +31,8 @@ function imZeitraum(s) {
 }
 
 function datensatz() {
-  return store
-    .suchen()
+  const sichtbar = R.sichtbareHundIds();
+  return R.filtereDokumente(store.suchen())
     .filter((s) => (filter.mitEntwuerfen || S.istAbgeschlossen(s)) && (!filter.hundId || s.hundId === filter.hundId) && imZeitraum(s))
     .sort((a, b) => (a.datum || '').localeCompare(b.datum || ''));
 }
@@ -46,7 +47,7 @@ function html() {
   }
 
   const daten = datensatz();
-  const hunde = store.hunde();
+  const hunde = R.meineHunde();
   const entwuerfe = alle.filter((s) => !S.istAbgeschlossen(s)).length;
   const freie = store.freieDokus().filter((d) => S.istAbgeschlossen(d)).length;
 
@@ -131,7 +132,7 @@ function zeitraumText(daten) {
  * damit die Übersicht über die ganze Staffel auf einen Blick da ist.
  */
 function verbellenBlock() {
-  const hunde = filter.hundId ? [store.get(filter.hundId)].filter(Boolean) : store.hunde();
+  const hunde = filter.hundId ? [store.get(filter.hundId)].filter(Boolean) : R.meineHunde();
   if (!hunde.length) return '';
 
   const zeilen = hunde.map((h) => {

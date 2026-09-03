@@ -1,5 +1,23 @@
 # Änderungsprotokoll
 
+## 1.8.0 – 2026-09-03
+- **Rollen: Hundeführer:in und Ausbilder:in.** Unter Einstellungen wird festgelegt, wer am
+  Geraet arbeitet und in welcher Rolle. Hundefuehrer:innen sehen nur die ihnen zugeordneten
+  Hunde und deren Dokumentation; die Zuordnung erfolgt je Hund und erlaubt mehrere Personen
+  wie auch mehrere Hunde je Person.
+- **Bestaetigung der Einheiten durch die Ausbildung.** Jede abgeschlossene Einheit - Suche,
+  Verbellen-Sitzung, freie Dokumentation - wartet auf Bestaetigung. Festgehalten wird, wer
+  wann bestaetigt hat, dazu eine freiwillige Bemerkung; Zuruecknahme moeglich. Offene
+  Bestaetigungen gesammelt unter Einstellungen und als Filter in der Uebersicht.
+- **Auswertungen sind der Ausbildung vorbehalten**: Dashboard, Verbellen-Stand und
+  Helfer:in-Bilder sind fuer Hundefuehrer:innen ausgeblendet. Die Ausbildung kann per Schalter
+  freigeben, dass sie den Stand ihrer EIGENEN Hunde sehen duerfen.
+- Klar benannt, in App und README: Rollen ordnen die Ansicht, sie schuetzen die Daten nicht.
+  Alle teilen sich eine Datei und einen Token; eine echte Zugriffssperre braeuchte einen
+  Server mit Benutzerkonten.
+- Kontrast des neuen Rollen-Abzeichens korrigiert (4,12:1 auf 6,8:1); die helle Auflage auf
+  dem roten Grund wich einer dunklen, was auch Statusanzeige und Aktualisieren-Knopf zugute kommt.
+
 ## 1.7.3 – 2026-09-03
 - **Sechste und entscheidende Ursache der iPhone-Update-Probleme gefunden:** Der
   Service Worker fuellte seinen Cache beim Installieren mit `cache.addAll(...)`.

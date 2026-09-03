@@ -6,6 +6,7 @@ import * as S from '../schema.js';
 import { ladeConfig, loescheLokaleConfig, speichereConfig, speichereToken, geraeteName, setzeGeraeteName, STANDARD_CONFIG } from '../config.js';
 import { RELEASE_DATE, BUILD, versionString } from '../version.js';
 import * as update from '../update.js';
+import * as R from '../rollen.js';
 import { esc, karte, feld, textInput, toast, frage, download, relativeZeit, formatDatum, leer } from '../ui.js';
 
 let statusAbmelden = null;
@@ -103,12 +104,49 @@ function html() {
         </ul>` : ''}
     `)}
 
-    ${karte('Dieses Gerät', feld('Gerätename', textInput('__geraet', geraeteName(), { placeholder: 'z.B. Handy Rainer' }),
-      { hint: 'erscheint im Team als "zuletzt geändert von"' }))}
+    ${karte('Dieses Gerät', `
+      ${feld('Wer arbeitet an diesem Gerät?',
+        `<select class="input" data-person>
+          <option value="">– niemand zugeordnet –</option>
+          ${personen.map((p) => `<option value="${esc(p.id)}"${R.meinePersonId() === p.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}
+        </select>`,
+        { hint: 'steuert, welche Hunde angezeigt werden' })}
+      ${feld('Rolle',
+        `<select class="input" data-rolle>
+          ${R.ROLLEN.map((r) => `<option value="${esc(r.id)}"${R.meineRolle() === r.id ? ' selected' : ''}>${esc(r.label)} – ${esc(r.beschreibung)}</option>`).join('')}
+        </select>`)}
+      ${feld('Gerätename', textInput('__geraet', geraeteName(), { placeholder: 'z.B. Handy Rainer' }),
+        { hint: 'erscheint im Team als "zuletzt geändert von"' })}
+      <p class="karte__hint"><strong>Wichtig:</strong> Die Rolle ordnet die Ansicht, sie schützt die Daten nicht.
+        Alle Geräte teilen sich eine Datei und einen Zugangs-Token – wer den Token hat, kann technisch
+        den ganzen Bestand lesen. Für eine echte Zugriffssperre bräuchte es einen Server mit Benutzerkonten.</p>
+      ${R.eingerichtet() && !R.istAusbilder()
+        ? `<p class="karte__hint">Sichtbar sind aktuell: ${R.meineHunde().map((h) => esc(h.name)).join(', ') || '<em>keine Hunde zugeordnet – bitte bei der Ausbildung melden</em>'}.</p>`
+        : ''}
+    `)}
+
+    ${R.istAusbilder() ? karte('Ausbildung', `
+      ${(() => {
+        const offen = R.offeneBestaetigungen();
+        return offen.length
+          ? `<p class="abschluss__offen">${offen.length} abgeschlossene Einheit(en) warten auf Bestätigung.</p>
+             <a class="btn btn--primaer" href="#/bestaetigungen">Offene Bestätigungen ansehen</a>`
+          : '<p class="gut">Alle abgeschlossenen Einheiten sind bestätigt. 👍</p>';
+      })()}
+      <h3 class="unter">Was Hundeführer:innen sehen</h3>
+      <label class="schalter">
+        <input type="checkbox" data-eigener-stand ${R.teamEinstellung().eigenerStandSichtbar ? 'checked' : ''}>
+        <span>Hundeführer:innen dürfen Dashboard, Verbellen-Stand und Helfer:in-Bilder
+          <strong>ihrer eigenen Hunde</strong> einsehen</span>
+      </label>
+      <p class="karte__hint">Ist der Schalter aus, sind diese Auswertungen ausschließlich für
+        Ausbilder:innen sichtbar. Dokumentieren können Hundeführer:innen in jedem Fall.
+        Diese Einstellung gilt für das ganze Team und wird mit abgeglichen.</p>
+    `) : ''}
 
     ${karte('Hunde', `
       <div class="stamm-liste">
-        ${hunde.length ? hunde.map((h) => stammZeile(h)).join('') : leer('Noch kein Hund angelegt.')}
+        ${hunde.length ? hunde.map((h) => hundZeile(h, personen)).join('') : leer('Noch kein Hund angelegt.')}
       </div>
       <div class="btn-zeile">
         <input class="input" placeholder="Name des Hundes" data-neu-hund>
@@ -234,6 +272,23 @@ function uhrzeit(ts) {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
+/** Hund mit Zuordnung zu einer oder mehreren Hundeführer:innen. */
+function hundZeile(h, personen) {
+  return `<div class="stamm stamm--hund">
+    <div class="stamm__zeile">
+      <input class="input input--schlank" value="${esc(h.name || '')}" data-rename="${esc(h.id)}">
+      <button type="button" class="btn btn--mini btn--gefahr-still" data-del="${esc(h.id)}">×</button>
+    </div>
+    ${personen.length
+      ? `<div class="chips chips--schlank">
+          ${personen.map((p) => `<button type="button" class="mini-chip${(h.hfIds || []).includes(p.id) ? ' mini-chip--an' : ''}"
+            data-zuordnung="${esc(h.id)}:${esc(p.id)}">${esc(p.name)}</button>`).join('')}
+        </div>
+        ${(h.hfIds || []).length ? '' : '<small class="stamm__warnung">niemandem zugeordnet – nur Ausbilder:innen sehen diesen Hund</small>'}`
+      : '<small class="stamm__warnung">Erst Hundeführer:innen anlegen, dann zuordnen.</small>'}
+  </div>`;
+}
+
 function stammZeile(r) {
   return `<div class="stamm">
     <input class="input input--schlank" value="${esc(r.name || '')}" data-rename="${esc(r.id)}">
@@ -246,6 +301,19 @@ function binde(box, wurzel) {
 
   box.addEventListener('click', async (e) => {
     const t = e.target;
+
+    const z = t.closest('[data-zuordnung]');
+    if (z) {
+      const [hundId, personId] = z.dataset.zuordnung.split(':');
+      const h = store.get(hundId);
+      if (h) {
+        const ids = new Set(h.hfIds || []);
+        ids.has(personId) ? ids.delete(personId) : ids.add(personId);
+        await store.put({ ...h, hfIds: [...ids] });
+        zeichne(wurzel);
+      }
+      return;
+    }
 
     if (t.closest('[data-token-speichern]')) {
       const feldEl = box.querySelector('[data-token]');
@@ -356,6 +424,27 @@ function binde(box, wurzel) {
   });
 
   box.addEventListener('change', async (e) => {
+    const pers = e.target.closest('[data-person]');
+    if (pers) {
+      R.setzePerson(pers.value);
+      toast(pers.value ? 'Gerät zugeordnet.' : 'Zuordnung entfernt.');
+      zeichne(wurzel);
+      return;
+    }
+    const rol = e.target.closest('[data-rolle]');
+    if (rol) {
+      R.setzeRolle(rol.value);
+      toast('Rolle gesetzt: ' + (R.ROLLEN.find((x) => x.id === rol.value)?.label || rol.value));
+      location.reload();
+      return;
+    }
+    const es = e.target.closest('[data-eigener-stand]');
+    if (es) {
+      await R.setzeTeamEinstellung({ eigenerStandSichtbar: es.checked });
+      toast(es.checked ? 'Eigener Stand freigegeben.' : 'Auswertungen nur für Ausbilder:innen.');
+      zeichne(wurzel);
+      return;
+    }
     const ren = e.target.closest('[data-rename]');
     if (ren) {
       const r = store.get(ren.dataset.rename);

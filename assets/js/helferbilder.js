@@ -12,6 +12,7 @@
 
 import * as store from './store.js';
 import { HELFER_BILDER, istAbgeschlossen } from './schema.js';
+import * as R from './rollen.js';
 
 /** Stufe, die sich allein aus dem Einsatz in einer Suche ergibt. */
 export const STUFE_AUS_SUCHE = 1;
@@ -23,7 +24,7 @@ export function einsaetze(hundId) {
   const map = {};
   const suchen = store
     .suchen()
-    .filter((s) => istAbgeschlossen(s) && (!hundId || s.hundId === hundId))
+    .filter((s) => istAbgeschlossen(s) && (hundId ? s.hundId === hundId : R.darfSehen(s)))
     .sort((a, b) => (a.datum || '').localeCompare(b.datum || ''));
 
   for (const s of suchen) {

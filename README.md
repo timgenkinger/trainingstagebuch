@@ -130,6 +130,49 @@ und funktioniert auch ohne Empfang im Wald.
 
 ---
 
+## Rollen: Hundeführer:in und Ausbildung
+
+Unter **Einstellungen → Dieses Gerät** wird festgelegt, wer daran arbeitet und in welcher Rolle.
+Beides sind Geräte-Einstellungen und werden nicht mit abgeglichen.
+
+| | **Hundeführer:in** | **Ausbilder:in** |
+|---|---|---|
+| Sichtbare Hunde | nur die zugeordneten | alle |
+| Dokumentieren | ja | ja |
+| Einheiten bestätigen | nein | ja |
+| Dashboard, Verbellen-Stand, Helfer:in-Bilder | nur wenn freigegeben | ja |
+
+Die Zuordnung Hund → Hundeführer:in erfolgt unter **Einstellungen → Hunde**. Ein Hund kann
+mehreren Personen zugeordnet sein, eine Person mehreren Hunden. Ein Hund ohne Zuordnung ist
+nur für die Ausbildung sichtbar.
+
+Ob Hundeführer:innen die Auswertungen **ihrer eigenen** Hunde einsehen dürfen, entscheidet die
+Ausbildung mit einem Schalter; ab Werk ist das aus.
+
+> ### Wichtig: Rollen ordnen die Ansicht, sie schützen die Daten nicht
+>
+> Alle Geräte teilen sich eine Datei und einen Zugangs-Token. Wer den Token hat, kann technisch
+> den gesamten Bestand lesen – unabhängig von der eingestellten Rolle, die jede:r am eigenen
+> Gerät ändern kann. Für den Alltag (jede:r sieht die eigenen Hunde, die Ausbildung sieht alles)
+> ist diese Trennung richtig und ausreichend. Als Vertraulichkeitsgrenze gegenüber den eigenen
+> Leuten taugt sie nicht. Dafür bräuchte es einen Server mit Benutzerkonten, den eine statische
+> Seite auf GitHub Pages nicht bereitstellen kann.
+
+### Bestätigung der Einheiten
+
+Jede abgeschlossene Einheit – Suche, Verbellen-Sitzung oder freie Dokumentation – wartet auf die
+Bestätigung durch die Ausbildung. Festgehalten wird, **wer wann** bestätigt hat, dazu eine
+freiwillige Bemerkung; zurückziehen ist möglich.
+
+Bewusst kein gezeichneter Namenszug: In einer App, in der jede:r die eigene Rolle setzen kann,
+sähe eine Unterschrift verbindlicher aus, als sie ist.
+
+Hundeführer:innen sehen an jeder Einheit deren Stand. Die Ausbildung findet alle offenen
+Bestätigungen gesammelt unter **Einstellungen → Ausbildung** oder über den Filter
+*wartet auf Bestätigung* in der Übersicht.
+
+---
+
 ## Verbellen
 
 Der Trainingsplan stammt aus `Trainingsplan_Verbellen.xlsx` und ist wortgetreu übernommen:
@@ -386,12 +429,15 @@ assets/js/
   charts.js                Diagramme (selbst gezeichnetes SVG)
   verbellen-plan.js        Trainingsplan Verbellen (wortgetreu aus der Vorlage)
   verbellen.js             Ableitung des Fortschritts aus den Sitzungen
+  rollen.js                Rollen, Sichtbarkeit, Bestätigungen
+  update.js                Programm-Aktualisierung
   helferbilder.js          Ableitung der Helfer:in-Bilder aus den Suchen
   skizze.js                Zeichenfeld für das Suchgebiet
   ui.js                    Bausteine: Skala, Chips, Karten, Meldungen
   views/
     suchen.js              Übersicht beider Dokumentarten
-    bausteine.js           gemeinsame Bausteine beider Dokumentarten (Grundwerte, Abschluss)
+    bausteine.js           gemeinsame Bausteine der Dokumentarten (Grundwerte, Abschluss)
+    bestaetigung.js        Bestätigung einer Einheit durch die Ausbildung
     editor.js              Erfassungsmaske einer Suche
     freidoku.js            Erfassungsmaske der freien Dokumentation
     verbellen-editor.js    Erfassungsmaske einer Verbellen-Sitzung

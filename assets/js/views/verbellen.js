@@ -4,6 +4,7 @@
  */
 
 import * as store from '../store.js';
+import * as R from '../rollen.js';
 import * as V from '../verbellen.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
 import { esc, karte, leer, formatDatum, runde, frage, toast } from '../ui.js';
@@ -11,7 +12,7 @@ import { esc, karte, leer, formatDatum, runde, frage, toast } from '../ui.js';
 const zustand = { hundId: '', weg: 'box', nurOffen: false, offeneStufe: null };
 
 export async function render(wurzel) {
-  const hunde = store.hunde();
+  const hunde = R.meineHunde();
   if (!zustand.hundId && hunde.length) zustand.hundId = hunde[0].id;
   zeichne(wurzel);
 }
@@ -22,7 +23,7 @@ function zeichne(wurzel) {
 }
 
 function html() {
-  const hunde = store.hunde();
+  const hunde = R.meineHunde();
   if (!hunde.length) {
     return `<div class="seite">${leer(
       'Lege zuerst einen Hund an – der Verbellen-Fortschritt wird je Hund geführt.',

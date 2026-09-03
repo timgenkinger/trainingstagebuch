@@ -4,10 +4,13 @@ import * as store from '../store.js';
 import * as S from '../schema.js';
 import { esc, formatDatum, formatNote, formatMinuten, leer, skalaFarbe } from '../ui.js';
 import { skizzeSvg } from '../skizze.js';
+import * as R from '../rollen.js';
+import { bestaetigungAbzeichen } from './bestaetigung.js';
 
-const filter = { text: '', hundId: '', jahr: '', nurEntwuerfe: false, art: '' };
+const filter = { text: '', hundId: '', jahr: '', nurEntwuerfe: false, art: '', nurUnbestaetigt: false };
 
-export async function render(wurzel) {
+export async function render(wurzel, params = {}) {
+  if (params.nurUnbestaetigt !== undefined) filter.nurUnbestaetigt = !!params.nurUnbestaetigt;
   zeichne(wurzel);
 }
 
@@ -19,7 +22,9 @@ function zeichne(wurzel) {
 
 function gefiltert() {
   const t = filter.text.trim().toLowerCase();
-  return store.dokumente().filter((s) => {
+  // Hundeführer:innen sehen ausschließlich ihre eigenen Hunde.
+  return R.filtereDokumente(store.dokumente()).filter((s) => {
+    if (filter.nurUnbestaetigt && (R.istBestaetigt(s) || (s.status ?? 'abgeschlossen') !== 'abgeschlossen')) return false;
     if (filter.art && s.type !== filter.art) return false;
     if (filter.nurEntwuerfe && S.istAbgeschlossen(s)) return false;
     if (filter.hundId && s.hundId !== filter.hundId) return false;
@@ -32,14 +37,15 @@ function gefiltert() {
 }
 
 function html() {
-  const alle = store.dokumente();
+  const alle = R.filtereDokumente(store.dokumente());
   const liste = gefiltert();
-  const hunde = store.hunde();
+  const hunde = R.meineHunde();
   const jahre = [...new Set(alle.map((s) => (s.datum || '').slice(0, 4)).filter(Boolean))].sort().reverse();
   const entwuerfe = alle.filter((s) => !S.istAbgeschlossen(s)).length;
   const anzahlSuchen = alle.filter((s) => s.type === 'suche').length;
   const anzahlFrei = alle.filter((s) => s.type === 'freidoku').length;
   const anzahlVerbellen = alle.filter((s) => s.type === 'verbellen').length;
+  const unbestaetigt = alle.filter((s) => (s.status ?? 'abgeschlossen') === 'abgeschlossen' && !R.istBestaetigt(s)).length;
 
   if (!alle.length) {
     return `<div class="seite">
@@ -82,6 +88,9 @@ function html() {
       <button type="button" class="chip${filter.nurEntwuerfe ? ' chip--an' : ''}" data-t="nurEntwuerfe">
         nur Entwürfe${entwuerfe ? ` (${entwuerfe})` : ''}
       </button>
+      ${R.istAusbilder() ? `<button type="button" class="chip${filter.nurUnbestaetigt ? ' chip--an' : ''}" data-t="nurUnbestaetigt">
+        wartet auf Bestätigung${unbestaetigt ? ` (${unbestaetigt})` : ''}
+      </button>` : ''}
     </div>
 
     ${liste.length ? `<div class="such-liste">${liste.map(karteFuer).join('')}</div>` : leer('Kein Eintrag passt zu diesem Filter.')}
@@ -107,6 +116,7 @@ function karteVerbellen(s) {
         <span class="such-karte__ort">${esc(s.ort || 'ohne Ortsangabe')}</span>
         <span class="abz abz--art">Verbellen</span>
         ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
+        ${bestaetigungAbzeichen(s)}
       </div>
       <div class="such-karte__zeile2">
         ${zeile2(s)}
@@ -136,6 +146,7 @@ function karteFreidoku(s) {
         <span class="such-karte__ort">${esc(s.titel || 'ohne Überschrift')}</span>
         <span class="abz abz--art">Freie Doku</span>
         ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
+        ${bestaetigungAbzeichen(s)}
       </div>
       <div class="such-karte__zeile2">
         ${zeile2(s)}
@@ -165,6 +176,7 @@ function karteSuche(s) {
         <strong>${esc(formatDatum(s.datum))}</strong>
         <span class="such-karte__ort">${esc(s.ort || 'ohne Ortsangabe')}</span>
         ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
+        ${bestaetigungAbzeichen(s)}
         ${score != null ? `<span class="note" style="--n:${skalaFarbe(score)}">${formatNote(score)}</span>` : ''}
       </div>
       <div class="such-karte__zeile2">

@@ -209,6 +209,8 @@ export function neueSuche(defaults = {}) {
     // Erst mit 'abgeschlossen' wird sie für das Team hochgeladen.
     status: 'entwurf',
     abgeschlossenAm: null,
+    /** Bestätigung durch die Ausbildung: {vonId, vonName, am, bemerkung} */
+    bestaetigung: null,
     datum: heute,
     // Wartezeit im Auto vor dem Einsatz – beeinflusst Anspannung und Motivation
     // des Hundes und gehört deshalb an den Anfang der Grundwerte.
@@ -264,6 +266,8 @@ export function neueFreieDoku(defaults = {}) {
     type: 'freidoku',
     status: 'entwurf',
     abgeschlossenAm: null,
+    /** Bestätigung durch die Ausbildung: {vonId, vonName, am, bemerkung} */
+    bestaetigung: null,
     datum: heute,
     wartezeitAutoMin: null,
     titel: '',
@@ -296,6 +300,8 @@ export function neueVerbellenSitzung(defaults = {}) {
     type: 'verbellen',
     status: 'entwurf',
     abgeschlossenAm: null,
+    /** Bestätigung durch die Ausbildung: {vonId, vonName, am, bemerkung} */
+    bestaetigung: null,
     datum: heute,
     wartezeitAutoMin: null,
     ort: '',

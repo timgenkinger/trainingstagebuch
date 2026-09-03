@@ -1,6 +1,7 @@
 /** Erfassungsmaske einer einzelnen Suche – bildet Seite 1 und 2 des Hefts ab. */
 
 import * as store from '../store.js';
+import { bestaetigungsKarte, bestaetigungKlick } from './bestaetigung.js';
 import * as S from '../schema.js';
 import {
   esc, feld, textInput, textArea, select, karte, chipGruppe, skala, skalaZeile,
@@ -197,6 +198,8 @@ function html() {
       </div>
     `)}
 
+    <div data-bestaetigung>${bestaetigungsKarte(suche)}</div>
+
     <div data-abschluss>${abschlussKarte()}</div>
 
     <div class="editor__fuss">
@@ -303,6 +306,8 @@ function binde(wurzel) {
   });
 
   wurzel.addEventListener('click', async (e) => {
+    if (await bestaetigungKlick(e, suche, () => neuZeichnenBestaetigung())) return;
+
     const t = e.target;
 
     // Umschalter aktualisieren nur ihre eigene Schaltergruppe – das lange
@@ -486,4 +491,10 @@ function neuZeichnen() {
   zeichne(document.getElementById('view'));
   window.scrollTo(0, y);
   statusSetzen('Speichere \u2026');
+}
+
+/** Nur den Bestätigungsbereich neu zeichnen. */
+function neuZeichnenBestaetigung() {
+  const b = document.querySelector('[data-bestaetigung]');
+  if (b) b.innerHTML = bestaetigungsKarte(suche);
 }
