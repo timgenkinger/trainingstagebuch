@@ -142,6 +142,15 @@ Beides sind Geräte-Einstellungen und werden nicht mit abgeglichen.
 | Einheiten bestätigen | nein | ja |
 | Dashboard, Verbellen-Stand, Helfer:in-Bilder | nur wenn freigegeben | ja |
 
+Der Wechsel in die Ausbilder-Rolle ist **passwortpflichtig**. Das Passwort wird im Team
+mündlich weitergegeben und steht bewusst *nicht* im Quelltext – hinterlegt ist nur ein
+Prüfwert (SHA-256 mit Salt), aus dem es sich nicht zurückrechnen lässt. Das ist nötig, weil
+dieses Repository öffentlich ist. Der Weg zurück zur Hundeführer:in-Rolle braucht kein Passwort.
+
+Auch hier gilt die Einordnung von oben: Das Passwort verhindert, dass jemand die Rolle mal eben
+umstellt. Es ist keine Zugriffssperre – die Prüfung läuft im Browser und ließe sich mit
+Entwicklerwerkzeugen umgehen.
+
 Die Zuordnung Hund → Hundeführer:in erfolgt unter **Einstellungen → Hunde**. Ein Hund kann
 mehreren Personen zugeordnet sein, eine Person mehreren Hunden. Ein Hund ohne Zuordnung ist
 nur für die Ausbildung sichtbar.

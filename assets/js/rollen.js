@@ -24,6 +24,43 @@ export const ROLLEN = [
 ];
 
 /* ---------------------------------------------------------------- */
+/* Passwort für den Wechsel in die Ausbilder-Rolle                   */
+/* ---------------------------------------------------------------- */
+
+/**
+ * Hinterlegt ist NICHT das Passwort, sondern nur ein Pruefwert daraus.
+ * Grund: Das Repository ist oeffentlich – im Klartext stuende das Passwort
+ * damit im Internet. Aus dem Pruefwert laesst es sich nicht zurueckrechnen.
+ *
+ * Was das leistet und was nicht: Es verhindert, dass jemand die Rolle mal eben
+ * umstellt. Es ist keine Zugriffssperre – die Pruefung laeuft im Browser und
+ * liesse sich mit Entwicklerwerkzeugen umgehen (siehe Hinweis oben).
+ */
+const SALZ = 'rhd-trainingstagebuch-rolle-v1';
+const PRUEFWERT_SHA256 = 'c7a90aeaecd216ab7999e8035bc30b99991984ef309bfab11005b95e5d989970';
+const PRUEFWERT_EINFACH = 'a0ee82a8';
+
+/** Rueckfallebene, falls crypto.subtle fehlt (unsichere Herkunft, sehr alter Browser). */
+function einfacherHash(text) {
+  let h = 0x811c9dc5;
+  for (const b of new TextEncoder().encode(text)) {
+    h ^= b;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, '0');
+}
+
+export async function passwortStimmt(eingabe) {
+  const roh = `${SALZ}:${(eingabe || '').trim()}`;
+  if (globalThis.crypto?.subtle) {
+    const puffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(roh));
+    const hex = [...new Uint8Array(puffer)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    return hex === PRUEFWERT_SHA256;
+  }
+  return einfacherHash(roh) === PRUEFWERT_EINFACH;
+}
+
+/* ---------------------------------------------------------------- */
 /* Wer bedient dieses Gerät?                                         */
 /* ---------------------------------------------------------------- */
 
@@ -31,8 +68,20 @@ export function meineRolle() {
   return localStorage.getItem(LS_ROLLE) || 'hundefuehrer';
 }
 
+/**
+ * Setzt die Rolle. Der Wechsel zur Ausbildung ist passwortpflichtig und geht
+ * deshalb ausschliesslich ueber wechsleZuAusbilder().
+ */
 export function setzeRolle(r) {
+  if (r === 'ausbilder') throw new Error('Wechsel zur Ausbildung nur mit Passwort.');
   localStorage.setItem(LS_ROLLE, r);
+}
+
+/** @returns {Promise<boolean>} true, wenn das Passwort stimmte und die Rolle nun gilt. */
+export async function wechsleZuAusbilder(passwort) {
+  if (!(await passwortStimmt(passwort))) return false;
+  localStorage.setItem(LS_ROLLE, 'ausbilder');
+  return true;
 }
 
 export function meinePersonId() {

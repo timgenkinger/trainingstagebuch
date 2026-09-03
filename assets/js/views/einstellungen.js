@@ -7,7 +7,7 @@ import { ladeConfig, loescheLokaleConfig, speichereConfig, speichereToken, gerae
 import { RELEASE_DATE, BUILD, versionString } from '../version.js';
 import * as update from '../update.js';
 import * as R from '../rollen.js';
-import { esc, karte, feld, textInput, toast, frage, download, relativeZeit, formatDatum, leer } from '../ui.js';
+import { esc, karte, feld, textInput, toast, frage, passwortFrage, download, relativeZeit, formatDatum, leer } from '../ui.js';
 
 let statusAbmelden = null;
 let updateAbmelden = null;
@@ -114,7 +114,8 @@ function html() {
       ${feld('Rolle',
         `<select class="input" data-rolle>
           ${R.ROLLEN.map((r) => `<option value="${esc(r.id)}"${R.meineRolle() === r.id ? ' selected' : ''}>${esc(r.label)} – ${esc(r.beschreibung)}</option>`).join('')}
-        </select>`)}
+        </select>`,
+        { hint: 'der Wechsel zur Ausbildung verlangt das vereinbarte Passwort' })}
       ${feld('Gerätename', textInput('__geraet', geraeteName(), { placeholder: 'z.B. Handy Rainer' }),
         { hint: 'erscheint im Team als "zuletzt geändert von"' })}
       <p class="karte__hint"><strong>Wichtig:</strong> Die Rolle ordnet die Ansicht, sie schützt die Daten nicht.
@@ -433,6 +434,26 @@ function binde(box, wurzel) {
     }
     const rol = e.target.closest('[data-rolle]');
     if (rol) {
+      if (rol.value === 'ausbilder') {
+        // Wechsel in die Ausbildung ist passwortpflichtig.
+        const eingabe = await passwortFrage(
+          'Wechsel zur Ausbildung',
+          'Diese Rolle ist der Ausbildung vorbehalten. Bitte das vereinbarte Passwort eingeben.',
+          { ok: 'Rolle wechseln' }
+        );
+        if (eingabe === null) {
+          rol.value = R.meineRolle();
+          return;
+        }
+        if (!(await R.wechsleZuAusbilder(eingabe))) {
+          rol.value = R.meineRolle();
+          toast('Passwort stimmt nicht – Rolle unverändert.', 'fehler');
+          return;
+        }
+        toast('Rolle gesetzt: Ausbilder:in');
+        location.reload();
+        return;
+      }
       R.setzeRolle(rol.value);
       toast('Rolle gesetzt: ' + (R.ROLLEN.find((x) => x.id === rol.value)?.label || rol.value));
       location.reload();

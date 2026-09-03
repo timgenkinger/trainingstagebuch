@@ -1,5 +1,14 @@
 # Änderungsprotokoll
 
+## 1.8.1 – 2026-09-03
+- **Der Wechsel in die Ausbilder-Rolle verlangt jetzt ein Passwort.** Der Weg zurueck
+  zur Hundefuehrer:in-Rolle bleibt frei.
+- Hinterlegt ist nicht das Passwort, sondern nur ein Pruefwert (SHA-256 mit Salt) - dieses
+  Repository ist oeffentlich, im Klartext stuende das Passwort damit im Internet.
+- Fehler behoben: Die Navigation wurde nicht bei jedem Ansichtswechsel neu bewertet. Aendert
+  sich die Rolle oder die Freigabe des Teams im laufenden Betrieb, passen sich die Reiter
+  jetzt sofort an, statt erst beim naechsten Neuladen.
+
 ## 1.8.0 – 2026-09-03
 - **Rollen: Hundeführer:in und Ausbilder:in.** Unter Einstellungen wird festgelegt, wer am
   Geraet arbeitet und in welcher Rolle. Hundefuehrer:innen sehen nur die ihnen zugeordneten

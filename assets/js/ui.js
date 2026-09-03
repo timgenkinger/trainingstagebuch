@@ -205,6 +205,44 @@ export function frage(text, { ok = 'Ja', abbruch = 'Abbrechen', gefahr = false }
   });
 }
 
+/**
+ * Passwortabfrage. Liefert die Eingabe oder null bei Abbruch.
+ * Die Pruefung selbst liegt beim Aufrufer.
+ */
+export function passwortFrage(titel, text, { ok = 'Bestätigen' } = {}) {
+  return new Promise((resolve) => {
+    const back = document.createElement('div');
+    back.className = 'modal-back';
+    back.innerHTML = `<div class="modal" role="dialog" aria-modal="true">
+      <h2 class="karte__titel">${esc(titel)}</h2>
+      <p class="modal__text">${esc(text)}</p>
+      <input class="input" type="password" data-pw autocomplete="current-password"
+        placeholder="Passwort" aria-label="Passwort">
+      <p class="modal__fehler" data-pw-fehler hidden>Passwort stimmt nicht.</p>
+      <div class="modal__aktionen">
+        <button type="button" class="btn btn--still" data-nein>Abbrechen</button>
+        <button type="button" class="btn btn--primaer" data-ja>${esc(ok)}</button>
+      </div>
+    </div>`;
+    document.body.appendChild(back);
+    const feld = back.querySelector('[data-pw]');
+    const schliesse = (v) => {
+      back.remove();
+      resolve(v);
+    };
+    back.querySelector('[data-ja]').onclick = () => schliesse(feld.value);
+    back.querySelector('[data-nein]').onclick = () => schliesse(null);
+    feld.onkeydown = (e) => {
+      if (e.key === 'Enter') schliesse(feld.value);
+      if (e.key === 'Escape') schliesse(null);
+    };
+    back.onclick = (e) => {
+      if (e.target === back) schliesse(null);
+    };
+    setTimeout(() => feld.focus(), 50);
+  });
+}
+
 export function debounce(fn, ms = 500) {
   let t;
   const f = (...a) => {

@@ -1141,3 +1141,7 @@ span.wdh { cursor: default; }
 .stamm__zeile .input { flex: 1; }
 .chips--schlank { gap: .25rem; }
 .stamm__warnung { font-size: .74rem; color: var(--rot-text); }
+
+/* --- Passwortabfrage --- */
+.modal .input[type="password"] { margin-bottom: .5rem; }
+.modal__fehler { color: var(--rot-text); font-size: .85rem; margin: 0 0 .5rem; font-weight: 600; }

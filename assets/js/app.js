@@ -73,6 +73,9 @@ async function route(navigiert = true) {
   }
 
   aktuelleView = treffer.r.view;
+  // Bei jedem Wechsel neu bewerten: Rolle und Freigabe koennen sich
+  // zwischendurch geaendert haben (eigene Umstellung oder Abgleich vom Team).
+  aktualisiereNavigation();
   const view = document.getElementById('view');
   const y = window.scrollY;
   markiereTab(treffer.r.tab);

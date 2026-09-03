@@ -6,7 +6,7 @@
  * ein Update tauscht nur den Cache aus, nicht die Datenbank.
  */
 
-const VERSION = '1.8.0'; // wird von scripts/release.sh gepflegt
+const VERSION = '1.8.1'; // wird von scripts/release.sh gepflegt
 const CACHE = `rhd-app-${VERSION}`;
 
 const DATEIEN = [
