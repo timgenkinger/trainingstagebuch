@@ -280,20 +280,46 @@ function uhrzeit(ts) {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
-/** Hund mit Zuordnung zu einer oder mehreren Hundeführer:innen. */
+/**
+ * Hund mit Zuordnung. Die Richtung muss unmissverständlich sein: Zugeordnet
+ * wird eine Hundeführer:in ZU DIESEM HUND – deshalb steht der Hundename in der
+ * Beschriftung und nicht nur ein allgemeines "Zuordnung".
+ */
 function hundZeile(h, personen) {
+  const zugeordnet = (h.hfIds || []).map((id) => store.get(id)).filter(Boolean);
+  const offen = personen.filter((p) => !(h.hfIds || []).includes(p.id));
+  const name = h.name?.trim() || 'diesem Hund';
+
   return `<div class="stamm stamm--hund">
     <div class="stamm__zeile">
-      <input class="input input--schlank" value="${esc(h.name || '')}" data-rename="${esc(h.id)}">
-      <button type="button" class="btn btn--mini btn--gefahr-still" data-del="${esc(h.id)}">×</button>
+      <input class="input input--schlank" value="${esc(h.name || '')}" data-rename="${esc(h.id)}"
+        aria-label="Name des Hundes">
+      <button type="button" class="btn btn--mini btn--gefahr-still" data-del="${esc(h.id)}"
+        aria-label="Hund entfernen">×</button>
     </div>
-    ${personen.length
-      ? `<div class="chips chips--schlank">
-          ${personen.map((p) => `<button type="button" class="mini-chip${(h.hfIds || []).includes(p.id) ? ' mini-chip--an' : ''}"
-            data-zuordnung="${esc(h.id)}:${esc(p.id)}">${esc(p.name)}</button>`).join('')}
-        </div>
-        ${(h.hfIds || []).length ? '' : '<small class="stamm__warnung">niemandem zugeordnet – nur Ausbilder:innen sehen diesen Hund</small>'}`
-      : '<small class="stamm__warnung">Erst Hundeführer:innen anlegen, dann zuordnen.</small>'}
+
+    <div class="zuordnung">
+      <span class="zuordnung__label">Wer führt <strong>${esc(name)}</strong>?</span>
+
+      ${zugeordnet.length
+        ? `<div class="zuordnung__liste">
+            ${zugeordnet.map((p) => `<span class="zuordnung__tag">${esc(p.name)}
+              <button type="button" data-zuordnung-weg="${esc(h.id)}:${esc(p.id)}"
+                aria-label="${esc(p.name)} von ${esc(name)} lösen" title="Zuordnung lösen">×</button>
+            </span>`).join('')}
+          </div>`
+        : `<small class="stamm__warnung">Niemandem zugeordnet – nur die Ausbildung sieht ${esc(name)}.</small>`}
+
+      ${personen.length
+        ? (offen.length
+            ? `<select class="input input--schlank zuordnung__auswahl" data-zuordnung-add="${esc(h.id)}"
+                aria-label="Hundeführer:in zu ${esc(name)} zuordnen">
+                <option value="">+ Hundeführer:in zuordnen …</option>
+                ${offen.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}
+              </select>`
+            : '<small class="zuordnung__fertig">Alle Hundeführer:innen sind zugeordnet.</small>')
+        : '<small class="stamm__warnung">Erst Hundeführer:innen anlegen, dann zuordnen.</small>'}
+    </div>
   </div>`;
 }
 
@@ -310,14 +336,13 @@ function binde(box, wurzel) {
   box.addEventListener('click', async (e) => {
     const t = e.target;
 
-    const z = t.closest('[data-zuordnung]');
-    if (z) {
-      const [hundId, personId] = z.dataset.zuordnung.split(':');
+    const zweg = t.closest('[data-zuordnung-weg]');
+    if (zweg) {
+      const [hundId, personId] = zweg.dataset.zuordnungWeg.split(':');
       const h = store.get(hundId);
       if (h) {
-        const ids = new Set(h.hfIds || []);
-        ids.has(personId) ? ids.delete(personId) : ids.add(personId);
-        await store.put({ ...h, hfIds: [...ids] });
+        await store.put({ ...h, hfIds: (h.hfIds || []).filter((x) => x !== personId) });
+        toast(`${store.get(personId)?.name || 'Person'} führt ${h.name} nicht mehr.`);
         zeichne(wurzel);
       }
       return;
@@ -432,6 +457,20 @@ function binde(box, wurzel) {
   });
 
   box.addEventListener('change', async (e) => {
+    const zadd = e.target.closest('[data-zuordnung-add]');
+    if (zadd) {
+      const personId = zadd.value;
+      if (!personId) return;
+      const h = store.get(zadd.dataset.zuordnungAdd);
+      if (h) {
+        const ids = new Set(h.hfIds || []);
+        ids.add(personId);
+        await store.put({ ...h, hfIds: [...ids] });
+        toast(`${store.get(personId)?.name || 'Person'} führt jetzt ${h.name}.`);
+        zeichne(wurzel);
+      }
+      return;
+    }
     const pers = e.target.closest('[data-person]');
     if (pers) {
       R.setzePerson(pers.value);

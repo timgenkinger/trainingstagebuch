@@ -155,9 +155,11 @@ Auch hier gilt die Einordnung von oben: Das Passwort verhindert, dass jemand die
 umstellt. Es ist keine Zugriffssperre – die Prüfung läuft im Browser und ließe sich mit
 Entwicklerwerkzeugen umgehen.
 
-Die Zuordnung Hund → Hundeführer:in erfolgt unter **Einstellungen → Hunde**. Ein Hund kann
-mehreren Personen zugeordnet sein, eine Person mehreren Hunden. Ein Hund ohne Zuordnung ist
-nur für die Ausbildung sichtbar.
+Die Zuordnung erfolgt unter **Einstellungen → Hunde**, je Hund über die Frage
+*„Wer führt <Hundename>?"*: Bereits zugeordnete Personen stehen als Marken darunter und lassen
+sich einzeln lösen, weitere kommen über ein Auswahlmenü dazu, das nur noch die nicht
+zugeordneten Personen anbietet. Ein Hund kann mehreren Personen zugeordnet sein, eine Person
+mehreren Hunden. Ein Hund ohne Zuordnung ist nur für die Ausbildung sichtbar.
 
 ### Was in den Erfassungsmasken vorbelegt ist
 

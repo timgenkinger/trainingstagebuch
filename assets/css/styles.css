@@ -1139,7 +1139,6 @@ span.wdh { cursor: default; }
 .stamm--hund { flex-direction: column; align-items: stretch; gap: .35rem; padding-bottom: .5rem; border-bottom: 1px solid var(--rand); }
 .stamm__zeile { display: flex; gap: .5rem; align-items: center; }
 .stamm__zeile .input { flex: 1; }
-.chips--schlank { gap: .25rem; }
 .stamm__warnung { font-size: .74rem; color: var(--rot-text); }
 
 /* --- Passwortabfrage --- */
@@ -1169,3 +1168,47 @@ span.wdh { cursor: default; }
 }
 .hinweis-kasten strong { display: block; margin-bottom: .3rem; }
 .hinweis-kasten p { margin: 0; font-size: .88rem; }
+
+/* --- Zuordnung Hundeführer:in zu einem Hund --- */
+.zuordnung {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  padding: .5rem .6rem;
+  background: var(--flaeche-2);
+  border: 1px solid var(--rand);
+  border-left: 3px solid var(--marke);
+  border-radius: var(--r);
+}
+.zuordnung__label { font-size: .82rem; color: var(--text-leise); }
+.zuordnung__label strong { color: var(--text); }
+.zuordnung__liste { display: flex; flex-wrap: wrap; gap: .35rem; }
+.zuordnung__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .2rem .3rem .2rem .6rem;
+  font-size: .84rem;
+  font-weight: 550;
+  background: var(--marke-blass);
+  border: 1px solid var(--marke-hell);
+  border-radius: 999px;
+  color: var(--marke-dunkel);
+}
+.zuordnung__tag button {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.zuordnung__tag button:hover { background: color-mix(in srgb, var(--marke) 20%, transparent); }
+.zuordnung__auswahl { max-width: 22rem; }
+.zuordnung__fertig { font-size: .76rem; color: var(--text-leise); }

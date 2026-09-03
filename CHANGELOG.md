@@ -1,5 +1,12 @@
 # Änderungsprotokoll
 
+## 1.9.1 – 2026-09-03
+- Die Zuordnung Hundefuehrer:in → Hund erfolgt jetzt ueber ein **Auswahlmenü** statt einer
+  Liste aller Namen; angeboten werden nur die noch nicht zugeordneten Personen.
+- Die Richtung der Zuordnung ist klar benannt: Ueber jedem Block steht
+  „Wer führt <Hundename>?“. Zugeordnete Personen erscheinen als Marken mit eigenem
+  Löse-Knopf, jede Aenderung wird im Klartext bestaetigt („Sabine führt jetzt Nala.“).
+
 ## 1.9.0 – 2026-09-03
 - **Ein neues Gerät ist immer Hundeführer:in ohne Zuordnung.** Die bisherige Rueckfallregel,
   nach der ein nicht zugeordnetes Geraet alles sah, ist entfallen. Stattdessen fuehren
