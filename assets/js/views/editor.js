@@ -6,7 +6,7 @@ import * as S from '../schema.js';
 import * as HB from '../helferbilder.js';
 import * as R from '../rollen.js';
 import {
-  esc, feld, feldBlock, textInput, textArea, select, karte, chipGruppe, skala, skalaZeile,
+  esc, feld, feldBlock, textInput, textArea, select, selectGruppen, karte, chipGruppe, skala, skalaZeile,
   setPath, toast, frage, textFrage, debounce, formatDatum, formatNote,
 } from '../ui.js';
 import { skizzeHtml, skizzeAktivieren } from '../skizze.js';
@@ -274,7 +274,7 @@ function helferTabelle() {
         ${suche.helfer.length > 1 ? `<button type="button" class="btn btn--mini btn--gefahr-still" data-helfer-weg="${i}">×</button>` : ''}
       </div>
       ${feldBlock('Wer hat sich versteckt?', `<span class="person-wahl">
-        ${select(`helfer.${i}.personId`, h.personId, store.helferpersonen().map((p) => ({ id: p.id, label: p.name })), '– nicht erfasst –')}
+        ${personWahl(h.personId, i)}
         <button type="button" class="btn btn--mini" data-person-neu="${i}">+ neu</button>
       </span>`, { hint: 'ermöglicht die Auswertung nach Versteckperson' })}
       <div class="raster raster--3">
@@ -288,6 +288,24 @@ function helferTabelle() {
     </div>`
     )
     .join('')}</div>`;
+}
+
+/**
+ * Auswahl der Versteckperson: das eigene Team zuerst, danach die zusaetzlich
+ * erfassten Gaeste. Zeigt eine Person auf einen inzwischen entfernten Eintrag,
+ * bleibt sie als eigene Zeile stehen – sonst saehe das Protokoll leer aus,
+ * obwohl eine Zuordnung darin steht.
+ */
+function personWahl(personId, i) {
+  const marke = (p) => ({ id: p.id, label: p.name });
+  const gruppen = [
+    { label: 'Hundeführer:innen', optionen: store.personen().map(marke) },
+    { label: 'Gäste und weitere', optionen: store.helferpersonen().map(marke) },
+  ];
+  if (personId && !store.get(personId)) {
+    gruppen.push({ label: 'nicht mehr vorhanden', optionen: [{ id: personId, label: 'entfernte Person' }] });
+  }
+  return selectGruppen(`helfer.${i}.personId`, personId, gruppen, '– nicht erfasst –');
 }
 
 /** Zusätzliche Angaben zur Versteckperson – nur in der Trümmersuche. */
@@ -478,9 +496,11 @@ function binde(wurzel) {
     const pneu = t.closest('[data-person-neu]');
     if (pneu) {
       const i = Number(pneu.dataset.personNeu);
-      const name = (await textFrage('Neue Versteckperson', 'Name der Person, die sich versteckt hat:'))?.trim();
+      const name = (await textFrage('Weitere Versteckperson', 'Name der Person, die sich versteckt hat – etwa ein Gast im Training:'))?.trim();
       if (!name) return;
-      const schon = store.helferpersonen().find((p) => p.name.toLowerCase() === name.toLowerCase());
+      // Gegen beide Listen pruefen: Wer schon als Hundefuehrer:in im Team steht,
+      // darf nicht ein zweites Mal als Gast entstehen.
+      const schon = store.versteckpersonen().find((p) => (p.name || '').toLowerCase() === name.toLowerCase());
       const p = schon || (await store.put({ type: 'helferperson', name }));
       suche.helfer[i].personId = p.id;
       neuZeichnen();

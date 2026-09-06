@@ -163,18 +163,20 @@ function html() {
       </div>
     `)}
 
-    ${karte('Versteckpersonen', `
+    ${karte('Gäste als Versteckpersonen', `
       <div class="stamm-liste">
         ${store.helferpersonen().length
           ? store.helferpersonen().map((p) => stammZeile(p)).join('')
-          : leer('Noch keine Versteckperson angelegt. Sie entstehen auch direkt in der Suche.')}
+          : leer('Noch keine Gäste angelegt. Sie entstehen auch direkt in der Suche über „+ neu“.')}
       </div>
       <div class="btn-zeile">
         <input class="input" placeholder="Name" data-neu-helferperson>
         <button type="button" class="btn btn--primaer" data-add-helferperson>Hinzufügen</button>
       </div>
-      <p class="karte__hint">Wer sich versteckt hat. Die Zuordnung je Versteckperson ermöglicht die
-        Auswertung, bei welchen Personen der Hund zuverlässig findet.</p>
+      <p class="karte__hint">In der Suche stehen als Versteckperson alle Hundeführer:innen zur
+        Auswahl – hier kommen nur die dazu, die nicht zur Staffel gehören, etwa Gäste im Training.
+        Die Zuordnung je Versteckperson ermöglicht die Auswertung, bei welchen Personen der Hund
+        zuverlässig findet.</p>
     `)}
 
     ${karte('Hundeführer:innen', `

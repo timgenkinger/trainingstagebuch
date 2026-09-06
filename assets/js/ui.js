@@ -151,6 +151,22 @@ export function feldBlock(label, inner, opts = {}) {
   </div>`;
 }
 
+/**
+ * Auswahl mit Gruppen. `gruppen` ist [{ label, optionen: [{id, label}] }];
+ * leere Gruppen entfallen, damit keine leeren Ueberschriften stehen bleiben.
+ */
+export function selectGruppen(pfad, wert, gruppen, platzhalter = '– bitte wählen –') {
+  const option = (o) =>
+    `<option value="${esc(o.id)}"${String(wert) === String(o.id) ? ' selected' : ''}>${esc(o.label)}</option>`;
+  return `<select class="input" data-pfad="${esc(pfad)}">
+    <option value="">${esc(platzhalter)}</option>
+    ${gruppen
+      .filter((g) => g.optionen.length)
+      .map((g) => `<optgroup label="${esc(g.label)}">${g.optionen.map(option).join('')}</optgroup>`)
+      .join('')}
+  </select>`;
+}
+
 export function textInput(pfad, wert, opts = {}) {
   return `<input class="input" type="${opts.type || 'text'}" data-pfad="${esc(pfad)}"
     value="${esc(wert ?? '')}" ${opts.placeholder ? `placeholder="${esc(opts.placeholder)}"` : ''}

@@ -424,9 +424,15 @@ E += [
       "und die Bewertungen leert – praktisch bei mehreren Suchen am selben Ort.", "klein"),
 
     p("Wer sich versteckt hat", "h3"),
-    p("Der Name der Versteckperson steht in derselben Zeile wie ihr Ergebnis. Neue Namen legt "
-      "<b>+ neu</b> direkt in der Zeile an; gleich geschriebene Namen werden zusammengeführt, "
-      "aus „Sabine Helfer“ und „sabine helfer“ wird also nicht zweimal dieselbe Person.", "text"),
+    p("Der Name der Versteckperson steht in derselben Zeile wie ihr Ergebnis. Die Auswahl bietet "
+      "zwei Gruppen an: <b>Hundeführer:innen</b> – alle Personen der Staffel, ohne dass sie dafür "
+      "doppelt gepflegt werden müssten – und <b>Gäste und weitere</b>. Wer in keiner der beiden "
+      "steht, kommt über <b>+ neu</b> direkt in der Zeile dazu; das ist für Gäste im Training "
+      "gedacht.", "text"),
+    p("Gleich geschriebene Namen werden gegen beide Gruppen geprüft und zusammengeführt: Aus "
+      "„Tom Vogel“ und „tom vogel“ wird nicht zweimal dieselbe Person, und wer bereits als "
+      "Hundeführer:in im Team steht, entsteht nicht zusätzlich als Gast. Angelegte Gäste stehen "
+      "unter <b>Einstellungen – Gäste als Versteckpersonen</b>.", "text"),
     p("Früher standen die Namen als eine Freitextzeile oben im Suchgebiet. Dort war zwar "
       "festgehalten, wer dabei war, aber nicht, bei wem der Hund gefunden hat – auswerten ließ "
       "sich das nicht. Aus der Zuordnung je Person entsteht nun die Dashboard-Karte "

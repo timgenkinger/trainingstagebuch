@@ -124,6 +124,15 @@ export function helferpersonen() {
   return alle('helferperson').sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
 }
 
+/**
+ * Wer als Versteckperson infrage kommt: das eigene Team und die zusaetzlich
+ * erfassten Gaeste. Beide Arten stehen gleichberechtigt in `helfer[].personId`,
+ * denn beim Verstecken zaehlt die Person, nicht ihre Rolle in der Staffel.
+ */
+export function versteckpersonen() {
+  return [...personen(), ...helferpersonen()];
+}
+
 export function bildFortschritt(hundId) {
   const map = {};
   for (const r of alle('helferbild')) {

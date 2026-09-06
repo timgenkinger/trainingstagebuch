@@ -74,9 +74,17 @@ niemand den ganzen Bildbestand der Staffel auf sein Handy. Bis dahin steht in de
 ### Versteckpersonen
 
 Wer sich versteckt hat, wird **je Versteckperson** in der Suche erfasst – zusammen mit Bild,
-Zeit, Fund und Anzeige, also genau dort, wo auch das Ergebnis steht. Ein neuer Name lässt sich
-direkt in der Zeile über **+ neu** anlegen; gleich geschriebene Namen werden zusammengeführt,
-sodass aus „Sabine Helfer" und „sabine helfer" nicht zwei Personen werden.
+Zeit, Fund und Anzeige, also genau dort, wo auch das Ergebnis steht.
+
+Zur Auswahl stehen zwei Gruppen: **Hundeführer:innen** (die Personen der Staffel, ohne dass sie
+irgendwo doppelt gepflegt werden müssten) und **Gäste und weitere**. Wer nicht in der Liste steht,
+kommt über **+ neu** direkt in der Zeile dazu – gedacht für Gäste im Training. Gleich geschriebene
+Namen werden gegen *beide* Gruppen geprüft und zusammengeführt: Aus „Tom Vogel" und „tom vogel"
+wird nicht zweimal dieselbe Person, und wer schon als Hundeführer:in im Team steht, entsteht nicht
+zusätzlich als Gast.
+
+Zeigt eine Zeile auf eine inzwischen entfernte Person, bleibt sie als *entfernte Person* sichtbar,
+statt leer auszusehen – das Protokoll soll nicht stillschweigend eine Zuordnung verlieren.
 
 Zuvor standen die Namen als eine Freitextzeile oben im Suchgebiet. Damit war zwar festgehalten,
 *wer dabei war*, aber nicht, *bei wem der Hund gefunden hat* – auswerten ließ sich das nicht.
@@ -113,7 +121,7 @@ im Dashboard gibt es einen Spartenfilter.
 | Geländebeschaffenheit | Mehrfachauswahl (offen, dicht, Dornen, hügelig, steil …) |
 | Temperatur / Wetter / Tageszeit | getrennt nach Temperatur, Wind, Niederschlag, Licht + Windrichtung |
 | Skizzenfeld Suchgebiet | Zeichenfeld mit vier Stiften: Gebiet, Laufweg HF, Laufweg Hund, Helfer:in |
-| Namen der Helfer:innen | je Versteckperson auswählbar, neue über **+ neu**; Grundlage der Auswertung nach Person |
+| Namen der Helfer:innen | je Versteckperson auswählbar: alle Hundeführer:innen plus Gäste, neue über **+ neu**; Grundlage der Auswertung nach Person |
 | Suchzeit bis / Element Anzeige / Radius zur HF | Zeile je Versteckperson, beliebig viele, mit Helfer:in-Bild und Anzeigeart |
 | Team: Verlauf der Suche | 6 Kriterien auf der 5er-Skala, „Ablage vor Suche“ zusätzlich mit ✓/✗ |
 | Verhalten Hund + Problemverhalten | 4 Kriterien, Radius weit/mittel/eng, 6 Problemverhalten mit Kontextfeld |

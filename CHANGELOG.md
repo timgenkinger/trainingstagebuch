@@ -1,5 +1,20 @@
 # Änderungsprotokoll
 
+## 1.16.1 – 2026-09-06
+- **Als Versteckperson stehen jetzt auch die Hundeführer:innen zur Auswahl.** Die Liste ist in
+  zwei Gruppen geteilt – das Team und „Gäste und weitere“ –, sodass niemand doppelt gepflegt
+  werden muss. „+ neu“ bleibt für alle, die in keiner der beiden stehen, etwa Gäste im Training;
+  gleich geschriebene Namen werden gegen beide Gruppen geprüft, damit ein Teammitglied nicht
+  zusätzlich als Gast entsteht.
+- Zeigt eine Zeile auf eine inzwischen entfernte Person, steht dort „entfernte Person“ statt
+  einer leeren Auswahl – so verliert das Protokoll die Zuordnung nicht stillschweigend.
+- Die Einstellungskarte heißt jetzt **Gäste als Versteckpersonen** und sagt dazu, dass das Team
+  ohnehin schon in der Auswahl steht.
+- Kontrast: „Jetzt aktualisieren“ stand im dunklen Modus bei 2,7:1 – die Schriftfarbe folgte
+  einer Variablen, die dort ins Helle kippt, während der Knopfgrund fest weiß bleibt. Neu ist
+  dafür `--auf-weiss`, das in beiden Modi dunkel bleibt (7,1:1); die drei anderen Stellen mit
+  fest weißem Grund nutzen es mit.
+
 ## 1.16.0 – 2026-09-06
 - **Einrichtungsassistent für neue Geräte.** Wer noch keiner Person zugeordnet ist, landet beim
   Öffnen von allein darin: Zugangscode, eigener Name, eigener Hund – in vier Schritten und ohne
