@@ -1,5 +1,12 @@
 # Änderungsprotokoll
 
+## 1.13.0 – 2026-09-06
+- **„Kann den Hund lesen“ gilt jetzt in beiden Sparten.** Das Kriterium kam mit der
+  Trümmersuche und steht nun auch in der Flächensuche zur Verfügung – damit hat
+  „Verhalten Hundeführer:in“ überall sieben Kriterien.
+- Die getrennte Trümmer-Kriterienliste ist damit entfallen; beide Sparten greifen auf
+  dieselbe Liste zu. Das Dashboard wertet sie ohne Sonderfall aus.
+
 ## 1.12.0 – 2026-09-06
 - **Fotos in allen vier Erfassungsformularen.** Auf dem Handy oeffnet sich Kamera oder
   Galerie. Bilder werden auf 1600 Pixel verkleinert (aus 4 MB werden meist 150–250 kB),

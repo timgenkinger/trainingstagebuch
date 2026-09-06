@@ -200,7 +200,7 @@ function verlauf(daten) {
   const alleKriterien = [
     ...vereinigt(S.TEAM_KRITERIEN, S.TEAM_KRITERIEN_TRUEMMER).map((k) => ({ ...k, gruppe: 'team' })),
     ...S.HUND_KRITERIEN.map((k) => ({ ...k, gruppe: 'hund' })),
-    ...vereinigt(S.HF_KRITERIEN, S.HF_KRITERIEN_TRUEMMER).map((k) => ({ ...k, gruppe: 'hf' })),
+    ...S.HF_KRITERIEN.map((k) => ({ ...k, gruppe: 'hf' })),
   ];
 
   let diagramm;
@@ -283,7 +283,7 @@ function kriterienBloecke(daten) {
   return `<div class="raster raster--2 raster--karten">
     ${block('team', vereinigt(S.TEAM_KRITERIEN, S.TEAM_KRITERIEN_TRUEMMER), 'Suchteam')}
     ${block('hund', S.HUND_KRITERIEN, 'Verhalten Hund')}
-    ${block('hf', vereinigt(S.HF_KRITERIEN, S.HF_KRITERIEN_TRUEMMER), 'Verhalten Hundeführer:in')}
+    ${block('hf', S.HF_KRITERIEN, 'Verhalten Hundeführer:in')}
     ${radiusBlock(daten)}
   </div>`;
 }

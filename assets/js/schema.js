@@ -189,16 +189,17 @@ export const HF_KRITERIEN = [
   { id: 'ansprache_timing', label: 'Ansprache / Timing mit Hund' },
   { id: 'zusammenarbeit', label: 'Zusammenarbeit' },
   { id: 'konzentration', label: 'Konzentration / Ernsthaftigkeit' },
-];
-
-/** Trümmersuche: dieselben Kriterien wie in der Fläche, zusätzlich das Lesen des Hundes. */
-export const HF_KRITERIEN_TRUEMMER = [
-  ...HF_KRITERIEN,
   { id: 'hund_lesen', label: 'Kann den Hund lesen' },
 ];
 
-export function hfKriterienFuer(sparte) {
-  return sparte === 'truemmer' ? HF_KRITERIEN_TRUEMMER : HF_KRITERIEN;
+/**
+ * Die Kriterien der Hundeführer:in sind in beiden Sparten gleich.
+ * "Kann den Hund lesen" kam über die Trümmersuche dazu und gilt seit 1.13.0
+ * auch in der Fläche. Die Funktion bleibt als gemeinsamer Zugriffspunkt,
+ * damit eine künftige Abweichung nur hier eingebaut werden muss.
+ */
+export function hfKriterienFuer() {
+  return HF_KRITERIEN;
 }
 
 /* ------------------------------------------------------------------ */

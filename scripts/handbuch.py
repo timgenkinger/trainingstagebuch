@@ -391,7 +391,9 @@ E += [
         ["Versteckpersonen", "je Person: Helfer:in-Bild, Zeit bis zum Fund, gefunden ja/nein, "
                              "Abstand zur Hundeführer:in und die Anzeige auf einer Skala von 0 bis 5. "
                              "Angezeigt wird durchgängig durch Bellen."],
-        ["Team, Hund, Hundeführer:in", "je Kriterium eine Note von 1 bis 5 auf der Punkteskala"],
+        ["Team, Hund, Hundeführer:in", "je Kriterium eine Note von 1 bis 5 auf der Punkteskala. "
+                                      "Bei der Hundeführer:in sieben Kriterien, darunter "
+                                      "„Kann den Hund lesen“"],
         ["Problemverhalten", "sechs Merkmale zum Ankreuzen mit Feld für den Kontext"],
         ["Notizen und Konsequenz", "Freitext sowie Beobachten, Bearbeiten, Neues Ziel"],
     ], [42 * mm, BREITE - 42 * mm]),
@@ -409,11 +411,11 @@ E += [
                      "gegebenen Hilfen"],
         ["Versteckperson", "zusätzlich: Hund kommt hin (ja/nein), Verdeckung (teilweise oder "
                            "komplett) und Versteck (leicht, mittel, schwer)"],
-        ["Hundeführer:in", "zusätzlich: Kann den Hund lesen"],
     ], [34 * mm, BREITE - 34 * mm], kopf=False),
     Spacer(1, 6),
-    p("Suchgebiet, Skizze, Verhalten Hund, Problemverhalten und Konsequenz sind in beiden "
-      "Sparten gleich. In der Übersicht und im Dashboard lässt sich nach Sparte filtern.", "klein"),
+    p("Suchgebiet, Skizze, Verhalten Hund, Verhalten Hundeführer:in, Problemverhalten und "
+      "Konsequenz sind in beiden Sparten gleich. In der Übersicht und im Dashboard lässt sich "
+      "nach Sparte filtern.", "klein"),
 
     p("Fotos", "h3"),
     p("Zu jedem Eintrag lassen sich Fotos hinzufügen – in allen vier Formularen. Auf dem Handy "

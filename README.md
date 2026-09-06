@@ -79,9 +79,9 @@ Stellen ab:
 | Windrichtung | ja | entfällt |
 | Suchteam | 6 Kriterien | ohne Grundlinie, Strukturen und Ecken/Grenzen; dafür Beweglichkeit/Sicherheit des Hundes und Schwierigkeit der Verstecke, dazu ein Freitextfeld **Hilfen** |
 | Versteckperson | Bild, Zeit, Fund, Radius, Anzeige 0–5 | zusätzlich *Hund kommt hin*, Verdeckung (teilweise/komplett) und Versteck (leicht/mittel/schwer) |
-| Hundeführer:in | 6 Kriterien | zusätzlich *Kann den Hund lesen* |
 
-Suchgebiet, Skizze, Verhalten Hund, Problemverhalten und Konsequenz sind in beiden Sparten gleich.
+Suchgebiet, Skizze, Verhalten Hund, **Verhalten Hundeführer:in**, Problemverhalten und
+Konsequenz sind in beiden Sparten gleich.
 In der Übersicht tragen die Karten eine Marke *Fläche* oder *Trümmer*, und es lässt sich danach filtern;
 im Dashboard gibt es einen Spartenfilter.
 
