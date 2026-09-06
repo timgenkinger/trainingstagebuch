@@ -195,7 +195,7 @@ eine Person ausgewählt ist und die Ausbildung ihr Hunde zugeordnet hat, ist die
 | Sichtbare Hunde | nur die zugeordneten | alle |
 | Dokumentieren | ja | ja |
 | Einheiten bestätigen | nein | ja |
-| Daten exportieren | nein | ja |
+| Daten sichern und einspielen | nein | ja |
 | Dashboard, Verbellen-Stand, Helfer:in-Bilder | nur wenn freigegeben | ja |
 
 Der Wechsel in die Ausbilder-Rolle ist **passwortpflichtig**. Das Passwort wird im Team

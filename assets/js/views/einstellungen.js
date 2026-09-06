@@ -172,21 +172,20 @@ function html() {
       </div>
     `)}
 
-    ${karte('Sicherung', `
-      <div class="btn-zeile">
-        ${R.istAusbilder()
-          ? '<button type="button" class="btn btn--still" data-export>Alle Daten exportieren (JSON)</button>'
-          : ''}
-        <label class="btn btn--still">Import … <input type="file" accept="application/json,.json" hidden data-import></label>
-      </div>
-      <p class="karte__hint">Der Import mischt nur: bestehende neuere Datensätze bleiben erhalten.
-        Es liegen ${store.rohdaten().length} Datensätze auf diesem Gerät. Der Zugangs-Token wird nie mit exportiert.</p>
-      ${R.istAusbilder()
-        ? ''
-        : `<p class="karte__hint">Der Export ist der Ausbildung vorbehalten: Er umfasst den gesamten
-           Bestand auf diesem Gerät – also auch Hunde, die dir nicht zugeordnet sind, weil der
-           Abgleich alle Daten lokal ablegt.</p>`}
-    `)}
+    ${karte('Sicherung', R.istAusbilder()
+      ? `<div class="btn-zeile">
+          <button type="button" class="btn btn--still" data-export>Alle Daten exportieren (JSON)</button>
+          <label class="btn btn--still">Import … <input type="file" accept="application/json,.json" hidden data-import></label>
+        </div>
+        <p class="karte__hint">Der Import mischt nur: bestehende neuere Datensätze bleiben erhalten.
+          Es liegen ${store.rohdaten().length} Datensätze auf diesem Gerät. Der Zugangs-Token wird
+          nie mit exportiert.</p>`
+      : `<p class="karte__hint">Sicherung und Wiederherstellung sind der Ausbildung vorbehalten.</p>
+         <p class="karte__hint">Der <strong>Export</strong> umfasst den gesamten Bestand auf diesem Gerät –
+           also auch Hunde, die dir nicht zugeordnet sind, weil der Abgleich alle Daten lokal ablegt.
+           Der <strong>Import</strong> schreibt in den gemeinsamen Bestand und wirkt damit auf das ganze Team.</p>
+         <p class="karte__hint">Deine Einträge sind trotzdem gesichert: Alles Abgeschlossene liegt
+           nach dem Abgleich im gemeinsamen Datenspeicher.</p>`)}
 
     ${karte('Papierkorb', muell.length
       ? `<div class="stamm-liste">${muell.map((x) => `<div class="stamm">
@@ -556,6 +555,13 @@ function binde(box, wurzel) {
   datei?.addEventListener('change', async () => {
     const f = datei.files?.[0];
     if (!f) return;
+    // Zweite Sperre neben der Anzeige: Der Import schreibt in den gemeinsamen
+    // Bestand und wirkt damit auf das ganze Team.
+    if (!R.istAusbilder()) {
+      datei.value = '';
+      toast('Der Import ist der Ausbildung vorbehalten.', 'fehler');
+      return;
+    }
     try {
       const n = await store.importJson(await f.text());
       toast(`${n} Datensätze importiert.`);

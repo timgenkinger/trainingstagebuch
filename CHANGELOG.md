@@ -1,5 +1,13 @@
 # Änderungsprotokoll
 
+## 1.15.2 – 2026-09-06
+- **Auch der Import ist jetzt der Ausbildung vorbehalten.** Er schreibt in den gemeinsamen
+  Bestand und wirkt damit auf das ganze Team.
+- Die Sicherungskarte zeigt Hundefuehrer:innen den Grund statt zweier fehlender Knoepfe,
+  samt Hinweis, dass Abgeschlossenes ohnehin im gemeinsamen Datenspeicher liegt.
+- Zwei Sperren wie beim Export: Die Knoepfe erscheinen nicht, und die Behandlung weist einen
+  Aufruf ueber eine veraltete Oberflaeche zusaetzlich ab.
+
 ## 1.15.1 – 2026-09-06
 - **Der Datenexport ist jetzt der Ausbildung vorbehalten.** Grund: Er umfasst den gesamten
   Bestand auf dem Geraet – auch Hunde, die der bedienenden Person nicht zugeordnet sind,

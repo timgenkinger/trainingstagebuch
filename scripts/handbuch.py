@@ -347,7 +347,7 @@ E += [
         ["Dokumentieren", "ja", "ja"],
         ["Fremde Hunde erfassen", "nein", "ja"],
         ["Einheiten bestätigen", "nein", "ja"],
-        ["Daten exportieren", "nein", "ja"],
+        ["Daten sichern und einspielen", "nein", "ja"],
         ["Dashboard, Verbellen-Stand, Helfer:in-Bilder", "nur wenn freigegeben", "ja"],
     ], [62 * mm, (BREITE - 62 * mm) / 2, (BREITE - 62 * mm) / 2]),
     Spacer(1, 8),
@@ -583,9 +583,12 @@ E += [
     p("Unter <b>Einstellungen – Sicherung</b> lassen sich alle Daten als JSON-Datei ausgeben und "
       "wieder einlesen. Der Import mischt ebenfalls nur; bestehende neuere Datensätze bleiben "
       "erhalten. Gelöschte Einträge liegen im <b>Papierkorb</b> und lassen sich wiederherstellen.", "text"),
-    p("<b>Der Export ist der Ausbildung vorbehalten.</b> Er umfasst den gesamten Bestand auf dem "
-      "Gerät – also auch Hunde, die der bedienenden Person nicht zugeordnet sind, weil der "
-      "Abgleich alle Daten lokal ablegt.", "text"),
+    p("<b>Sicherung und Wiederherstellung sind der Ausbildung vorbehalten.</b> Der Export "
+      "umfasst den gesamten Bestand auf dem Gerät – also auch Hunde, die der bedienenden Person "
+      "nicht zugeordnet sind, weil der Abgleich alle Daten lokal ablegt. Der Import schreibt in "
+      "den gemeinsamen Bestand und wirkt damit auf das ganze Team. Für Hundeführer:innen ist das "
+      "kein Verlust: Alles Abgeschlossene liegt nach dem Abgleich ohnehin im gemeinsamen "
+      "Datenspeicher.", "text"),
     PageBreak(),
 
     # ---- 8 ----
