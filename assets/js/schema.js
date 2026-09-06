@@ -141,7 +141,6 @@ export const TEAM_KRITERIEN_TRUEMMER = [
   { id: 'fokussiert_vor_start', label: 'fokussiert vor Start' },
   { id: 'motivierter_start', label: 'motivierter Start' },
   { id: 'beweglichkeit', label: 'Beweglichkeit/Sicherheit des Hundes' },
-  { id: 'schwierigkeit_verstecke', label: 'Schwierigkeit der Verstecke' },
 ];
 
 export function teamKriterienFuer(sparte) {
@@ -154,7 +153,7 @@ export function teamKriterienFuer(sparte) {
 
 export const HUND_KRITERIEN = [
   { id: 'lenkbarkeit', label: 'Lenkbarkeit' },
-  { id: 'rauslaufen_wind', label: 'Rauslaufen für Wind' },
+  { id: 'rauslaufen_wind', label: 'Hund versucht selbständig Geruch zu finden' },
   {
     id: 'strukturen_erkennen',
     label: 'Strukturen selbst erkennen und abdecken',
@@ -176,6 +175,10 @@ export const PROBLEMVERHALTEN = [
   { id: 'zeigt_nicht_an', label: 'Zeigt nicht an / Verlassen' },
   { id: 'fehlanzeige', label: 'Fehlanzeige' },
   { id: 'bedraengen', label: 'Bedrängen' },
+  { id: 'restgeruch', label: 'Restgeruch' },
+  { id: 'anzeige_kleidung', label: 'Anzeige Kleidungsstücke' },
+  { id: 'anzeige_futter', label: 'Anzeige Futter' },
+  { id: 'unsicherheit_gelaende', label: 'Unsicherheit Gelände' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -433,9 +436,27 @@ export function neueVerbellenSitzung(defaults = {}) {
   };
 }
 
-/** Alle Bewertungen einer Gruppe als Zahlen-Array (nur gesetzte Werte). */
+/** Gültige Kriterien einer Gruppe über beide Sparten hinweg. */
+export function kriterienIds(gruppe) {
+  const listen = {
+    team: [...TEAM_KRITERIEN, ...TEAM_KRITERIEN_TRUEMMER],
+    hund: HUND_KRITERIEN,
+    hf: HF_KRITERIEN,
+  };
+  return new Set((listen[gruppe] || []).map((k) => k.id));
+}
+
+/**
+ * Alle Bewertungen einer Gruppe als Zahlen-Array (nur gesetzte Werte).
+ * Gezählt wird ausschließlich, was im aktuellen Katalog steht: Ein später
+ * entferntes Kriterium liegt zwar noch im Datensatz, darf den Durchschnitt
+ * aber nicht mehr unsichtbar verschieben.
+ */
 export function werteDerGruppe(suche, gruppe) {
-  const werte = Object.values(suche?.[gruppe] || {}).filter((v) => typeof v === 'number' && v > 0);
+  const gueltig = kriterienIds(gruppe);
+  const werte = Object.entries(suche?.[gruppe] || {})
+    .filter(([id, v]) => gueltig.has(id) && typeof v === 'number' && v > 0)
+    .map(([, v]) => v);
   const eigene = (suche?.eigeneKriterien?.[gruppe] || [])
     .map((k) => k.wert)
     .filter((v) => typeof v === 'number' && v > 0);

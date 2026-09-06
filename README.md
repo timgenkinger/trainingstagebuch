@@ -77,7 +77,7 @@ Stellen ab:
 |---|---|---|
 | Gelände | offen, dicht, Dornen, hügelig … | Gebäude intakt, Gebäude mit Trümmer, Trümmerkegel, Kieswerk o.ä., Felssturz, Tunnelsystem, Erdrutsch/Lawine, sonstiges |
 | Windrichtung | ja | entfällt |
-| Suchteam | 6 Kriterien | ohne Grundlinie, Strukturen und Ecken/Grenzen; dafür Beweglichkeit/Sicherheit des Hundes und Schwierigkeit der Verstecke, dazu ein Freitextfeld **Hilfen** |
+| Suchteam | 6 Kriterien | ohne Grundlinie, Strukturen und Ecken/Grenzen; dafür Beweglichkeit/Sicherheit des Hundes, dazu ein Freitextfeld **Hilfen** |
 | Versteckperson | Bild, Zeit, Fund, Radius, Anzeige 0–5 | zusätzlich *Hund kommt hin*, Verdeckung (teilweise/komplett) und Versteck (leicht/mittel/schwer) |
 
 Suchgebiet, Skizze, Verhalten Hund, **Verhalten Hundeführer:in**, Problemverhalten und

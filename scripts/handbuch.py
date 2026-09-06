@@ -394,7 +394,7 @@ E += [
         ["Team, Hund, Hundeführer:in", "je Kriterium eine Note von 1 bis 5 auf der Punkteskala. "
                                       "Bei der Hundeführer:in sieben Kriterien, darunter "
                                       "„Kann den Hund lesen“"],
-        ["Problemverhalten", "sechs Merkmale zum Ankreuzen mit Feld für den Kontext"],
+        ["Problemverhalten", "zehn Merkmale zum Ankreuzen mit Feld für den Kontext"],
         ["Notizen und Konsequenz", "Freitext sowie Beobachten, Bearbeiten, Neues Ziel"],
     ], [42 * mm, BREITE - 42 * mm]),
     Spacer(1, 6),
@@ -407,8 +407,7 @@ E += [
                     "Kieswerk o.ä., Felssturz, Tunnelsystem, Erdrutsch/Lawine (vergraben), sonstiges"],
         ["Windrichtung", "entfällt"],
         ["Suchteam", "ohne Grundlinie, Strukturen und Ecken/Grenzen. Dafür Beweglichkeit/Sicherheit "
-                     "des Hundes und Schwierigkeit der Verstecke, dazu ein Freitextfeld für die "
-                     "gegebenen Hilfen"],
+                     "des Hundes, dazu ein Freitextfeld für die gegebenen Hilfen"],
         ["Versteckperson", "zusätzlich: Hund kommt hin (ja/nein), Verdeckung (teilweise oder "
                            "komplett) und Versteck (leicht, mittel, schwer)"],
     ], [34 * mm, BREITE - 34 * mm], kopf=False),

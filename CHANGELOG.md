@@ -1,5 +1,17 @@
 # Änderungsprotokoll
 
+## 1.14.0 – 2026-09-06
+- **Vier neue Problemverhalten:** Restgeruch, Anzeige Kleidungsstücke, Anzeige Futter,
+  Unsicherheit Gelände. Damit zehn statt sechs, in beiden Sparten.
+- „Rauslaufen für Wind“ heisst jetzt **„Hund versucht selbständig Geruch zu finden“**.
+  Nur die Beschriftung wurde geaendert, die Kennung bleibt – bereits erfasste Bewertungen
+  behalten ihren Bezug.
+- **„Schwierigkeit der Verstecke“ im Suchteam der Trümmersuche entfernt.** Die Schwierigkeit
+  steht ohnehin je Versteckperson (leicht/mittel/schwer).
+- Dabei behoben: Werte entfernter Kriterien lagen weiter im Datensatz und flossen
+  unsichtbar in den Durchschnitt ein. Gezählt wird jetzt ausschliesslich, was im aktuellen
+  Katalog steht.
+
 ## 1.13.0 – 2026-09-06
 - **„Kann den Hund lesen“ gilt jetzt in beiden Sparten.** Das Kriterium kam mit der
   Trümmersuche und steht nun auch in der Flächensuche zur Verfügung – damit hat
