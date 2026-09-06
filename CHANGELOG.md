@@ -1,5 +1,13 @@
 # Änderungsprotokoll
 
+## 1.15.1 – 2026-09-06
+- **Der Datenexport ist jetzt der Ausbildung vorbehalten.** Grund: Er umfasst den gesamten
+  Bestand auf dem Geraet – auch Hunde, die der bedienenden Person nicht zugeordnet sind,
+  weil der Abgleich alle Daten lokal ablegt. Ohne die Einschraenkung liesse sich die
+  Rollentrennung damit umgehen.
+- Der Import bleibt fuer alle offen; er mischt nur und ueberschreibt nichts Neueres.
+- Hundefuehrer:innen sehen an der Stelle den Grund statt eines fehlenden Knopfes.
+
 ## 1.15.0 – 2026-09-06
 - **Neue Dashboard-Statistik: Schwierigkeit der Verstecke je Hund.** Wie viele leichte,
   mittlere und schwere Verstecke im gewaehlten Zeitraum, als Balken und als Tabelle,

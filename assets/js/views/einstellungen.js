@@ -174,11 +174,18 @@ function html() {
 
     ${karte('Sicherung', `
       <div class="btn-zeile">
-        <button type="button" class="btn btn--still" data-export>Alle Daten exportieren (JSON)</button>
+        ${R.istAusbilder()
+          ? '<button type="button" class="btn btn--still" data-export>Alle Daten exportieren (JSON)</button>'
+          : ''}
         <label class="btn btn--still">Import … <input type="file" accept="application/json,.json" hidden data-import></label>
       </div>
       <p class="karte__hint">Der Import mischt nur: bestehende neuere Datensätze bleiben erhalten.
         Es liegen ${store.rohdaten().length} Datensätze auf diesem Gerät. Der Zugangs-Token wird nie mit exportiert.</p>
+      ${R.istAusbilder()
+        ? ''
+        : `<p class="karte__hint">Der Export ist der Ausbildung vorbehalten: Er umfasst den gesamten
+           Bestand auf diesem Gerät – also auch Hunde, die dir nicht zugeordnet sind, weil der
+           Abgleich alle Daten lokal ablegt.</p>`}
     `)}
 
     ${karte('Papierkorb', muell.length
@@ -416,6 +423,12 @@ function binde(box, wurzel) {
     }
 
     if (t.closest('[data-export]')) {
+      // Zweite Sperre neben der Anzeige: Der Export umfasst den gesamten
+      // lokalen Bestand und ist deshalb der Ausbildung vorbehalten.
+      if (!R.istAusbilder()) {
+        toast('Der Export ist der Ausbildung vorbehalten.', 'fehler');
+        return;
+      }
       download(`trainingstagebuch-${new Date().toISOString().slice(0, 10)}.json`, store.exportJson());
       return;
     }
