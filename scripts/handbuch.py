@@ -513,6 +513,10 @@ E += [
         "<b>Problemverhalten:</b> wie oft welches Merkmal auftrat.",
         "<b>Bedingungen:</b> welche Bedingungen trainiert wurden (zeigt Lücken im Plan) und die "
         "Ø Note je Bedingung – einschließlich der Wartezeit im Auto in vier Stufen.",
+        "<b>Schwierigkeit der Verstecke</b> je Hund: wie viele leichte, mittlere und schwere im "
+        "gewählten Zeitraum, dazu das Datum, an dem die Kategorie zuletzt vorkam. Das Datum "
+        "bezieht sich bewusst auf alle abgeschlossenen Suchen – sonst hinge die Antwort auf "
+        "„wann zuletzt“ am Zeitraumfilter.",
         "<b>Verbellen und Helfer:in-Bilder</b> je Hund im Überblick.",
     ]),
     p("Filter nach Hund und Zeitraum stehen oben. Ohne Hundefilter erscheint beim Verbellen "

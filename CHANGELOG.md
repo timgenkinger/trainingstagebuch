@@ -1,5 +1,14 @@
 # Änderungsprotokoll
 
+## 1.15.0 – 2026-09-06
+- **Neue Dashboard-Statistik: Schwierigkeit der Verstecke je Hund.** Wie viele leichte,
+  mittlere und schwere Verstecke im gewaehlten Zeitraum, als Balken und als Tabelle,
+  dazu das Datum, an dem die Kategorie zuletzt vorkam.
+- Das Datum bezieht sich bewusst auf alle abgeschlossenen Suchen, nicht auf den
+  Zeitraumfilter – sonst haenge die Antwort auf „wann zuletzt“ am Filter und
+  beantwortete die eigentliche Frage nicht. Der Kartenhinweis sagt das.
+- Ohne Hundefilter erscheint eine Zeile je Hund.
+
 ## 1.14.0 – 2026-09-06
 - **Vier neue Problemverhalten:** Restgeruch, Anzeige Kleidungsstücke, Anzeige Futter,
   Unsicherheit Gelände. Damit zehn statt sechs, in beiden Sparten.

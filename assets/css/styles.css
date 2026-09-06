@@ -1315,3 +1315,22 @@ span.wdh { cursor: default; }
 
 .foto-gross { padding: 1rem; flex-direction: column; gap: .8rem; }
 .foto-gross img { max-width: 100%; max-height: 82vh; border-radius: var(--r); }
+
+/* --- Schwierigkeit der Verstecke (Dashboard) --- */
+.verstecke { display: flex; flex-direction: column; gap: 1.1rem; }
+.vs-zeile__kopf { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.vs-zeile__summe { font-size: .8rem; color: var(--text-leise); }
+.vs-zeile .stapel { margin: .35rem 0 .5rem; }
+.vs-tabelle { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.vs-tabelle th {
+  text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--text-leise); padding: .2rem .4rem; border-bottom: 1px solid var(--rand);
+}
+.vs-tabelle td { padding: .35rem .4rem; border-bottom: 1px solid var(--rand); }
+.vs-tabelle tr:last-child td { border-bottom: none; }
+.vs-zahl { font-variant-numeric: tabular-nums; font-weight: 650; }
+.vs-punkt {
+  display: inline-block; width: 10px; height: 10px; border-radius: 3px;
+  margin-right: .45rem; vertical-align: -1px;
+}
+.vs-nie { color: var(--text-leise); }

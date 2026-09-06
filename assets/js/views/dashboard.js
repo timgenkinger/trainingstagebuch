@@ -90,7 +90,7 @@ function html() {
 }
 
 function inhalt(daten) {
-  return verbellenBlock() + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
+  return verbellenBlock() + versteckBlock(daten) + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
 }
 
 /* -------------------- Kennzahlen -------------------- */
@@ -181,6 +181,89 @@ function verbellenBlock() {
          <a href="#/verbellen-sitzung/neu">Erste Sitzung anlegen →</a></p>`,
     { hint: `Abgeleitet aus den Sitzungen · ${V.NOETIGE_WIEDERHOLUNGEN} gelungene Wiederholungen je Unterübung` }
   );
+}
+
+/* -------------------- Schwierigkeit der Verstecke -------------------- */
+
+/** Farben ohne Wertung: zunehmende Schwere, kein Ampelschema. */
+const VERSTECK_FARBEN = { leicht: '#c3cad3', mittel: '#8b95a2', schwer: '#4b5560' };
+
+/**
+ * Zählt die Verstecke einer Sammlung von Suchen je Schwierigkeit.
+ * @returns {Object} id -> { anzahl, letzteAm }
+ */
+function versteckZaehlung(suchen, hundId) {
+  const z = {};
+  S.VERSTECK_SCHWIERIGKEIT.forEach((k) => (z[k.id] = { anzahl: 0, letzteAm: null }));
+  suchen
+    .filter((s) => !hundId || s.hundId === hundId)
+    .forEach((s) => {
+      (s.helfer || []).forEach((h) => {
+        if (!h.versteck || !z[h.versteck]) return;
+        z[h.versteck].anzahl++;
+        if (!z[h.versteck].letzteAm || (s.datum || '') > z[h.versteck].letzteAm) {
+          z[h.versteck].letzteAm = s.datum;
+        }
+      });
+    });
+  return z;
+}
+
+/**
+ * Verteilung der Versteckschwierigkeit je Hund.
+ * Die Anzahl bezieht sich auf den gewählten Zeitraum, das Datum dagegen auf
+ * alle abgeschlossenen Suchen – "wann zuletzt" wäre sonst vom Filter abhängig
+ * und beantwortete die eigentliche Frage nicht.
+ */
+function versteckBlock(daten) {
+  const hunde = filter.hundId ? [store.get(filter.hundId)].filter(Boolean) : R.meineHunde();
+  if (!hunde.length) return '';
+
+  const alleAbgeschlossenen = R.filtereDokumente(store.suchen()).filter((x) => S.istAbgeschlossen(x));
+
+  const zeilen = hunde.map((h) => ({
+    hund: h,
+    imZeitraum: versteckZaehlung(daten, h.id),
+    gesamt: versteckZaehlung(alleAbgeschlossenen, h.id),
+  }));
+
+  const etwasDa = zeilen.some((z) => Object.values(z.gesamt).some((x) => x.anzahl > 0));
+  if (!etwasDa) {
+    return karte('Schwierigkeit der Verstecke',
+      `<p class="karte__hint">Noch keine Versteckschwierigkeit erfasst. Sie wird je Versteckperson
+        in der Trümmersuche eingetragen (leicht, mittel, schwer).</p>`);
+  }
+
+  return karte('Schwierigkeit der Verstecke', `
+    <div class="verstecke">
+      ${zeilen.map((z) => {
+        const summe = Object.values(z.imZeitraum).reduce((n, x) => n + x.anzahl, 0);
+        return `<div class="vs-zeile">
+          <div class="vs-zeile__kopf">
+            <strong>${esc(z.hund.name)}</strong>
+            <span class="vs-zeile__summe">${summe} Versteck(e) im Zeitraum</span>
+          </div>
+          ${summe
+            ? stapel(S.VERSTECK_SCHWIERIGKEIT.map((k) => ({
+                label: k.label, wert: z.imZeitraum[k.id].anzahl, farbe: VERSTECK_FARBEN[k.id],
+              })), summe)
+            : '<p class="karte__hint">im gewählten Zeitraum keine</p>'}
+          <table class="vs-tabelle">
+            <thead><tr><th>Schwierigkeit</th><th>Anzahl</th><th>zuletzt</th></tr></thead>
+            <tbody>
+              ${S.VERSTECK_SCHWIERIGKEIT.map((k) => `<tr>
+                <td><span class="vs-punkt" style="background:${VERSTECK_FARBEN[k.id]}"></span>${esc(k.label)}</td>
+                <td class="vs-zahl">${z.imZeitraum[k.id].anzahl}</td>
+                <td>${z.gesamt[k.id].letzteAm
+                  ? esc(formatDatum(z.gesamt[k.id].letzteAm))
+                  : '<span class="vs-nie">noch nie</span>'}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+      }).join('')}
+    </div>
+  `, { hint: 'Anzahl im gewählten Zeitraum, Datum über alle abgeschlossenen Suchen.' });
 }
 
 /* -------------------- Leistungsverlauf -------------------- */
