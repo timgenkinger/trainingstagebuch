@@ -1221,3 +1221,24 @@ span.wdh { cursor: default; }
 .bild-zeile__weg { display: grid; place-items: center; }
 .schalter--knapp { font-size: .82rem; white-space: nowrap; }
 .schalter--knapp input { width: 18px; height: 18px; }
+
+/* --- Skala 0 bis 5 (Anzeige in der Trümmersuche) --- */
+.skala--null .dot { width: 27px; height: 27px; }
+@media (max-width: 420px) { .skala--null { gap: .3rem; } .skala--null .dot { width: 24px; height: 24px; } }
+
+/* --- Zusätzliche Angaben zur Versteckperson (Trümmersuche) --- */
+.versteck-raster { margin-bottom: .2rem; }
+.mini-wahl { display: flex; flex-wrap: wrap; gap: .3rem; min-height: var(--tap); align-items: center; }
+.krit--anzeige { border-top: 1px solid var(--rand); border-bottom: none; padding-top: .6rem; }
+
+/* --- Sparte der Suche --- */
+.abz--truemmer { background: #5a4632; color: #fff; border-color: #5a4632; }
+.such-karte--truemmer { border-left: 4px solid #8a6d4d; }
+@media (prefers-color-scheme: dark) {
+  .abz--truemmer { background: #a8825c; color: #16181b; border-color: #a8825c; }
+}
+
+/* Trümmersuche: eigener Farbton, damit die beiden Sparten unterscheidbar sind
+   und nicht zwei gleich starke rote Knöpfe nebeneinander stehen. */
+.btn--truemmer { background: #6b533a; border-color: #6b533a; color: #fff; }
+.btn--truemmer:hover { background: #55412d; border-color: #55412d; }

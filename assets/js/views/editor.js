@@ -70,6 +70,7 @@ export async function render(wurzel, params) {
         // ersatzweise der zuletzt dokumentierte Stand.
         hundId: R.standardHundId() || letzte?.hundId || R.meineHunde()[0]?.id,
         hfId: R.standardHfId() || letzte?.hfId,
+        sparte: params.sparte,
       }),
       id: store.uid(),
     };
@@ -110,12 +111,15 @@ function html() {
   const hunde = store.hunde().map((h) => ({ id: h.id, label: h.name }));
   const personen = store.personen().map((p) => ({ id: p.id, label: p.name }));
   const score = S.gesamtScore(suche);
+  const sparte = S.sparteVon(suche);
+  const truemmer = sparte === 'truemmer';
 
   return `
   <div class="editor">
     <div class="editor__kopf">
       <div>
-        <h1>Suche vom ${esc(formatDatum(suche.datum, true))} <span data-status-abz>${statusAbzeichen(suche)}</span></h1>
+        <h1>${esc(S.sparteLabel(suche))} vom ${esc(formatDatum(suche.datum, true))}
+          <span data-status-abz>${statusAbzeichen(suche)}</span></h1>
         <p class="editor__meta">
           <span data-speicherstatus>Gespeichert</span><span data-gesamtnote>${
             score != null ? ` · Gesamtnote <strong>${formatNote(score)}</strong>` : ''
@@ -148,18 +152,24 @@ function html() {
     `)}
 
     ${karte('Versteckpersonen & Funde', helferTabelle(), {
-      hint: `Pro Versteckperson: Zeit bis zum Fund, gewähltes Helfer:in-Bild und Abstand zur Hundeführer:in beim Fund. Angezeigt wird durchgängig durch ${S.ANZEIGE_ART}.`,
+      hint: truemmer
+        ? 'Pro Versteckperson: Zeit bis zum Fund, Helfer:in-Bild, Abstand, Verdeckung, Schwierigkeit des Verstecks und die Bewertung der Anzeige.'
+        : `Pro Versteckperson: Zeit bis zum Fund, gewähltes Helfer:in-Bild und Abstand zur Hundeführer:in beim Fund. Angezeigt wird durchgängig durch ${S.ANZEIGE_ART}.`,
       aktion: `<button type="button" class="btn btn--mini" data-helfer-plus>+ Person</button>`,
     })}
 
-    ${karte('Team: Verlauf der Suche', `
-      ${S.TEAM_KRITERIEN.map((k) =>
+    ${karte(truemmer ? 'Suchteam' : 'Team: Verlauf der Suche', `
+      ${S.teamKriterienFuer(sparte).map((k) =>
         skalaZeile(k.label, `team.${k.id}`, suche.team?.[k.id], {
           hint: k.hint,
           extra: k.hasCheck ? ampel('teamAblageOk', suche.teamAblageOk) : '',
         })
       ).join('')}
       ${eigeneKriterien('team')}
+      ${truemmer
+        ? `<h3 class="unter">Hilfen</h3>
+           ${textArea('hilfen', suche.hilfen, { rows: 3, placeholder: 'Welche Hilfen wurden gegeben?' })}`
+        : ''}
     `)}
 
     ${karte('Verhalten Hund', `
@@ -186,7 +196,7 @@ function html() {
 
     ${karte('Verhalten Hundeführer:in', `
       <h3 class="unter">Leistung</h3>
-      ${S.HF_KRITERIEN.map((k) => skalaZeile(k.label, `hf.${k.id}`, suche.hf?.[k.id])).join('')}
+      ${S.hfKriterienFuer(sparte).map((k) => skalaZeile(k.label, `hf.${k.id}`, suche.hf?.[k.id])).join('')}
       ${eigeneKriterien('hf')}
       <h3 class="unter">Selbstreflektion und Vorsätze</h3>
       ${textArea('selbstreflektion', suche.selbstreflektion, { rows: 5 })}
@@ -266,10 +276,37 @@ function helferTabelle() {
         ${feld('Suchzeit bis (min)', textInput(`helfer.${i}.zeitBisMin`, h.zeitBisMin, { type: 'number', inputmode: 'decimal', min: 0, step: 0.5 }))}
         ${feld('Radius zur HF (m)', textInput(`helfer.${i}.radiusM`, h.radiusM, { type: 'number', inputmode: 'numeric', min: 0, step: 1 }))}
       </div>
+      ${S.sparteVon(suche) === 'truemmer' ? truemmerZeile(h, i) : ''}
       ${feld('Element / Bemerkung', textInput(`helfer.${i}.beschreibung`, h.beschreibung, { placeholder: 'z.B. Versteck unter Wurzelteller, Wind seitlich' }))}
     </div>`
     )
     .join('')}</div>`;
+}
+
+/** Zusätzliche Angaben zur Versteckperson – nur in der Trümmersuche. */
+function truemmerZeile(h, i) {
+  const wahl = (pfad, wert, optionen) =>
+    optionen
+      .map(
+        (o) => `<button type="button" class="mini-chip${wert === o.id ? ' mini-chip--an' : ''}"
+          data-wahl="${pfad}" data-id="${esc(o.id)}" aria-pressed="${wert === o.id}">${esc(o.label)}</button>`
+      )
+      .join('');
+
+  return `<div class="raster raster--3 versteck-raster">
+    ${feld('Hund kommt hin', `<span class="mini-wahl">
+      <button type="button" class="mini-chip${h.kommtHin === true ? ' mini-chip--an' : ''}"
+        data-tri="helfer.${i}.kommtHin" data-wert="true">ja</button>
+      <button type="button" class="mini-chip${h.kommtHin === false ? ' mini-chip--an mini-chip--rot' : ''}"
+        data-tri="helfer.${i}.kommtHin" data-wert="false">nein</button>
+    </span>`)}
+    ${feld('Verdeckung', `<span class="mini-wahl">${wahl(`helfer.${i}.verdeckung`, h.verdeckung, S.VERDECKUNG)}</span>`)}
+    ${feld('Versteck', `<span class="mini-wahl">${wahl(`helfer.${i}.versteck`, h.versteck, S.VERSTECK_SCHWIERIGKEIT)}</span>`)}
+  </div>
+  <div class="krit krit--anzeige">
+    <div class="krit__label"><span>Anzeige</span><small>0 = keine Anzeige</small></div>
+    ${skala(`helfer.${i}.anzeigeNote`, h.anzeigeNote, { abNull: true })}
+  </div>`;
 }
 
 /* ---------------------------------------------------------------- */
@@ -378,6 +415,20 @@ function binde(wurzel) {
           b.classList.toggle('mini-chip--an', an);
           b.classList.toggle('mini-chip--rot', an && !ja);
         }
+      });
+      markiere();
+      return;
+    }
+
+    const wahl = t.closest('[data-wahl]');
+    if (wahl) {
+      const pfad = wahl.dataset.wahl;
+      const neu = getWert(pfad) === wahl.dataset.id ? '' : wahl.dataset.id;
+      setPath(suche, pfad, neu);
+      wurzel.querySelectorAll(`[data-wahl="${CSS.escape(pfad)}"]`).forEach((b) => {
+        const an = b.dataset.id === neu;
+        b.classList.toggle('mini-chip--an', an);
+        b.setAttribute('aria-pressed', String(an));
       });
       markiere();
       return;

@@ -1,6 +1,6 @@
 /** Kleine UI-Bausteine ohne Framework. */
 
-import { SCALE_MAX, SCALE_COLORS, SCALE_LABELS } from './schema.js';
+import { SCALE_MAX, SCALE_COLORS, SCALE_LABELS, SCALE_COLORS_0, SCALE_LABELS_0 } from './schema.js';
 
 export function esc(v) {
   return String(v ?? '')
@@ -88,15 +88,24 @@ export function skalaFarbe(wert) {
 /* Bausteine (liefern HTML-Strings)                                  */
 /* ---------------------------------------------------------------- */
 
-/** 5er-Punkteskala wie im Heft (rot -> grün). */
+/**
+ * Punkteskala wie im Heft (rot -> grün).
+ * @param {{klein?:boolean, abNull?:boolean}} opts  abNull erzeugt eine Skala 0–5,
+ *        wobei die 0 für "keine Anzeige" steht und deshalb grau ist.
+ */
 export function skala(pfad, wert, opts = {}) {
-  const punkte = Array.from({ length: SCALE_MAX }, (_, i) => {
-    const v = i + 1;
-    const aktiv = Number(wert) === v;
-    return `<button type="button" class="dot${aktiv ? ' dot--aktiv' : ''}" data-skala="${esc(pfad)}" data-wert="${v}"
-      style="--dot:${SCALE_COLORS[i]}" aria-label="${esc(SCALE_LABELS[i])}" aria-pressed="${aktiv}"></button>`;
-  }).join('');
-  return `<div class="skala${opts.klein ? ' skala--klein' : ''}" role="group">${punkte}</div>`;
+  const abNull = !!opts.abNull;
+  const farben = abNull ? SCALE_COLORS_0 : SCALE_COLORS;
+  const namen = abNull ? SCALE_LABELS_0 : SCALE_LABELS;
+  const punkte = farben
+    .map((farbe, i) => {
+      const v = abNull ? i : i + 1;
+      const aktiv = Number(wert) === v && wert !== null && wert !== undefined && wert !== '';
+      return `<button type="button" class="dot${aktiv ? ' dot--aktiv' : ''}" data-skala="${esc(pfad)}" data-wert="${v}"
+        style="--dot:${farbe}" aria-label="${esc(namen[i])}" title="${esc(namen[i])}" aria-pressed="${aktiv}"></button>`;
+    })
+    .join('');
+  return `<div class="skala${opts.klein ? ' skala--klein' : ''}${abNull ? ' skala--null' : ''}" role="group">${punkte}</div>`;
 }
 
 /** Zeile: Label links, Skala rechts. */

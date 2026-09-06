@@ -8,8 +8,38 @@
 
 export const SCALE_MAX = 5;
 
+/**
+ * Sparten der Suche. Beide nutzen dasselbe Protokoll; die Trümmersuche
+ * weicht in Gelände, Bewertungskriterien und den Angaben zur Versteckperson ab.
+ * Bewusst eine Sparte statt einer eigenen Dokumentart – sonst müsste das
+ * Protokoll doppelt gepflegt werden und Auswertungen liefen auseinander.
+ */
+export const SPARTEN = [
+  { id: 'flaeche', label: 'Flächensuche', kurz: 'Fläche' },
+  { id: 'truemmer', label: 'Trümmersuche', kurz: 'Trümmer' },
+];
+
+export function sparteVon(suche) {
+  return suche?.sparte === 'truemmer' ? 'truemmer' : 'flaeche';
+}
+
+export function sparteLabel(suche) {
+  return SPARTEN.find((s) => s.id === sparteVon(suche)).label;
+}
+
 /** Farben der 5er-Skala – entsprechen den Punktreihen im Heft (rot -> grün). */
 export const SCALE_COLORS = ['#e0685c', '#ef9070', '#efc766', '#a9ce8b', '#5c9a5c'];
+/** Skala 0–5: 0 steht fuer "keine Anzeige" und ist deshalb grau, nicht rot. */
+export const SCALE_COLORS_0 = ['#b9b9bd', '#e0685c', '#ef9070', '#efc766', '#a9ce8b', '#5c9a5c'];
+export const SCALE_LABELS_0 = [
+  '0 – keine Anzeige',
+  '1 – deutlicher Trainingsbedarf',
+  '2 – ausbaufähig',
+  '3 – solide',
+  '4 – gut',
+  '5 – sehr gut',
+];
+
 export const SCALE_LABELS = [
   '1 – deutlicher Trainingsbedarf',
   '2 – ausbaufähig',
@@ -33,6 +63,25 @@ export const GELAENDE = [
   { id: 'huegelig', label: 'hügelig' },
   { id: 'steil', label: 'steil' },
 ];
+
+/** Gelände der Trümmersuche – eigene Liste, nicht die der Flächensuche. */
+export const GELAENDE_TRUEMMER = [
+  { id: 'gebaeude_intakt', label: 'Gebäude intakt' },
+  { id: 'gebaeude_truemmer', label: 'Gebäude mit Trümmer' },
+  { id: 'truemmerkegel', label: 'Trümmerkegel' },
+  { id: 'kieswerk', label: 'Kieswerk o.ä.' },
+  { id: 'felssturz', label: 'Felssturz' },
+  { id: 'tunnelsystem', label: 'Tunnelsystem' },
+  { id: 'erdrutsch', label: 'Erdrutsch/Lawine (vergraben)' },
+  { id: 'sonstiges', label: 'sonstiges' },
+];
+
+export function gelaendeFuer(sparte) {
+  return sparte === 'truemmer' ? GELAENDE_TRUEMMER : GELAENDE;
+}
+
+/** Alle Geländemerkmale beider Sparten – für Auswertungen über den Gesamtbestand. */
+export const GELAENDE_ALLE = () => [...GELAENDE, ...GELAENDE_TRUEMMER];
 
 export const TEMPERATUR = [
   { id: 'warm', label: 'warm' },
@@ -83,6 +132,22 @@ export const TEAM_KRITERIEN = [
   { id: 'ecken_grenzen_laufwege', label: 'Ecken/Grenzen/Laufwege ordentlich' },
 ];
 
+/**
+ * Suchteam in der Trümmersuche: Die drei letzten Kriterien der Flächensuche
+ * (Grundlinie, Strukturen, Ecken/Grenzen) entfallen, dafür kommen zwei hinzu.
+ */
+export const TEAM_KRITERIEN_TRUEMMER = [
+  { id: 'ablage_vor_suche', label: 'Ablage vor Suche', hasCheck: true },
+  { id: 'fokussiert_vor_start', label: 'fokussiert vor Start' },
+  { id: 'motivierter_start', label: 'motivierter Start' },
+  { id: 'beweglichkeit', label: 'Beweglichkeit/Sicherheit des Hundes' },
+  { id: 'schwierigkeit_verstecke', label: 'Schwierigkeit der Verstecke' },
+];
+
+export function teamKriterienFuer(sparte) {
+  return sparte === 'truemmer' ? TEAM_KRITERIEN_TRUEMMER : TEAM_KRITERIEN;
+}
+
 /* ------------------------------------------------------------------ */
 /* Seite 2 – Verhalten Hund                                            */
 /* ------------------------------------------------------------------ */
@@ -124,6 +189,31 @@ export const HF_KRITERIEN = [
   { id: 'ansprache_timing', label: 'Ansprache / Timing mit Hund' },
   { id: 'zusammenarbeit', label: 'Zusammenarbeit' },
   { id: 'konzentration', label: 'Konzentration / Ernsthaftigkeit' },
+];
+
+/** Trümmersuche: dieselben Kriterien wie in der Fläche, zusätzlich das Lesen des Hundes. */
+export const HF_KRITERIEN_TRUEMMER = [
+  ...HF_KRITERIEN,
+  { id: 'hund_lesen', label: 'Kann den Hund lesen' },
+];
+
+export function hfKriterienFuer(sparte) {
+  return sparte === 'truemmer' ? HF_KRITERIEN_TRUEMMER : HF_KRITERIEN;
+}
+
+/* ------------------------------------------------------------------ */
+/* Versteckperson in der Trümmersuche                                  */
+/* ------------------------------------------------------------------ */
+
+export const VERDECKUNG = [
+  { id: 'teilweise', label: 'teilw. verdeckt' },
+  { id: 'komplett', label: 'komplett verdeckt' },
+];
+
+export const VERSTECK_SCHWIERIGKEIT = [
+  { id: 'leicht', label: 'leicht' },
+  { id: 'mittel', label: 'mittel' },
+  { id: 'schwer', label: 'schwer' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -182,6 +272,10 @@ export const HELFER_BILDER = [
   { id: 'graben_verdeckt', label: 'Graben am Weg verdeckt (Natur)', key: true },
   { id: 'kleidung_reflektoren', label: 'Kleidung: Reflektoren', key: true },
   { id: 'wandernde_vp', label: 'wandernde VP (verschiedene Punkte im Gebiet)' },
+  { id: 'hochopfer', label: 'Hochopfer' },
+  { id: 'tiefopfer', label: 'Tiefopfer' },
+  { id: 'verdeckt_mit_sicht', label: 'Verdeckt mit Sicht zum Helfer' },
+  { id: 'verdeckt_ohne_sicht', label: 'Verdeckt ohne Sicht zum Helfer' },
 ];
 
 export const BILDER_BY_ID = Object.fromEntries(HELFER_BILDER.map((b) => [b.id, b]));
@@ -198,6 +292,11 @@ export function neueHelferZeile(nr) {
     zeitBisMin: null,
     gefunden: null,
     radiusM: null,
+    // nur in der Trümmersuche verwendet
+    kommtHin: null,
+    verdeckung: '',
+    versteck: '',
+    anzeigeNote: null,
   };
 }
 
@@ -205,6 +304,8 @@ export function neueSuche(defaults = {}) {
   const heute = new Date().toISOString().slice(0, 10);
   return {
     type: 'suche',
+    /** 'flaeche' oder 'truemmer' – beide nutzen dasselbe Protokoll. */
+    sparte: defaults.sparte === 'truemmer' ? 'truemmer' : 'flaeche',
     // Solange eine Suche 'entwurf' ist, bleibt sie auf diesem Gerät.
     // Erst mit 'abgeschlossen' wird sie für das Team hochgeladen.
     status: 'entwurf',
@@ -244,6 +345,8 @@ export function neueSuche(defaults = {}) {
 
     probleme: {},
     problemeKontext: '',
+    /** Trümmersuche: welche Hilfen gegeben wurden. */
+    hilfen: '',
 
     selbstreflektion: '',
     notizen: '',

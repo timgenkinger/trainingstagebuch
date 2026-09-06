@@ -254,7 +254,7 @@ E += [
     tabelle([
         ["", "Suche", "Verbellen", "Freie Dokumentation"],
         ["Wofür",
-         "Suchprotokoll nach Vorlage des Hefts",
+         "Suchprotokoll – Flächen- oder Trümmersuche",
          "Trainingsplan Verbellen",
          "alles andere: Gehorsam, Geräte, Theorie"],
         ["Inhalt",
@@ -378,8 +378,10 @@ E += [
 E += [
     p("4 &nbsp; Dokumentieren", "h1"),
 
-    p("4.1 &nbsp; Suche", "h2"),
-    p("Bildet Seite 1 und 2 des gedruckten Hefts ab.", "text"),
+    p("4.1 &nbsp; Suche: Fläche und Trümmer", "h2"),
+    p("Bildet Seite 1 und 2 des gedruckten Hefts ab. Angelegt wird sie über "
+      "<b>+ Flächensuche</b> oder <b>+ Trümmersuche</b>; beide nutzen dasselbe Protokoll und "
+      "erscheinen in der Übersicht mit einer Marke <i>Fläche</i> beziehungsweise <i>Trümmer</i>.", "text"),
     tabelle([
         ["Abschnitt", "Inhalt"],
         ["Grundwerte", "Wartezeit im Auto, Datum, Ort, Hund, Hundeführer:in, Trainingsziel"],
@@ -395,6 +397,23 @@ E += [
     Spacer(1, 6),
     p("Über <b>Duplizieren</b> entsteht eine neue Suche, welche die Rahmenbedingungen übernimmt "
       "und die Bewertungen leert – praktisch bei mehreren Suchen am selben Ort.", "klein"),
+
+    p("Was in der Trümmersuche anders ist", "h3"),
+    tabelle([
+        ["Gelände", "eigenes Verzeichnis: Gebäude intakt, Gebäude mit Trümmer, Trümmerkegel, "
+                    "Kieswerk o.ä., Felssturz, Tunnelsystem, Erdrutsch/Lawine (vergraben), sonstiges"],
+        ["Windrichtung", "entfällt"],
+        ["Suchteam", "ohne Grundlinie, Strukturen und Ecken/Grenzen. Dafür Beweglichkeit/Sicherheit "
+                     "des Hundes und Schwierigkeit der Verstecke, dazu ein Freitextfeld für die "
+                     "gegebenen Hilfen"],
+        ["Versteckperson", "zusätzlich: Hund kommt hin (ja/nein), Verdeckung (teilweise oder "
+                           "komplett), Versteck (leicht, mittel, schwer) und die Anzeige auf einer "
+                           "Skala von 0 bis 5 – die 0 steht für keine Anzeige"],
+        ["Hundeführer:in", "zusätzlich: Kann den Hund lesen"],
+    ], [34 * mm, BREITE - 34 * mm], kopf=False),
+    Spacer(1, 6),
+    p("Suchgebiet, Skizze, Verhalten Hund, Problemverhalten und Konsequenz sind in beiden "
+      "Sparten gleich. In der Übersicht und im Dashboard lässt sich nach Sparte filtern.", "klein"),
 
     p("4.2 &nbsp; Verbellen", "h2"),
     p("Der Trainingsplan umfasst zwei Wege: <b>Box</b> mit 33 Stufen und 148 Unterübungen, "
@@ -496,8 +515,8 @@ E += [
       "Filter für einen einzelnen Weg und für offene Stufen.", "text"),
 
     p("6.3 &nbsp; Helfer:in-Bilder", "h2"),
-    p("Alle 39 Bilder der Heftliste je Hund, in vier Stufen: kennengelernt, kurze Anzeige, "
-      "längere Anzeige, gemeistert. Die im Heft fett gedruckten sind als <b>wichtig</b> markiert.", "text"),
+    p("Alle Bilder der Liste je Hund, in vier Stufen: kennengelernt, kurze Anzeige, "
+      "längere Anzeige, gemeistert. Die im Heft fett gedruckten sind als <b>wichtig</b> markiert. Eigene Bilder lassen sich hier anlegen und stehen danach in jeder Sucherfassung zur Auswahl.", "text"),
     liste([
         "Ein Bild gilt automatisch als <b>kennengelernt</b>, sobald es in einer abgeschlossenen "
         "Suche als Versteckperson vorkam. Die Zeile zeigt dann, wie oft, wann zuletzt und wie oft gefunden.",

@@ -66,19 +66,23 @@ export function kopfKarte(rec, opts = {}) {
 
 export function gelaendeKarte(rec) {
   return karte('Geländebeschaffenheit', `
-    ${chipGruppe('gelaende', S.GELAENDE, rec.gelaende)}
+    ${chipGruppe('gelaende', S.gelaendeFuer(S.sparteVon(rec)), rec.gelaende)}
     ${feld('Sonstiges', textInput('gelaendeSonstiges', rec.gelaendeSonstiges, { placeholder: 'weitere Merkmale' }))}
   `);
 }
 
 export function wetterKarte(rec) {
+  // In der Trümmersuche spielt die Windrichtung keine Rolle und entfällt.
+  const mitWindrichtung = S.sparteVon(rec) !== 'truemmer';
   return karte('Temperatur / Wetter / Tageszeit', `
     <div class="gruppe"><h3>Temperatur</h3>${chipGruppe('temperatur', S.TEMPERATUR, rec.temperatur)}</div>
     <div class="gruppe"><h3>Wind</h3>${chipGruppe('wind', S.WIND, rec.wind)}</div>
     <div class="gruppe"><h3>Niederschlag</h3>${chipGruppe('niederschlag', S.NIEDERSCHLAG, rec.niederschlag)}</div>
     <div class="gruppe"><h3>Licht</h3>${chipGruppe('licht', S.LICHT, rec.licht)}</div>
     <div class="raster raster--2">
-      ${feld('Windrichtung', select('windrichtung', rec.windrichtung, S.HIMMELSRICHTUNGEN.map((r) => ({ id: r, label: r })), '– keine Angabe –'))}
+      ${mitWindrichtung
+        ? feld('Windrichtung', select('windrichtung', rec.windrichtung, S.HIMMELSRICHTUNGEN.map((r) => ({ id: r, label: r })), '– keine Angabe –'))
+        : ''}
       ${feld('Sonstiges', textInput('wetterSonstiges', rec.wetterSonstiges, { placeholder: 'z.B. Bodennebel' }))}
     </div>
   `);

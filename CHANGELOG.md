@@ -1,5 +1,21 @@
 # Änderungsprotokoll
 
+## 1.11.0 – 2026-09-06
+- **Trümmersuche als zweite Sparte der Suche.** Der Knopf „+ Neue Suche“ heisst jetzt
+  „+ Flächensuche“, daneben steht „+ Trümmersuche“. Beide nutzen dasselbe Protokoll.
+- Abweichungen der Trümmersuche: eigenes Geländeverzeichnis (8 Merkmale), keine
+  Windrichtung, Suchteam ohne Grundlinie/Strukturen/Ecken dafür mit Beweglichkeit und
+  Schwierigkeit der Verstecke plus Freitextfeld „Hilfen“, bei der Versteckperson
+  zusätzlich „Hund kommt hin“, Verdeckung, Schwierigkeit des Verstecks und die Anzeige
+  auf einer Skala 0–5, bei der Hundeführer:in zusätzlich „Kann den Hund lesen“.
+- Übersicht und Dashboard kennzeichnen und filtern nach Sparte; die Auswertung
+  berücksichtigt die Kriterien beider Sparten.
+- **Vier neue Helfer:in-Bilder:** Hochopfer, Tiefopfer, Verdeckt mit Sicht zum Helfer,
+  Verdeckt ohne Sicht zum Helfer (jetzt 43 statt 39).
+- Fehler behoben: Eine Ausbilder:in ohne zugeordnete Person sah gar nichts, obwohl sie
+  alles sehen darf. Die Sperre gilt jetzt nur noch für Hundeführer:innen; die Ausbildung
+  bekommt stattdessen einen Hinweis, weil ihr Name in den Bestätigungen steht.
+
 ## 1.10.0 – 2026-09-03
 - **Eigene Helfer:in-Bilder** lassen sich in der Uebersicht anlegen, wahlweise gleich als
   wichtig markiert. Sie stehen danach in jeder Sucherfassung zur Auswahl (mit dem Zusatz

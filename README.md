@@ -36,14 +36,33 @@ und Ausbildung. Neu erzeugen mit `python3 scripts/handbuch.py` (benötigt `repor
 
 | | **Suche** | **Verbellen** | **Freie Dokumentation** |
 |---|---|---|---|
-| Wofür | Suchprotokoll nach Vorlage des Hefts | Trainingsplan Verbellen | alles andere: Gehorsam, Geräte, Theorie |
+| Wofür | Suchprotokoll – Fläche oder Trümmer | Trainingsplan Verbellen | alles andere: Gehorsam, Geräte, Theorie |
 | Inhalt | Grundwerte, Skizze, Versteckpersonen, drei Bewertungsblöcke, Konsequenz | Grundwerte, bearbeitete Stufen mit Wiederholungen, Notizen | Grundwerte, Skizze, Freitext |
 | Auswertung | 5er-Skalen im Dashboard | Fortschrittskatalog je Hund | keine – nur in der Übersicht |
-| Anlegen | „+ Neue Suche" | „+ Verbellen" | „+ Freie Doku" |
+| Anlegen | „+ Flächensuche" / „+ Trümmersuche" | „+ Verbellen" | „+ Freie Doku" |
 
 Beide teilen sich denselben Block **Grundwerte**, der mit der **Wartezeit im Auto bis zur Suche**
 beginnt – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet.
 Danach folgen Datum, Ort, Hund, Hundeführer:in sowie Gelände und Wetter.
+
+### Zwei Sparten der Suche
+
+Fläche und Trümmer nutzen **dasselbe Protokoll** – bewusst eine Sparte statt einer eigenen
+Dokumentart, sonst müsste das Protokoll doppelt gepflegt werden und Dashboard,
+Helfer:in-Bilder und Bestätigungen liefen auseinander. Die Trümmersuche weicht an fünf
+Stellen ab:
+
+| | Flächensuche | Trümmersuche |
+|---|---|---|
+| Gelände | offen, dicht, Dornen, hügelig … | Gebäude intakt, Gebäude mit Trümmer, Trümmerkegel, Kieswerk o.ä., Felssturz, Tunnelsystem, Erdrutsch/Lawine, sonstiges |
+| Windrichtung | ja | entfällt |
+| Suchteam | 6 Kriterien | ohne Grundlinie, Strukturen und Ecken/Grenzen; dafür Beweglichkeit/Sicherheit des Hundes und Schwierigkeit der Verstecke, dazu ein Freitextfeld **Hilfen** |
+| Versteckperson | Bild, Zeit, Fund, Radius | zusätzlich *Hund kommt hin*, Verdeckung (teilweise/komplett), Versteck (leicht/mittel/schwer) und die **Anzeige auf einer Skala 0–5** |
+| Hundeführer:in | 6 Kriterien | zusätzlich *Kann den Hund lesen* |
+
+Suchgebiet, Skizze, Verhalten Hund, Problemverhalten und Konsequenz sind in beiden Sparten gleich.
+In der Übersicht tragen die Karten eine Marke *Fläche* oder *Trümmer*, und es lässt sich danach filtern;
+im Dashboard gibt es einen Spartenfilter.
 
 **Suche erfassen** (bildet Seite 1 und 2 des Hefts ab)
 
@@ -74,7 +93,8 @@ Zusätzlich: eigene Kriterien pro Bereich (die leeren Zeilen im Heft), Duplizier
 * Fortschritt bei den Helfer:in-Bildern
 * Filter nach Hund und Zeitraum
 
-**Helfer:in-Bilder** – die 39 Bilder der Heftliste plus selbst angelegte, als Fortschrittskatalog je Hund,
+**Helfer:in-Bilder** – die 43 Bilder der Liste (39 aus dem Heft, dazu Hochopfer, Tiefopfer,
+Verdeckt mit Sicht zum Helfer, Verdeckt ohne Sicht zum Helfer) plus selbst angelegte, als Fortschrittskatalog je Hund,
 vier Stufen (kennengelernt / kurze Anzeige / längere Anzeige / gemeistert). Die im Heft
 fett gedruckten Bilder sind als **wichtig** markiert. Bilder, bei denen korrektes Verhalten
 *keine* Anzeige ist (Attrappen), haben nur die erste Stufe.

@@ -9,7 +9,7 @@ import * as V from '../verbellen.js';
 import * as HB from '../helferbilder.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
 
-const filter = { hundId: '', zeitraum: 'alle', kriterium: 'gruppen', mitEntwuerfen: false };
+const filter = { hundId: '', zeitraum: 'alle', kriterium: 'gruppen', mitEntwuerfen: false, sparte: '' };
 
 const FARBE = { team: '#3c8a4f', hund: '#1d6fb8', hf: '#c2761b' };
 const GRUPPEN_LABEL = { team: 'Team', hund: 'Hund', hf: 'Hundeführer:in' };
@@ -33,7 +33,10 @@ function imZeitraum(s) {
 function datensatz() {
   const sichtbar = R.sichtbareHundIds();
   return R.filtereDokumente(store.suchen())
-    .filter((s) => (filter.mitEntwuerfen || S.istAbgeschlossen(s)) && (!filter.hundId || s.hundId === filter.hundId) && imZeitraum(s))
+    .filter((s) => (filter.mitEntwuerfen || S.istAbgeschlossen(s))
+      && (!filter.hundId || s.hundId === filter.hundId)
+      && (!filter.sparte || S.sparteVon(s) === filter.sparte)
+      && imZeitraum(s))
     .sort((a, b) => (a.datum || '').localeCompare(b.datum || ''));
 }
 
@@ -61,6 +64,10 @@ function html() {
       <select class="input" data-f="hundId">
         <option value="">Alle Hunde</option>
         ${hunde.map((h) => `<option value="${esc(h.id)}"${filter.hundId === h.id ? ' selected' : ''}>${esc(h.name)}</option>`).join('')}
+      </select>
+      <select class="input" data-f="sparte">
+        <option value="">Beide Sparten</option>
+        ${S.SPARTEN.map((x) => `<option value="${x.id}"${filter.sparte === x.id ? ' selected' : ''}>nur ${esc(x.label)}</option>`).join('')}
       </select>
       <select class="input" data-f="zeitraum">
         ${[
@@ -191,9 +198,9 @@ function verlauf(daten) {
   }));
 
   const alleKriterien = [
-    ...S.TEAM_KRITERIEN.map((k) => ({ ...k, gruppe: 'team' })),
+    ...vereinigt(S.TEAM_KRITERIEN, S.TEAM_KRITERIEN_TRUEMMER).map((k) => ({ ...k, gruppe: 'team' })),
     ...S.HUND_KRITERIEN.map((k) => ({ ...k, gruppe: 'hund' })),
-    ...S.HF_KRITERIEN.map((k) => ({ ...k, gruppe: 'hf' })),
+    ...vereinigt(S.HF_KRITERIEN, S.HF_KRITERIEN_TRUEMMER).map((k) => ({ ...k, gruppe: 'hf' })),
   ];
 
   let diagramm;
@@ -233,6 +240,12 @@ function verlauf(daten) {
 
 /* -------------------- Kriterien im Detail -------------------- */
 
+/** Kriterien beider Sparten ohne Doppelte – die Auswertung soll keines übersehen. */
+function vereinigt(a, b) {
+  const gesehen = new Set();
+  return [...a, ...b].filter((k) => (gesehen.has(k.id) ? false : gesehen.add(k.id)));
+}
+
 function kriterienBloecke(daten) {
   const block = (gruppe, kriterien, titel) => {
     const items = kriterien
@@ -268,9 +281,9 @@ function kriterienBloecke(daten) {
   };
 
   return `<div class="raster raster--2 raster--karten">
-    ${block('team', S.TEAM_KRITERIEN, 'Team: Verlauf der Suche')}
+    ${block('team', vereinigt(S.TEAM_KRITERIEN, S.TEAM_KRITERIEN_TRUEMMER), 'Suchteam')}
     ${block('hund', S.HUND_KRITERIEN, 'Verhalten Hund')}
-    ${block('hf', S.HF_KRITERIEN, 'Verhalten Hundeführer:in')}
+    ${block('hf', vereinigt(S.HF_KRITERIEN, S.HF_KRITERIEN_TRUEMMER), 'Verhalten Hundeführer:in')}
     ${radiusBlock(daten)}
   </div>`;
 }
@@ -334,12 +347,12 @@ function rahmenBlock(daten) {
     return katalog.filter((k) => z[k.id]).map((k) => ({ label: k.label, wert: z[k.id] })).sort((a, b) => b.wert - a.wert);
   };
 
-  const gelaende = zaehle('gelaende', S.GELAENDE);
+  const gelaende = zaehle('gelaende', S.GELAENDE_ALLE());
   const wetter = [...zaehle('temperatur', S.TEMPERATUR), ...zaehle('wind', S.WIND), ...zaehle('niederschlag', S.NIEDERSCHLAG), ...zaehle('licht', S.LICHT)];
 
   // Wie gut läuft es unter welchen Bedingungen?
   const nachBedingung = [];
-  [...S.GELAENDE, ...S.TEMPERATUR, ...S.WIND, ...S.NIEDERSCHLAG, ...S.LICHT].forEach((k) => {
+  [...S.GELAENDE_ALLE(), ...S.TEMPERATUR, ...S.WIND, ...S.NIEDERSCHLAG, ...S.LICHT].forEach((k) => {
     const treffer = daten.filter((s) =>
       ['gelaende', 'temperatur', 'wind', 'niederschlag', 'licht'].some((f) => (s[f] || []).includes(k.id))
     );

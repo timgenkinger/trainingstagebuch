@@ -25,7 +25,11 @@ function gefiltert() {
   // Hundeführer:innen sehen ausschließlich ihre eigenen Hunde.
   return R.filtereDokumente(store.dokumente()).filter((s) => {
     if (filter.nurUnbestaetigt && (R.istBestaetigt(s) || (s.status ?? 'abgeschlossen') !== 'abgeschlossen')) return false;
-    if (filter.art && s.type !== filter.art) return false;
+    if (filter.art) {
+      const [typ, sparte] = filter.art.split(':');
+      if (s.type !== typ) return false;
+      if (sparte && S.sparteVon(s) !== sparte) return false;
+    }
     if (filter.nurEntwuerfe && S.istAbgeschlossen(s)) return false;
     if (filter.hundId && s.hundId !== filter.hundId) return false;
     if (filter.jahr && !(s.datum || '').startsWith(filter.jahr)) return false;
@@ -37,7 +41,10 @@ function gefiltert() {
 }
 
 function html() {
-  if (!R.eingerichtet()) {
+  // Die Sperre gilt nur für Hundeführer:innen: Ohne Zuordnung gibt es keine Hunde
+  // und damit nichts zu zeigen. Die Ausbildung sieht ohnehin alles und bekommt
+  // nur einen Hinweis, weil ihr Name in den Bestätigungen steht.
+  if (!R.eingerichtet() && !R.istAusbilder()) {
     return `<div class="seite">${leer(
       'Dieses Gerät ist noch niemandem zugeordnet. Wähle unter Einstellungen aus, wer damit arbeitet – danach erscheinen deine Hunde und deren Dokumentation.',
       '<a class="btn btn--primaer" href="#/einstellungen">Zu den Einstellungen</a>'
@@ -58,6 +65,8 @@ function html() {
   const anzahlSuchen = alle.filter((s) => s.type === 'suche').length;
   const anzahlFrei = alle.filter((s) => s.type === 'freidoku').length;
   const anzahlVerbellen = alle.filter((s) => s.type === 'verbellen').length;
+  const anzahlFlaeche = alle.filter((s) => s.type === 'suche' && S.sparteVon(s) === 'flaeche').length;
+  const anzahlTruemmer = alle.filter((s) => s.type === 'suche' && S.sparteVon(s) === 'truemmer').length;
   const unbestaetigt = alle.filter((s) => (s.status ?? 'abgeschlossen') === 'abgeschlossen' && !R.istBestaetigt(s)).length;
 
   if (!alle.length) {
@@ -65,7 +74,8 @@ function html() {
       ${leer(
         'Noch nichts dokumentiert. Eine Suche folgt dem Protokoll aus dem Heft, eine freie Dokumentation hat nur Grundwerte, Skizze und Freitext.',
         `<div class="btn-zeile btn-zeile--mitte">
-          <a class="btn btn--primaer" href="#/suche/neu">Erste Suche anlegen</a>
+          <a class="btn btn--primaer" href="#/suche/neu">Erste Flächensuche anlegen</a>
+          <a class="btn btn--truemmer" href="#/suche/neu-truemmer">Trümmersuche</a>
           <a class="btn btn--still" href="#/doku/neu">Freie Dokumentation</a>
         </div>`
       )}
@@ -78,9 +88,17 @@ function html() {
       <div class="btn-zeile">
         <a class="btn btn--still" href="#/verbellen-sitzung/neu">+ Verbellen</a>
         <a class="btn btn--still" href="#/doku/neu">+ Freie Doku</a>
-        <a class="btn btn--primaer" href="#/suche/neu">+ Neue Suche</a>
+        <a class="btn btn--truemmer" href="#/suche/neu-truemmer">+ Trümmersuche</a>
+        <a class="btn btn--primaer" href="#/suche/neu">+ Flächensuche</a>
       </div>
     </div>
+
+    ${!R.eingerichtet() ? `<div class="hinweis-kasten">
+      <strong>Diesem Gerät ist noch keine Person zugeordnet</strong>
+      <p>Sichtbar ist trotzdem alles. Für Bestätigungen fehlt aber der Name –
+        sie erscheinen sonst nur als „Ausbildung“. Nachholen unter
+        <a href="#/einstellungen">Einstellungen</a>.</p>
+    </div>` : ''}
 
     <div class="filterleiste">
       <input class="input" type="search" placeholder="Ort, Ziel, Notizen durchsuchen …" data-f="text" value="${esc(filter.text)}">
@@ -95,6 +113,8 @@ function html() {
       <select class="input" data-f="art">
         <option value="">Alle Arten</option>
         <option value="suche"${filter.art === 'suche' ? ' selected' : ''}>nur Suchen (${anzahlSuchen})</option>
+        <option value="suche:flaeche"${filter.art === 'suche:flaeche' ? ' selected' : ''}>nur Flächensuchen (${anzahlFlaeche})</option>
+        <option value="suche:truemmer"${filter.art === 'suche:truemmer' ? ' selected' : ''}>nur Trümmersuchen (${anzahlTruemmer})</option>
         <option value="freidoku"${filter.art === 'freidoku' ? ' selected' : ''}>nur freie Doku (${anzahlFrei})</option>
         <option value="verbellen"${filter.art === 'verbellen' ? ' selected' : ''}>nur Verbellen (${anzahlVerbellen})</option>
       </select>
@@ -183,11 +203,12 @@ function karteSuche(s) {
     ['HF', S.mittelwert(S.werteDerGruppe(s, 'hf'))],
   ];
 
-  return `<a class="such-karte" href="#/suche/${esc(s.id)}">
+  return `<a class="such-karte${S.sparteVon(s) === 'truemmer' ? ' such-karte--truemmer' : ''}" href="#/suche/${esc(s.id)}">
     <div class="such-karte__haupt">
       <div class="such-karte__zeile1">
         <strong>${esc(formatDatum(s.datum))}</strong>
         <span class="such-karte__ort">${esc(s.ort || 'ohne Ortsangabe')}</span>
+        <span class="abz abz--art${S.sparteVon(s) === 'truemmer' ? ' abz--truemmer' : ''}">${esc(S.SPARTEN.find((x) => x.id === S.sparteVon(s)).kurz)}</span>
         ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
         ${bestaetigungAbzeichen(s)}
         ${score != null ? `<span class="note" style="--n:${skalaFarbe(score)}">${formatNote(score)}</span>` : ''}

@@ -20,7 +20,8 @@ import * as vEinrichtung from './views/einrichtung.js';
 const ROUTEN = [
   { muster: /^#\/suchen$/, view: vSuchen, tab: 'suchen', params: () => ({ nurUnbestaetigt: false }) },
   { muster: /^#\/bestaetigungen$/, view: vSuchen, tab: 'suchen', params: () => ({ nurUnbestaetigt: true }) },
-  { muster: /^#\/suche\/neu$/, view: vEditor, tab: 'suchen', params: () => ({}) },
+  { muster: /^#\/suche\/neu$/, view: vEditor, tab: 'suchen', params: () => ({ sparte: 'flaeche' }) },
+  { muster: /^#\/suche\/neu-truemmer$/, view: vEditor, tab: 'suchen', params: () => ({ sparte: 'truemmer' }) },
   { muster: /^#\/suche\/(.+)$/, view: vEditor, tab: 'suchen', params: (m) => ({ id: m[1] }) },
   { muster: /^#\/doku\/neu$/, view: vFreidoku, tab: 'suchen', params: () => ({}) },
   { muster: /^#\/doku\/(.+)$/, view: vFreidoku, tab: 'suchen', params: (m) => ({ id: m[1] }) },
