@@ -57,7 +57,7 @@ function html() {
   return `<div class="seite">
     <div class="seite__kopf">
       <h1>Dashboard</h1>
-      <a class="btn btn--still" href="#/suche/neu">+ Neue Suche</a>
+      <a class="btn btn--still" href="#/suche/neu">+ Flächensuche</a>
     </div>
 
     <div class="filterleiste">
@@ -90,7 +90,7 @@ function html() {
 }
 
 function inhalt(daten) {
-  return verbellenBlock() + versteckBlock(daten) + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
+  return verbellenBlock() + versteckBlock(daten) + personenBlock(daten) + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
 }
 
 /* -------------------- Kennzahlen -------------------- */
@@ -264,6 +264,60 @@ function versteckBlock(daten) {
       }).join('')}
     </div>
   `, { hint: 'Anzahl im gewählten Zeitraum, Datum über alle abgeschlossenen Suchen.' });
+}
+
+/* -------------------- Versteckpersonen -------------------- */
+
+/**
+ * Auswertung nach Versteckperson: Bei wem findet der Hund zuverlässig,
+ * bei wem hakt es? Ohne diese Zuordnung liesse sich das nicht erkennen.
+ */
+function personenBlock(daten) {
+  const z = {};
+  daten.forEach((s) => {
+    (s.helfer || []).forEach((h) => {
+      if (!h.personId) return;
+      const e = (z[h.personId] ||= { versteckt: 0, gefunden: 0, nicht: 0, noten: [], letzteAm: null });
+      e.versteckt++;
+      if (h.gefunden === true) e.gefunden++;
+      else if (h.gefunden === false) e.nicht++;
+      if (typeof h.anzeigeNote === 'number') e.noten.push(h.anzeigeNote);
+      if (!e.letzteAm || (s.datum || '') > e.letzteAm) e.letzteAm = s.datum;
+    });
+  });
+
+  const zeilen = Object.entries(z)
+    .map(([id, e]) => ({
+      name: store.get(id)?.name || 'unbekannt',
+      ...e,
+      quote: e.gefunden + e.nicht ? e.gefunden / (e.gefunden + e.nicht) : null,
+      note: S.mittelwert(e.noten),
+    }))
+    .sort((a, b) => (a.quote ?? 1) - (b.quote ?? 1) || b.versteckt - a.versteckt);
+
+  if (!zeilen.length) {
+    return karte('Versteckpersonen', `<p class="karte__hint">Noch keine Versteckperson zugeordnet.
+      Sie wird je Versteckperson in der Suche erfasst – erst dann lässt sich erkennen, bei wem
+      der Hund zuverlässig findet und bei wem es hakt.</p>`);
+  }
+
+  return karte('Versteckpersonen', `
+    <div class="tabelle-scroll"><table class="tabelle">
+      <thead><tr>
+        <th>Person</th><th>Versteckt</th><th>Gefunden</th><th>Ø Anzeige</th><th>zuletzt</th>
+      </tr></thead>
+      <tbody>${zeilen.map((r) => `<tr>
+        <td>${esc(r.name)}</td>
+        <td>${r.versteckt}×</td>
+        <td>${r.quote == null ? '<span class="t-leer">—</span>'
+          : `<span class="note note--klein" style="--n:${skalaFarbe(1 + r.quote * 4)}">${Math.round(r.quote * 100)} %</span>`
+            + ` <small>${r.gefunden}/${r.gefunden + r.nicht}</small>`}</td>
+        <td>${r.note == null ? '<span class="t-leer">—</span>'
+          : `<span class="note note--klein" style="--n:${skalaFarbe(Math.max(1, r.note))}">${formatNote(r.note)}</span>`}</td>
+        <td>${esc(formatDatum(r.letzteAm))}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  `, { hint: 'Schwächste Trefferquote zuerst. Zeigt, bei welchen Personen es hakt.' });
 }
 
 /* -------------------- Leistungsverlauf -------------------- */

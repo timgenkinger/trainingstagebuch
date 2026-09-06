@@ -277,7 +277,7 @@ E += [
     p("Was zusätzlich mitläuft", "h2"),
     liste([
         "<b>Helfer:in-Bilder:</b> Wird bei einer Versteckperson ein Bild gewählt, gilt es ab der "
-        "abgeschlossenen Suche als kennengelernt. Die Übersicht zeigt je Hund, welche der 39 Bilder "
+        "abgeschlossenen Suche als kennengelernt. Die Übersicht zeigt je Hund, welche der 43 Bilder "
         "gelaufen sind und welche noch nie.",
         "<b>Verbellen:</b> Der Fortschritt über 331 Unterübungen entsteht aus den Sitzungen, "
         "nicht aus einer zweiten Liste.",
@@ -309,24 +309,44 @@ E += [
     ], [30 * mm, BREITE - 30 * mm], kopf=False),
     Spacer(1, 8),
 
-    p("2.2 &nbsp; Wer arbeitet an diesem Gerät?", "h2"),
-    p("Ein neues Gerät ist immer <b>Hundeführer:in ohne Zuordnung</b> und zeigt deshalb "
-      "zunächst weder Hunde noch Einträge. Der erste Schritt führt in die Einstellungen:", "text"),
-    liste([
-        "<b>Einstellungen</b> öffnen (letzter Reiter).",
-        "Unter <b>Dieses Gerät</b> bei <i>Wer arbeitet an diesem Gerät?</i> den eigenen Namen wählen. "
-        "Steht er nicht in der Liste, muss ihn die Ausbildung zuerst anlegen.",
-        "Den <b>Gerätenamen</b> vergeben, zum Beispiel „Handy Rainer“. Er erscheint im Team als "
-        "„zuletzt geändert von“.",
-        "Den <b>Zugangs-Token</b> eintragen, damit der Abgleich läuft (siehe Abschnitt 7).",
-    ]),
-    p("Anschließend ordnet die Ausbildung dem eigenen Namen die Hunde zu. Erst dann erscheinen "
-      "Hunde und Dokumentation.", "text"),
+    p("2.2 &nbsp; Der Einrichtungsassistent", "h2"),
+    p("Ein Gerät, dem noch keine Person zugeordnet ist, landet beim Öffnen von allein im "
+      "<b>Einrichtungsassistenten</b>. Vier Schritte, danach ist die Anwendung nutzbar – "
+      "der Weg über die Einstellungen entfällt.", "text"),
+    tabelle([
+        ["1 &nbsp; Zugang",
+         "Den <b>Zugangscode</b> einsetzen, den es von der Ausbildung gibt. Die Anwendung prüft "
+         "ihn sofort und meldet zurück, wie viele Datensätze sie gefunden hat. Wer noch keinen "
+         "hat, geht über <i>Ohne Code fortfahren</i> weiter und trägt ihn später nach."],
+        ["2 &nbsp; Wer bist du?",
+         "Den eigenen Namen wählen oder neu anlegen. Dazu ein <b>Gerätename</b> wie "
+         "„Handy Rainer“ – er erscheint im Team als „zuletzt geändert von“."],
+        ["3 &nbsp; Dein Hund",
+         "Den eigenen Hund wählen oder anlegen. Er wird dem Namen <b>sofort zugeordnet</b>; "
+         "es braucht dafür niemanden aus der Ausbildung."],
+        ["4 &nbsp; Verbellen",
+         "Falls der Hund im Verbellen schon weiter ist: bis zu welcher Stufe der Plan sitzt – "
+         "getrennt für Box und Versteckperson. Siehe unten."],
+    ], [32 * mm, BREITE - 32 * mm], kopf=False),
+    Spacer(1, 8),
+    p("Angelegt wird erst beim Abschließen, nicht unterwegs – ein abgebrochener Versuch "
+      "hinterlässt also keine halben Einträge. Der Assistent endet immer in der Rolle "
+      "<b>Hundeführer:in</b>.", "text"),
+    p("Vorhandenen Verbellen-Stand übernehmen", "h3"),
+    p("Wer die ersten Stufen längst geübt hat, muss sie nicht nachtragen: Die erreichte Stufe "
+      "angeben genügt, alles davor gilt damit als erledigt. Weil der Fortschritt immer aus den "
+      "Sitzungen abgeleitet wird, entsteht dabei <b>eine eigens gekennzeichnete "
+      "Übernahme-Sitzung</b> mit dem Ort „Übernahme bei der Einrichtung“. So bleibt später "
+      "erkennbar, was wirklich protokolliert wurde und was beim Start eingetragen war.", "text"),
+    p("Der Assistent lässt sich jederzeit erneut aufrufen: <b>Einstellungen – "
+      "Einrichtungsassistent öffnen</b>. Eine bereits gesetzte Ausbilder-Rolle bleibt dabei "
+      "erhalten.", "text"),
 
     p("2.3 &nbsp; Der erste Eintrag", "h2"),
     liste([
-        "Im Reiter <b>Suchen</b> oben rechts die Art wählen: <b>+ Neue Suche</b>, "
-        "<b>+ Verbellen</b> oder <b>+ Freie Doku</b>.",
+        "Den roten <b>+</b>-Knopf unten rechts antippen. Er öffnet ein Menü mit allen vier "
+        "Möglichkeiten: <b>Flächensuche</b>, <b>Trümmersuche</b>, <b>Verbellen</b> und "
+        "<b>Freie Dokumentation</b>.",
         "Hund und Hundeführer:in sind bereits vorausgewählt.",
         "Ausfüllen. Gespeichert wird automatisch beim Tippen – es gibt keinen Speichern-Knopf, "
         "den man vergessen könnte.",
@@ -388,10 +408,11 @@ E += [
         ["Grundwerte", "Wartezeit im Auto, Datum, Ort, Hund, Hundeführer:in, Trainingsziel"],
         ["Geländebeschaffenheit", "offen, dicht, Dornen, hügelig, steil und weitere"],
         ["Temperatur / Wetter", "Temperatur, Wind, Niederschlag, Licht, Windrichtung"],
-        ["Suchgebiet", "Abmessungen, Suchzeit, Helfer:innen und das Zeichenfeld"],
-        ["Versteckpersonen", "je Person: Helfer:in-Bild, Zeit bis zum Fund, gefunden ja/nein, "
-                             "Abstand zur Hundeführer:in und die Anzeige auf einer Skala von 0 bis 5. "
-                             "Angezeigt wird durchgängig durch Bellen."],
+        ["Suchgebiet", "Abmessungen, Suchzeit und das Zeichenfeld"],
+        ["Versteckpersonen", "je Person: <b>wer sich versteckt hat</b>, Helfer:in-Bild, Zeit bis "
+                             "zum Fund, gefunden ja/nein, Abstand zur Hundeführer:in und die "
+                             "Anzeige auf einer Skala von 0 bis 5. Angezeigt wird durchgängig "
+                             "durch Bellen."],
         ["Team, Hund, Hundeführer:in", "je Kriterium eine Note von 1 bis 5 auf der Punkteskala. "
                                       "Bei der Hundeführer:in sieben Kriterien, darunter "
                                       "„Kann den Hund lesen“"],
@@ -401,6 +422,15 @@ E += [
     Spacer(1, 6),
     p("Über <b>Duplizieren</b> entsteht eine neue Suche, welche die Rahmenbedingungen übernimmt "
       "und die Bewertungen leert – praktisch bei mehreren Suchen am selben Ort.", "klein"),
+
+    p("Wer sich versteckt hat", "h3"),
+    p("Der Name der Versteckperson steht in derselben Zeile wie ihr Ergebnis. Neue Namen legt "
+      "<b>+ neu</b> direkt in der Zeile an; gleich geschriebene Namen werden zusammengeführt, "
+      "aus „Sabine Helfer“ und „sabine helfer“ wird also nicht zweimal dieselbe Person.", "text"),
+    p("Früher standen die Namen als eine Freitextzeile oben im Suchgebiet. Dort war zwar "
+      "festgehalten, wer dabei war, aber nicht, bei wem der Hund gefunden hat – auswerten ließ "
+      "sich das nicht. Aus der Zuordnung je Person entsteht nun die Dashboard-Karte "
+      "<b>Versteckpersonen</b>.", "text"),
 
     p("Was in der Trümmersuche anders ist", "h3"),
     tabelle([
@@ -518,6 +548,10 @@ E += [
         "gewählten Zeitraum, dazu das Datum, an dem die Kategorie zuletzt vorkam. Das Datum "
         "bezieht sich bewusst auf alle abgeschlossenen Suchen – sonst hinge die Antwort auf "
         "„wann zuletzt“ am Zeitraumfilter.",
+        "<b>Versteckpersonen:</b> je Person, wie oft sie versteckt war, die Trefferquote, die "
+        "Ø Anzeigenote und wann sie zuletzt dabei war – <b>schwächste Trefferquote zuerst</b>. "
+        "So fällt auf, wenn ein Hund bei einer bestimmten Person regelmäßig danebenliegt, etwa "
+        "weil sie sich anders verhält, anders riecht oder ruhiger ist.",
         "<b>Verbellen und Helfer:in-Bilder</b> je Hund im Überblick.",
     ]),
     p("Filter nach Hund und Zeitraum stehen oben. Ohne Hundefilter erscheint beim Verbellen "

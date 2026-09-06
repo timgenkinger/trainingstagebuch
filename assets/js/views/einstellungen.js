@@ -125,6 +125,7 @@ function html() {
         { hint: 'der Wechsel zur Ausbildung verlangt das vereinbarte Passwort' })}
       ${feld('Gerätename', textInput('__geraet', geraeteName(), { placeholder: 'z.B. Handy Rainer' }),
         { hint: 'erscheint im Team als "zuletzt geändert von"' })}
+      <div class="btn-zeile"><a class="btn btn--still" href="#/start">Einrichtungsassistent öffnen</a></div>
       <p class="karte__hint"><strong>Wichtig:</strong> Die Rolle ordnet die Ansicht, sie schützt die Daten nicht.
         Alle Geräte teilen sich eine Datei und einen Zugangs-Token – wer den Token hat, kann technisch
         den ganzen Bestand lesen. Für eine echte Zugriffssperre bräuchte es einen Server mit Benutzerkonten.</p>
@@ -160,6 +161,20 @@ function html() {
         <input class="input" placeholder="Name des Hundes" data-neu-hund>
         <button type="button" class="btn btn--primaer" data-add-hund>Hinzufügen</button>
       </div>
+    `)}
+
+    ${karte('Versteckpersonen', `
+      <div class="stamm-liste">
+        ${store.helferpersonen().length
+          ? store.helferpersonen().map((p) => stammZeile(p)).join('')
+          : leer('Noch keine Versteckperson angelegt. Sie entstehen auch direkt in der Suche.')}
+      </div>
+      <div class="btn-zeile">
+        <input class="input" placeholder="Name" data-neu-helferperson>
+        <button type="button" class="btn btn--primaer" data-add-helferperson>Hinzufügen</button>
+      </div>
+      <p class="karte__hint">Wer sich versteckt hat. Die Zuordnung je Versteckperson ermöglicht die
+        Auswertung, bei welchen Personen der Hund zuverlässig findet.</p>
     `)}
 
     ${karte('Hundeführer:innen', `
@@ -392,6 +407,14 @@ function binde(box, wurzel) {
       const el = box.querySelector('[data-neu-hund]');
       if (!el.value.trim()) return;
       await store.put({ type: 'hund', name: el.value.trim() });
+      zeichne(wurzel);
+      return;
+    }
+
+    if (t.closest('[data-add-helferperson]')) {
+      const el = box.querySelector('[data-neu-helferperson]');
+      if (!el.value.trim()) return;
+      await store.put({ type: 'helferperson', name: el.value.trim() });
       zeichne(wurzel);
       return;
     }

@@ -6,8 +6,8 @@ import * as S from '../schema.js';
 import * as HB from '../helferbilder.js';
 import * as R from '../rollen.js';
 import {
-  esc, feld, textInput, textArea, select, karte, chipGruppe, skala, skalaZeile,
-  setPath, toast, frage, debounce, formatDatum, formatNote,
+  esc, feld, feldBlock, textInput, textArea, select, karte, chipGruppe, skala, skalaZeile,
+  setPath, toast, frage, textFrage, debounce, formatDatum, formatNote,
 } from '../ui.js';
 import { skizzeHtml, skizzeAktivieren } from '../skizze.js';
 import { kopfKarte, gelaendeKarte, wetterKarte, statusAbzeichen, fotosKarte, fotosAktivieren, abschlussKarte as abschlussBaustein } from './bausteine.js';
@@ -144,10 +144,9 @@ function html() {
     ${wetterKarte(suche)}
 
     ${karte('Suchgebiet', `
-      <div class="raster raster--3">
+      <div class="raster raster--2">
         ${feld('Abmessungen', textInput('gebietGroesse', suche.gebietGroesse, { placeholder: 'z.B. 150 × 200 m' }))}
         ${feld('Suchzeit gesamt (min)', textInput('suchzeitMin', suche.suchzeitMin, { type: 'number', inputmode: 'decimal', min: 0, step: 1 }))}
-        ${feld('Helfer:innen (Namen)', textInput('helferNamen', suche.helferNamen, { placeholder: 'wer war versteckt?' }))}
       </div>
       ${skizzeHtml(suche.skizze)}
     `)}
@@ -274,6 +273,10 @@ function helferTabelle() {
         </span>
         ${suche.helfer.length > 1 ? `<button type="button" class="btn btn--mini btn--gefahr-still" data-helfer-weg="${i}">×</button>` : ''}
       </div>
+      ${feldBlock('Wer hat sich versteckt?', `<span class="person-wahl">
+        ${select(`helfer.${i}.personId`, h.personId, store.helferpersonen().map((p) => ({ id: p.id, label: p.name })), '– nicht erfasst –')}
+        <button type="button" class="btn btn--mini" data-person-neu="${i}">+ neu</button>
+      </span>`, { hint: 'ermöglicht die Auswertung nach Versteckperson' })}
       <div class="raster raster--3">
         ${feld('Helfer:in-Bild', select(`helfer.${i}.bildId`, h.bildId, HB.alleBilder().map((b) => ({ id: b.id, label: b.eigen ? b.label + ' (eigenes)' : b.label })), '– frei –'))}
         ${feld('Suchzeit bis (min)', textInput(`helfer.${i}.zeitBisMin`, h.zeitBisMin, { type: 'number', inputmode: 'decimal', min: 0, step: 0.5 }))}
@@ -468,6 +471,18 @@ function binde(wurzel) {
     if (weg) {
       const [gruppe, i] = weg.dataset.eigenWeg.split('.');
       suche.eigeneKriterien[gruppe].splice(Number(i), 1);
+      neuZeichnen();
+      return;
+    }
+
+    const pneu = t.closest('[data-person-neu]');
+    if (pneu) {
+      const i = Number(pneu.dataset.personNeu);
+      const name = (await textFrage('Neue Versteckperson', 'Name der Person, die sich versteckt hat:'))?.trim();
+      if (!name) return;
+      const schon = store.helferpersonen().find((p) => p.name.toLowerCase() === name.toLowerCase());
+      const p = schon || (await store.put({ type: 'helferperson', name }));
+      suche.helfer[i].personId = p.id;
       neuZeichnen();
       return;
     }

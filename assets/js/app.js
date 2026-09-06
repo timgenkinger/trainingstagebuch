@@ -16,6 +16,7 @@ import * as vDashboard from './views/dashboard.js';
 import * as vBilder from './views/bilder.js';
 import * as vEinstellungen from './views/einstellungen.js';
 import * as vEinrichtung from './views/einrichtung.js';
+import * as vStart from './views/start.js';
 
 const ROUTEN = [
   { muster: /^#\/suchen$/, view: vSuchen, tab: 'suchen', params: () => ({ nurUnbestaetigt: false }) },
@@ -32,6 +33,7 @@ const ROUTEN = [
   { muster: /^#\/bilder$/, view: vBilder, tab: 'bilder' },
   { muster: /^#\/einstellungen$/, view: vEinstellungen, tab: 'mehr' },
   { muster: /^#\/einrichtung$/, view: vEinrichtung, tab: 'mehr' },
+  { muster: /^#\/start$/, view: vStart, tab: '' },
 ];
 
 let aktuelleView = null;
@@ -58,6 +60,13 @@ async function route(navigiert = true) {
   if (aktuelleView === vVerbellenEditor && treffer.r.view !== vVerbellenEditor) vVerbellenEditor.flushEditor();
   // Laufende Abonnements der verlassenen Ansicht beenden.
   if (aktuelleView && aktuelleView !== treffer.r.view) aktuelleView.verlassen?.();
+
+  // Nicht eingerichtete Geräte in den Assistenten führen. Einstellungen und
+  // der Assistent selbst bleiben erreichbar, sonst gäbe es kein Entkommen.
+  if (!R.eingerichtet() && !['#/start', '#/einstellungen', '#/einrichtung'].includes(hash)) {
+    location.replace('#/start');
+    return;
+  }
 
   // Zugriff auf die Auswertungen prüfen, bevor die Ansicht gebaut wird.
   if (NUR_AUSWERTUNG.has(treffer.r.tab) && !R.darfAuswertungSehen()) {
@@ -172,7 +181,42 @@ function updateAnzeige() {
   });
 }
 
-/* ---------------- Start ---------------- *//* ---------------- Start ---------------- */
+/* ---------------- Schnellzugriff ---------------- */
+
+/** Der Plus-Knopf bietet alle vier Eintragsarten an, nicht nur die Flächensuche. */
+function fabMenue() {
+  const knopf = document.getElementById('fab');
+  const menue = document.getElementById('fab-menue');
+  if (!knopf || !menue) return;
+
+  const zu = () => {
+    menue.hidden = true;
+    knopf.setAttribute('aria-expanded', 'false');
+    knopf.classList.remove('fab--offen');
+  };
+  const auf = () => {
+    menue.hidden = false;
+    knopf.setAttribute('aria-expanded', 'true');
+    knopf.classList.add('fab--offen');
+  };
+
+  knopf.addEventListener('click', (e) => {
+    e.stopPropagation();
+    menue.hidden ? auf() : zu();
+  });
+  menue.addEventListener('click', (e) => {
+    if (e.target.closest('a')) zu();
+  });
+  document.addEventListener('click', (e) => {
+    if (!menue.hidden && !menue.contains(e.target) && e.target !== knopf) zu();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') zu();
+  });
+  window.addEventListener('hashchange', zu);
+}
+
+/* ---------------- Start ---------------- */
 
 async function start() {
   document.getElementById('version-badge').textContent = versionString();
@@ -181,6 +225,7 @@ async function start() {
   await store.init();
   syncAnzeige();
   document.getElementById('neu-laden')?.addEventListener('click', (e) => neuLaden(e.currentTarget));
+  fabMenue();
   window.addEventListener('hashchange', () => route(true));
   aktualisiereNavigation();
   await route();

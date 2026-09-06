@@ -1,5 +1,27 @@
 # Änderungsprotokoll
 
+## 1.16.0 – 2026-09-06
+- **Einrichtungsassistent für neue Geräte.** Wer noch keiner Person zugeordnet ist, landet beim
+  Öffnen von allein darin: Zugangscode, eigener Name, eigener Hund – in vier Schritten und ohne
+  Umweg über die Einstellungen. Der Hund wird dabei sofort zugeordnet, es braucht dafür niemanden
+  aus der Ausbildung. Angelegt wird erst beim Abschließen, ein Abbruch hinterlässt also nichts.
+- **Vorhandenen Verbellen-Stand übernehmen.** Im Assistenten lässt sich angeben, bis zu welcher
+  Stufe der Plan bereits sitzt – getrennt für Box und Versteckperson. Weil der Fortschritt immer
+  aus den Sitzungen abgeleitet wird, entsteht daraus eine eigens gekennzeichnete
+  Übernahme-Sitzung. So bleibt erkennbar, was wirklich trainiert und was beim Start eingetragen
+  wurde.
+- **Der rote Plus-Knopf öffnet jetzt ein Menü** mit allen vier Möglichkeiten: Flächensuche,
+  Trümmersuche, Verbellen und freie Dokumentation. Vorher führte er stillschweigend nur in die
+  Flächensuche und versteckte damit die übrigen Dokumentarten.
+- **Versteckpersonen werden je Person erfasst**, nicht mehr als Namensliste oben im Suchgebiet.
+  Der Name steht nun in derselben Zeile wie das Ergebnis; neue Namen legt „+ neu“ direkt dort an,
+  gleich geschriebene werden zusammengeführt. Daraus entsteht die Dashboard-Karte
+  **Versteckpersonen** mit Trefferquote und Ø Anzeige je Person, schwächste zuerst – damit
+  auffällt, bei wem ein Hund regelmäßig danebenliegt.
+- Kontraste nachgezogen: der Platzhalterstrich „—“ in Tabellen (1,7:1) und die Ziffern der noch
+  offenen Schritte im Assistenten (4,0:1) erfüllen jetzt WCAG AA. Die Einträge des Plusmenüs
+  haben ein 44 px hohes Antippfeld.
+
 ## 1.15.2 – 2026-09-06
 - **Auch der Import ist jetzt der Ausbildung vorbehalten.** Er schreibt in den gemeinsamen
   Bestand und wirkt damit auf das ganze Team.

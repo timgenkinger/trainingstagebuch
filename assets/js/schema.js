@@ -291,6 +291,8 @@ export const BILDER_BY_ID = Object.fromEntries(HELFER_BILDER.map((b) => [b.id, b
 export function neueHelferZeile(nr) {
   return {
     nr,
+    /** Wer sich versteckt hat – Verweis auf einen Datensatz vom Typ 'helferperson'. */
+    personId: '',
     bildId: '',
     beschreibung: '',
     zeitBisMin: null,
@@ -338,7 +340,6 @@ export function neueSuche(defaults = {}) {
 
     gebietGroesse: '',
     suchzeitMin: null,
-    helferNamen: '',
     skizze: null,
 
     helfer: [1, 2, 3, 4].map(neueHelferZeile),

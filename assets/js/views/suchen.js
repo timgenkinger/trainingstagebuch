@@ -148,6 +148,7 @@ function karteVerbellen(s) {
         <strong>${esc(formatDatum(s.datum))}</strong>
         <span class="such-karte__ort">${esc(s.ort || 'ohne Ortsangabe')}</span>
         <span class="abz abz--art">Verbellen</span>
+        ${s.uebernahme ? '<span class="abz abz--art">übernommen</span>' : ''}
         ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
         ${bestaetigungAbzeichen(s)}
       </div>

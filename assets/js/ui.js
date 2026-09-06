@@ -139,6 +139,18 @@ export function feld(label, inner, opts = {}) {
   </label>`;
 }
 
+/**
+ * Feld ohne <label>-Hülle. Nötig, sobald darin ein Knopf sitzt: In einem
+ * <label> leitet der Browser den Klick auf das zugehörige Eingabefeld um,
+ * der Knopf selbst wird dann nie als Klickziel gemeldet.
+ */
+export function feldBlock(label, inner, opts = {}) {
+  return `<div class="feld${opts.klasse ? ' ' + opts.klasse : ''}">
+    <span class="feld__label">${esc(label)}${opts.hint ? ` <small>${esc(opts.hint)}</small>` : ''}</span>
+    ${inner}
+  </div>`;
+}
+
 export function textInput(pfad, wert, opts = {}) {
   return `<input class="input" type="${opts.type || 'text'}" data-pfad="${esc(pfad)}"
     value="${esc(wert ?? '')}" ${opts.placeholder ? `placeholder="${esc(opts.placeholder)}"` : ''}
@@ -235,6 +247,39 @@ export function passwortFrage(titel, text, { ok = 'Bestätigen' } = {}) {
     </div>`;
     document.body.appendChild(back);
     const feld = back.querySelector('[data-pw]');
+    const schliesse = (v) => {
+      back.remove();
+      resolve(v);
+    };
+    back.querySelector('[data-ja]').onclick = () => schliesse(feld.value);
+    back.querySelector('[data-nein]').onclick = () => schliesse(null);
+    feld.onkeydown = (e) => {
+      if (e.key === 'Enter') schliesse(feld.value);
+      if (e.key === 'Escape') schliesse(null);
+    };
+    back.onclick = (e) => {
+      if (e.target === back) schliesse(null);
+    };
+    setTimeout(() => feld.focus(), 50);
+  });
+}
+
+/** Kurze Texteingabe im Dialog. Liefert den Text oder null bei Abbruch. */
+export function textFrage(titel, text, { ok = 'Anlegen', wert = '' } = {}) {
+  return new Promise((resolve) => {
+    const back = document.createElement('div');
+    back.className = 'modal-back';
+    back.innerHTML = `<div class="modal" role="dialog" aria-modal="true">
+      <h2 class="karte__titel">${esc(titel)}</h2>
+      <p class="modal__text">${esc(text)}</p>
+      <input class="input" type="text" data-eingabe value="${esc(wert)}" maxlength="80">
+      <div class="modal__aktionen">
+        <button type="button" class="btn btn--still" data-nein>Abbrechen</button>
+        <button type="button" class="btn btn--primaer" data-ja>${esc(ok)}</button>
+      </div>
+    </div>`;
+    document.body.appendChild(back);
+    const feld = back.querySelector('[data-eingabe]');
     const schliesse = (v) => {
       back.remove();
       resolve(v);

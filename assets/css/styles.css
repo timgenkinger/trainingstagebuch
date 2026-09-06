@@ -36,7 +36,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --grund: #14171400;
     --grund: #151618;
     --flaeche: #1e2023;
     --flaeche-2: #26292d;
@@ -550,7 +549,7 @@ select.input { background-image: none; padding-right: .7rem; }
 .tabelle td { padding: .45rem .5rem; border-bottom: 1px solid var(--rand); white-space: nowrap; }
 .tabelle tbody tr { cursor: pointer; }
 .tabelle tbody tr:hover { background: var(--flaeche-2); }
-.t-leer { color: var(--rand-stark); }
+.t-leer { color: var(--text-leise); }  /* --rand-stark waere nur 1,7:1 */
 
 /* ---------------- Helfer:in-Bilder ---------------- */
 
@@ -825,7 +824,7 @@ code {
   display: grid; place-items: center;
   border-radius: 50%;
   background: var(--rand);
-  color: var(--text-leise);
+  color: var(--text);  /* --text-leise waere auf --rand nur 4,0:1 */
   font-size: .72rem;
   font-weight: 700;
 }
@@ -1334,3 +1333,60 @@ span.wdh { cursor: default; }
   margin-right: .45rem; vertical-align: -1px;
 }
 .vs-nie { color: var(--text-leise); }
+
+/* --- Schnellzugriff: alle Eintragsarten --- */
+.fab-bereich {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1rem + env(safe-area-inset-bottom));
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: .6rem;
+}
+.fab-bereich .fab { position: static; border: none; font-family: inherit; }
+.fab--offen { transform: rotate(45deg); }
+.fab { transition: transform .18s ease; }
+
+.fab-menue {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  align-items: flex-end;
+}
+.fab-menue a {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: var(--tap);
+  padding: .55rem 1rem;
+  border-radius: 999px;
+  background: var(--flaeche);
+  border: 1px solid var(--rand-stark);
+  box-shadow: var(--schatten);
+  color: var(--text);
+  text-decoration: none;
+  font-size: .9rem;
+  font-weight: 550;
+  white-space: nowrap;
+}
+.fab-menue a:hover { border-color: var(--marke); }
+.fab-menue__punkt { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.fab-menue__punkt--flaeche { background: var(--marke); }
+.fab-menue__punkt--truemmer { background: #6b533a; }
+.fab-menue__punkt--verbellen { background: var(--marke-hell); }
+.fab-menue__punkt--frei { background: var(--rand-stark); }
+
+/* --- Versteckperson je Helfer:in --- */
+.person-wahl { display: flex; gap: .4rem; align-items: center; }
+.person-wahl .input { flex: 1; }
+
+/* --- Einrichtungsassistent --- */
+.seite--start { max-width: 46rem; margin: 0 auto; }
+.start-kopf { text-align: center; margin-bottom: .3rem; }
+.start-kopf h1 { font-size: 1.6rem; }
+.start-kopf p { color: var(--text-leise); font-size: .92rem; margin: .2rem 0 0; }
+.seite--start .schritte { justify-content: center; }
+.start-fuss { text-align: center; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+.seite--start .text { font-size: .92rem; }

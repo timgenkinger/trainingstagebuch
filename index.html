@@ -61,7 +61,16 @@
   <div class="start-laden"><span class="spinner"></span> Daten werden geladen …</div>
 </main>
 
-<a class="fab" href="#/suche/neu" title="Neue Suche dokumentieren" aria-label="Neue Suche">+</a>
+<div class="fab-bereich">
+  <div id="fab-menue" class="fab-menue" hidden role="menu" aria-label="Neuer Eintrag">
+    <a href="#/suche/neu" role="menuitem"><span class="fab-menue__punkt fab-menue__punkt--flaeche"></span>Flächensuche</a>
+    <a href="#/suche/neu-truemmer" role="menuitem"><span class="fab-menue__punkt fab-menue__punkt--truemmer"></span>Trümmersuche</a>
+    <a href="#/verbellen-sitzung/neu" role="menuitem"><span class="fab-menue__punkt fab-menue__punkt--verbellen"></span>Verbellen</a>
+    <a href="#/doku/neu" role="menuitem"><span class="fab-menue__punkt fab-menue__punkt--frei"></span>Freie Dokumentation</a>
+  </div>
+  <button type="button" id="fab" class="fab" aria-expanded="false" aria-controls="fab-menue"
+    title="Neuen Eintrag anlegen" aria-label="Neuen Eintrag anlegen">+</button>
+</div>
 
 <div id="toasts" class="toasts" aria-live="polite"></div>
 

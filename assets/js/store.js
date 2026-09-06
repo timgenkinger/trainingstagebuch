@@ -115,6 +115,15 @@ export function personen() {
   return alle('person').sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
 }
 
+/**
+ * Versteckpersonen. Bewusst eine eigene Liste neben den Hundeführer:innen:
+ * Beide Rollen ueberschneiden sich nur teilweise, und eine gemeinsame Liste
+ * wuerde beide Auswahlfelder unnoetig aufblaehen.
+ */
+export function helferpersonen() {
+  return alle('helferperson').sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
+}
+
 export function bildFortschritt(hundId) {
   const map = {};
   for (const r of alle('helferbild')) {

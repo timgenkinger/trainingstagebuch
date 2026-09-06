@@ -20,13 +20,14 @@ und Ausbildung. Neu erzeugen mit `python3 scripts/handbuch.py` (benötigt `repor
 ## Inhalt
 
 1. [Funktionsumfang](#funktionsumfang)
-2. [Schnellstart lokal](#schnellstart-lokal)
-3. [Veröffentlichen über GitHub Pages](#veröffentlichen-über-github-pages)
-4. [Nur abgeschlossene Suchen gehen online](#nur-abgeschlossene-suchen-gehen-online)
-5. [Online-Abgleich einrichten](#online-abgleich-einrichten)
-6. [Versionsnummern und Updates](#versionsnummern-und-updates)
-7. [Wie die Speicherung funktioniert](#wie-die-speicherung-funktioniert)
-8. [Aufbau des Projekts](#aufbau-des-projekts)
+2. [Ersteinrichtung auf einem neuen Gerät](#ersteinrichtung-auf-einem-neuen-gerät)
+3. [Schnellstart lokal](#schnellstart-lokal)
+4. [Veröffentlichen über GitHub Pages](#veröffentlichen-über-github-pages)
+5. [Nur abgeschlossene Suchen gehen online](#nur-abgeschlossene-suchen-gehen-online)
+6. [Online-Abgleich einrichten](#online-abgleich-einrichten)
+7. [Versionsnummern und Updates](#versionsnummern-und-updates)
+8. [Wie die Speicherung funktioniert](#wie-die-speicherung-funktioniert)
+9. [Aufbau des Projekts](#aufbau-des-projekts)
 
 ---
 
@@ -39,7 +40,11 @@ und Ausbildung. Neu erzeugen mit `python3 scripts/handbuch.py` (benötigt `repor
 | Wofür | Suchprotokoll – Fläche oder Trümmer | Trainingsplan Verbellen | alles andere: Gehorsam, Geräte, Theorie |
 | Inhalt | Grundwerte, Skizze, Versteckpersonen, drei Bewertungsblöcke, Konsequenz | Grundwerte, bearbeitete Stufen mit Wiederholungen, Notizen | Grundwerte, Skizze, Freitext |
 | Auswertung | 5er-Skalen im Dashboard | Fortschrittskatalog je Hund | keine – nur in der Übersicht |
-| Anlegen | „+ Flächensuche" / „+ Trümmersuche" | „+ Verbellen" | „+ Freie Doku" |
+| Anlegen | rotes **+** unten rechts → *Flächensuche* / *Trümmersuche* | rotes **+** → *Verbellen* | rotes **+** → *Freie Dokumentation* |
+
+Der rote Knopf unten rechts öffnet ein Menü mit **allen vier Möglichkeiten** – vorher führte er
+stillschweigend nur in die Flächensuche, was die anderen Dokumentarten verstecken konnte.
+Ein Klick daneben oder `Esc` schließt es wieder.
 
 Beide teilen sich denselben Block **Grundwerte**, der mit der **Wartezeit im Auto bis zur Suche**
 beginnt – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet.
@@ -65,6 +70,21 @@ niemand den ganzen Bildbestand der Staffel auf sein Handy. Bis dahin steht in de
 
 > Der Fototransport ist an den GitHub-Abgleich gebunden. Wer stattdessen Firestore nutzt,
 > behält seine Fotos lokal auf dem Gerät; dafür bräuchte es Firebase Storage.
+
+### Versteckpersonen
+
+Wer sich versteckt hat, wird **je Versteckperson** in der Suche erfasst – zusammen mit Bild,
+Zeit, Fund und Anzeige, also genau dort, wo auch das Ergebnis steht. Ein neuer Name lässt sich
+direkt in der Zeile über **+ neu** anlegen; gleich geschriebene Namen werden zusammengeführt,
+sodass aus „Sabine Helfer" und „sabine helfer" nicht zwei Personen werden.
+
+Zuvor standen die Namen als eine Freitextzeile oben im Suchgebiet. Damit war zwar festgehalten,
+*wer dabei war*, aber nicht, *bei wem der Hund gefunden hat* – auswerten ließ sich das nicht.
+
+Das Dashboard zeigt daraus die Karte **Versteckpersonen**: je Person, wie oft sie versteckt war,
+die Trefferquote, die durchschnittliche Anzeigenote und das Datum des letzten Mals –
+**schwächste Trefferquote zuerst**. So fällt auf, wenn ein Hund bei einer bestimmten Person
+regelmäßig danebenliegt, etwa weil sie sich anders verhält, anders riecht oder ruhiger ist.
 
 ### Zwei Sparten der Suche
 
@@ -93,6 +113,7 @@ im Dashboard gibt es einen Spartenfilter.
 | Geländebeschaffenheit | Mehrfachauswahl (offen, dicht, Dornen, hügelig, steil …) |
 | Temperatur / Wetter / Tageszeit | getrennt nach Temperatur, Wind, Niederschlag, Licht + Windrichtung |
 | Skizzenfeld Suchgebiet | Zeichenfeld mit vier Stiften: Gebiet, Laufweg HF, Laufweg Hund, Helfer:in |
+| Namen der Helfer:innen | je Versteckperson auswählbar, neue über **+ neu**; Grundlage der Auswertung nach Person |
 | Suchzeit bis / Element Anzeige / Radius zur HF | Zeile je Versteckperson, beliebig viele, mit Helfer:in-Bild und Anzeigeart |
 | Team: Verlauf der Suche | 6 Kriterien auf der 5er-Skala, „Ablage vor Suche“ zusätzlich mit ✓/✗ |
 | Verhalten Hund + Problemverhalten | 4 Kriterien, Radius weit/mittel/eng, 6 Problemverhalten mit Kontextfeld |
@@ -112,7 +133,9 @@ Zusätzlich: eigene Kriterien pro Bereich (die leeren Zeilen im Heft), Duplizier
 * Trainierte Bedingungen (zeigt Lücken im Trainingsplan) und Ø Note **je Bedingung** –
   einschließlich der Wartezeit im Auto in vier Stufen
 * Fortschritt bei den Helfer:in-Bildern
-* Filter nach Hund und Zeitraum
+* **Versteckpersonen** – Trefferquote und Ø Anzeige je Person, schwächste zuerst
+* Schwierigkeit der Verstecke je Hund (leicht / mittel / schwer) mit dem jeweils letzten Datum
+* Filter nach Hund, Sparte und Zeitraum
 
 **Helfer:in-Bilder** – die 43 Bilder der Liste (39 aus dem Heft, dazu Hochopfer, Tiefopfer,
 Verdeckt mit Sicht zum Helfer, Verdeckt ohne Sicht zum Helfer) plus selbst angelegte, als Fortschrittskatalog je Hund,
@@ -137,6 +160,35 @@ Bewusst automatisch ist **nur Stufe 1**: Dass ein Bild vorkam, steht im Protokol
 Anzeige kurz, länger oder gemeistert war, ist eine Einschätzung und bleibt Handarbeit – die
 App erfindet keine Bewertung. Eine Handbewertung hebt die Stufe an; nimmt man sie zurück,
 bleibt der Beleg aus der Suche bestehen.
+
+---
+
+## Ersteinrichtung auf einem neuen Gerät
+
+Ein Gerät, dem noch keine Person zugeordnet ist, landet beim Öffnen automatisch im
+**Einrichtungsassistenten**. Vier Schritte, danach ist die App nutzbar:
+
+| Schritt | Was passiert |
+|---|---|
+| **1 · Zugang** | Zugangscode einsetzen. Die App prüft ihn sofort und meldet zurück, wie viele Datensätze sie gefunden hat. Wer keinen Code hat, kommt über *Ohne Code fortfahren* trotzdem weiter und trägt ihn später nach. |
+| **2 · Wer bist du?** | Eigenen Namen wählen oder neu anlegen, dazu ein Gerätename (z. B. *Handy Rainer*), der in den Einstellungen sichtbar ist. |
+| **3 · Dein Hund** | Hund wählen oder anlegen. Er wird der Person **direkt zugeordnet**, ohne Umweg über die Ausbildung. |
+| **4 · Verbellen** | Stand beim Verbellen: bis zu welcher Stufe sitzt der Plan bereits – getrennt für den Weg über die Box und den Übertrag auf die Versteckperson. |
+
+Der Assistent legt keine leeren Einträge an: Erst beim Abschließen werden Person, Hund und die
+Zuordnung geschrieben. Er endet immer in der Rolle **Hundeführer:in**; eine bereits gesetzte
+Rolle bleibt unangetastet, damit die Ausbildung nicht herausfliegt, wenn sie den Assistenten
+später noch einmal aus den Einstellungen öffnet.
+
+**Vorhandenen Verbellen-Stand übernehmen.** Wer im Verbellen schon weiter ist, gibt die
+erreichte Stufe an; alle Unterübungen davor gelten damit als erledigt. Technisch entsteht dabei
+**eine als solche gekennzeichnete Übernahme-Sitzung** – der Fortschrittskatalog wird ja aus den
+Sitzungen abgeleitet, nicht getrennt gespeichert. Sie trägt den Ort *Übernahme bei der
+Einrichtung* und den Hinweis, dass in ihr nicht trainiert wurde. So bleibt im Nachhinein
+unterscheidbar, was tatsächlich protokolliert und was beim Start eingetragen wurde.
+
+Der Assistent lässt sich jederzeit erneut öffnen: **Einstellungen → Einrichtungsassistent
+öffnen**. Über *Assistent überspringen* geht es direkt in die Einstellungen.
 
 ---
 
@@ -186,9 +238,9 @@ und funktioniert auch ohne Empfang im Wald.
 Unter **Einstellungen → Dieses Gerät** wird festgelegt, wer daran arbeitet und in welcher Rolle.
 Beides sind Geräte-Einstellungen und werden nicht mit abgeglichen.
 
-**Ein neues Gerät startet immer als Hundeführer:in ohne Zuordnung** und zeigt deshalb zunächst
-weder Hunde noch Dokumentation – der erste Schritt führt in die Einstellungen. Erst wenn dort
-eine Person ausgewählt ist und die Ausbildung ihr Hunde zugeordnet hat, ist die App nutzbar.
+**Ein neues Gerät startet immer als Hundeführer:in ohne Zuordnung** und wird deshalb in den
+[Einrichtungsassistenten](#ersteinrichtung-auf-einem-neuen-gerät) geführt, der Person und Hund
+in vier Schritten festlegt. Erst danach zeigt die App Hunde und Dokumentation.
 
 | | **Hundeführer:in** | **Ausbilder:in** |
 |---|---|---|
@@ -522,6 +574,7 @@ assets/js/
     verbellen.js           Fortschrittskatalog Verbellen
     dashboard.js           Auswertung
     bilder.js              Helfer:in-Bilder
+    start.js               Einrichtungsassistent für neue Geräte
     einrichtung.js         Assistent für den Online-Abgleich
     einstellungen.js       Sync, Stammdaten, Sicherung, Version
 
