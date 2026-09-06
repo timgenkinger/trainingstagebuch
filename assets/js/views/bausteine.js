@@ -8,7 +8,8 @@
 import * as store from '../store.js';
 import * as S from '../schema.js';
 import * as R from '../rollen.js';
-import { esc, feld, textInput, textArea, select, karte, chipGruppe, formatDatum } from '../ui.js';
+import { esc, feld, textInput, textArea, select, karte, chipGruppe, formatDatum, toast, frage } from '../ui.js';
+import * as F from '../fotos.js';
 
 /** Wartezeit im Auto – steht in beiden Masken ganz oben. */
 export function wartezeitFeld(rec) {
@@ -137,4 +138,102 @@ export function abschlussKarte(rec, texte) {
     <p class="karte__hint">Solange der Eintrag Entwurf ist, bleibt er ausschließlich auf diesem Gerät.
       Erst mit dem Abschließen wird er hochgeladen.</p>
   `, { klasse: 'karte--abschluss' });
+}
+
+/* ---------------------------------------------------------------- */
+/* Fotos                                                             */
+/* ---------------------------------------------------------------- */
+
+/**
+ * Fotokarte für alle Erfassungsformulare.
+ * Die Bilddaten liegen nicht im Datensatz, sondern getrennt (siehe fotos.js);
+ * hier stehen nur die Verweise. Angezeigte Fotos werden bei Bedarf nachgeladen.
+ */
+export function fotosKarte(rec) {
+  const liste = rec.fotos || [];
+  return karte('Fotos', `
+    <div class="fotos" data-fotos>
+      ${liste.map((f) => `<figure class="foto" data-foto="${esc(f.id)}">
+        <div class="foto__bild" data-foto-bild="${esc(f.id)}"><span class="spinner"></span></div>
+        <figcaption>${esc(f.name || 'Foto')}</figcaption>
+        <button type="button" class="foto__weg" data-foto-weg="${esc(f.id)}"
+          aria-label="Foto entfernen" title="Foto entfernen">×</button>
+      </figure>`).join('')}
+      <label class="foto-neu">
+        <input type="file" accept="image/*" multiple hidden data-foto-datei>
+        <span class="foto-neu__zeichen">+</span>
+        <span>Foto hinzufügen</span>
+      </label>
+    </div>
+    <p class="karte__hint" data-foto-hinweis>${liste.length
+      ? `${liste.length} Foto(s). Beim Hinzufügen werden sie auf 1600 Pixel verkleinert.`
+      : 'Auf dem Handy öffnet sich Kamera oder Galerie. Bilder werden beim Hinzufügen verkleinert.'}</p>
+  `);
+}
+
+/**
+ * Aktiviert die Fotokarte.
+ * @param {HTMLElement} box    Container mit der Karte
+ * @param {object} rec         Datensatz (wird verändert)
+ * @param {() => void} onChange  wird nach jeder Änderung gerufen
+ */
+export function fotosAktivieren(box, rec, onChange) {
+  const bereich = box.querySelector('[data-fotos]');
+  if (!bereich) return;
+
+  // Vorschauen nachladen – fremde Fotos holt fotos.js beim Abgleich.
+  bereich.querySelectorAll('[data-foto-bild]').forEach(async (el) => {
+    const daten = await F.lade(el.dataset.fotoBild);
+    if (!el.isConnected) return;
+    el.innerHTML = daten
+      ? `<img src="${daten}" alt="" loading="lazy">`
+      : '<span class="foto__fehlt">noch nicht geladen</span>';
+  });
+
+  const datei = bereich.querySelector('[data-foto-datei]');
+  datei?.addEventListener('change', async () => {
+    const dateien = [...(datei.files || [])];
+    datei.value = '';
+    if (!dateien.length) return;
+    const hinweis = box.querySelector('[data-foto-hinweis]');
+    if (hinweis) hinweis.textContent = `${dateien.length} Bild(er) werden verkleinert …`;
+    for (const d of dateien) {
+      try {
+        const f = await F.hinzufuegen(rec.id, d);
+        rec.fotos = [...(rec.fotos || []), { id: f.id, name: f.name, am: new Date().toISOString() }];
+      } catch (e) {
+        toast(e.message, 'fehler');
+      }
+    }
+    onChange();
+  });
+
+  bereich.addEventListener('click', async (e) => {
+    const weg = e.target.closest('[data-foto-weg]');
+    if (weg) {
+      e.preventDefault();
+      const id = weg.dataset.fotoWeg;
+      if (await frage('Dieses Foto entfernen?', { ok: 'Entfernen', gefahr: true })) {
+        rec.fotos = (rec.fotos || []).filter((f) => f.id !== id);
+        await F.entferne(id);
+        onChange();
+      }
+      return;
+    }
+    const bild = e.target.closest('[data-foto-bild] img');
+    if (bild) zeigeGross(bild.src);
+  });
+}
+
+/** Foto formatfüllend ansehen. */
+function zeigeGross(quelle) {
+  const back = document.createElement('div');
+  back.className = 'modal-back foto-gross';
+  back.innerHTML = `<img src="${quelle}" alt=""><button type="button" class="btn btn--hell">Schließen</button>`;
+  document.body.appendChild(back);
+  const zu = () => back.remove();
+  back.querySelector('button').onclick = zu;
+  back.onclick = (e) => {
+    if (e.target === back) zu();
+  };
 }

@@ -10,7 +10,7 @@ import {
   setPath, toast, frage, debounce, formatDatum, formatNote,
 } from '../ui.js';
 import { skizzeHtml, skizzeAktivieren } from '../skizze.js';
-import { kopfKarte, gelaendeKarte, wetterKarte, statusAbzeichen, abschlussKarte as abschlussBaustein } from './bausteine.js';
+import { kopfKarte, gelaendeKarte, wetterKarte, statusAbzeichen, fotosKarte, fotosAktivieren, abschlussKarte as abschlussBaustein } from './bausteine.js';
 
 let suche = null;
 let dirty = false;
@@ -95,6 +95,7 @@ function zeichne(wurzel) {
     suche.skizze = d;
     markiere();
   });
+  fotosAktivieren(box, suche, () => neuZeichnen());
 }
 
 function markiere() {
@@ -154,7 +155,7 @@ function html() {
     ${karte('Versteckpersonen & Funde', helferTabelle(), {
       hint: truemmer
         ? 'Pro Versteckperson: Zeit bis zum Fund, Helfer:in-Bild, Abstand, Verdeckung, Schwierigkeit des Verstecks und die Bewertung der Anzeige.'
-        : `Pro Versteckperson: Zeit bis zum Fund, gewähltes Helfer:in-Bild und Abstand zur Hundeführer:in beim Fund. Angezeigt wird durchgängig durch ${S.ANZEIGE_ART}.`,
+        : `Pro Versteckperson: Zeit bis zum Fund, gewähltes Helfer:in-Bild, Abstand zur Hundeführer:in beim Fund und die Bewertung der Anzeige. Angezeigt wird durchgängig durch ${S.ANZEIGE_ART}.`,
       aktion: `<button type="button" class="btn btn--mini" data-helfer-plus>+ Person</button>`,
     })}
 
@@ -211,6 +212,8 @@ function html() {
         ${feld('Neues Ziel', textArea('neuesZiel', suche.neuesZiel, { rows: 3 }))}
       </div>
     `)}
+
+    ${fotosKarte(suche)}
 
     <div data-bestaetigung>${bestaetigungsKarte(suche)}</div>
 
@@ -277,6 +280,7 @@ function helferTabelle() {
         ${feld('Radius zur HF (m)', textInput(`helfer.${i}.radiusM`, h.radiusM, { type: 'number', inputmode: 'numeric', min: 0, step: 1 }))}
       </div>
       ${S.sparteVon(suche) === 'truemmer' ? truemmerZeile(h, i) : ''}
+      ${anzeigeZeile(h, i)}
       ${feld('Element / Bemerkung', textInput(`helfer.${i}.beschreibung`, h.beschreibung, { placeholder: 'z.B. Versteck unter Wurzelteller, Wind seitlich' }))}
     </div>`
     )
@@ -302,9 +306,16 @@ function truemmerZeile(h, i) {
     </span>`)}
     ${feld('Verdeckung', `<span class="mini-wahl">${wahl(`helfer.${i}.verdeckung`, h.verdeckung, S.VERDECKUNG)}</span>`)}
     ${feld('Versteck', `<span class="mini-wahl">${wahl(`helfer.${i}.versteck`, h.versteck, S.VERSTECK_SCHWIERIGKEIT)}</span>`)}
-  </div>
-  <div class="krit krit--anzeige">
-    <div class="krit__label"><span>Anzeige</span><small>0 = keine Anzeige</small></div>
+  </div>`;
+}
+
+/** Bewertung der Anzeige – in beiden Sparten, Skala 0 bis 5. */
+function anzeigeZeile(h, i) {
+  return `<div class="krit krit--anzeige">
+    <div class="krit__label">
+      <span>Anzeige</span>
+      <small>0 = keine Anzeige${S.sparteVon(suche) === 'truemmer' ? '' : ` · angezeigt wird durch ${S.ANZEIGE_ART}`}</small>
+    </div>
     ${skala(`helfer.${i}.anzeigeNote`, h.anzeigeNote, { abNull: true })}
   </div>`;
 }

@@ -12,7 +12,7 @@ import * as S from '../schema.js';
 import * as R from '../rollen.js';
 import { esc, feld, textArea, karte, toast, frage, debounce, formatDatum } from '../ui.js';
 import { skizzeHtml, skizzeAktivieren } from '../skizze.js';
-import { kopfKarte, gelaendeKarte, wetterKarte, statusAbzeichen, abschlussKarte } from './bausteine.js';
+import { kopfKarte, gelaendeKarte, wetterKarte, statusAbzeichen, fotosKarte, fotosAktivieren, abschlussKarte } from './bausteine.js';
 import { setPath } from '../ui.js';
 
 let doku = null;
@@ -69,6 +69,10 @@ function zeichne(wurzel) {
     doku.skizze = d;
     markiere();
   });
+  fotosAktivieren(box, doku, () => {
+    markiere();
+    zeichne(document.getElementById('view'));
+  });
 }
 
 function markiere() {
@@ -123,6 +127,8 @@ function html() {
       rows: 14,
       placeholder: 'Was wurde geübt, was ist aufgefallen, was nimmst du mit?',
     })))}
+
+    ${fotosKarte(doku)}
 
     <div data-bestaetigung>${bestaetigungsKarte(doku)}</div>
 

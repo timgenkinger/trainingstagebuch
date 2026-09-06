@@ -312,6 +312,8 @@ export function neueSuche(defaults = {}) {
     abgeschlossenAm: null,
     /** Bestätigung durch die Ausbildung: {vonId, vonName, am, bemerkung} */
     bestaetigung: null,
+    /** Verweise auf Fotos: [{id, name, am}]. Die Bilddaten liegen getrennt (siehe fotos.js). */
+    fotos: [],
     datum: heute,
     // Wartezeit im Auto vor dem Einsatz – beeinflusst Anspannung und Motivation
     // des Hundes und gehört deshalb an den Anfang der Grundwerte.
@@ -371,6 +373,8 @@ export function neueFreieDoku(defaults = {}) {
     abgeschlossenAm: null,
     /** Bestätigung durch die Ausbildung: {vonId, vonName, am, bemerkung} */
     bestaetigung: null,
+    /** Verweise auf Fotos: [{id, name, am}]. Die Bilddaten liegen getrennt (siehe fotos.js). */
+    fotos: [],
     datum: heute,
     wartezeitAutoMin: null,
     titel: '',
@@ -405,6 +409,8 @@ export function neueVerbellenSitzung(defaults = {}) {
     abgeschlossenAm: null,
     /** Bestätigung durch die Ausbildung: {vonId, vonName, am, bemerkung} */
     bestaetigung: null,
+    /** Verweise auf Fotos: [{id, name, am}]. Die Bilddaten liegen getrennt (siehe fotos.js). */
+    fotos: [],
     datum: heute,
     wartezeitAutoMin: null,
     ort: '',

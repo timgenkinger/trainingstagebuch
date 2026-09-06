@@ -389,7 +389,8 @@ E += [
         ["Temperatur / Wetter", "Temperatur, Wind, Niederschlag, Licht, Windrichtung"],
         ["Suchgebiet", "Abmessungen, Suchzeit, Helfer:innen und das Zeichenfeld"],
         ["Versteckpersonen", "je Person: Helfer:in-Bild, Zeit bis zum Fund, gefunden ja/nein, "
-                             "Abstand zur Hundeführer:in. Angezeigt wird durchgängig durch Bellen."],
+                             "Abstand zur Hundeführer:in und die Anzeige auf einer Skala von 0 bis 5. "
+                             "Angezeigt wird durchgängig durch Bellen."],
         ["Team, Hund, Hundeführer:in", "je Kriterium eine Note von 1 bis 5 auf der Punkteskala"],
         ["Problemverhalten", "sechs Merkmale zum Ankreuzen mit Feld für den Kontext"],
         ["Notizen und Konsequenz", "Freitext sowie Beobachten, Bearbeiten, Neues Ziel"],
@@ -407,13 +408,20 @@ E += [
                      "des Hundes und Schwierigkeit der Verstecke, dazu ein Freitextfeld für die "
                      "gegebenen Hilfen"],
         ["Versteckperson", "zusätzlich: Hund kommt hin (ja/nein), Verdeckung (teilweise oder "
-                           "komplett), Versteck (leicht, mittel, schwer) und die Anzeige auf einer "
-                           "Skala von 0 bis 5 – die 0 steht für keine Anzeige"],
+                           "komplett) und Versteck (leicht, mittel, schwer)"],
         ["Hundeführer:in", "zusätzlich: Kann den Hund lesen"],
     ], [34 * mm, BREITE - 34 * mm], kopf=False),
     Spacer(1, 6),
     p("Suchgebiet, Skizze, Verhalten Hund, Problemverhalten und Konsequenz sind in beiden "
       "Sparten gleich. In der Übersicht und im Dashboard lässt sich nach Sparte filtern.", "klein"),
+
+    p("Fotos", "h3"),
+    p("Zu jedem Eintrag lassen sich Fotos hinzufügen – in allen vier Formularen. Auf dem Handy "
+      "öffnet sich dabei Kamera oder Galerie. Die Bilder werden auf 1600 Pixel verkleinert; aus "
+      "einer 4-MB-Aufnahme werden so meist 150 bis 250 kB.", "text"),
+    p("Ein Foto von einem anderen Gerät wird erst geladen, wenn es angezeigt werden soll – "
+      "sonst läge der gesamte Bildbestand der Staffel auf jedem Handy. Bis dahin steht in der "
+      "Vorschau <i>noch nicht geladen</i>.", "text"),
 
     p("4.2 &nbsp; Verbellen", "h2"),
     p("Der Trainingsplan umfasst zwei Wege: <b>Box</b> mit 33 Stufen und 148 Unterübungen, "

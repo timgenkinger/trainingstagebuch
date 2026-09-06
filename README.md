@@ -45,6 +45,27 @@ Beide teilen sich denselben Block **Grundwerte**, der mit der **Wartezeit im Aut
 beginnt – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet.
 Danach folgen Datum, Ort, Hund, Hundeführer:in sowie Gelände und Wetter.
 
+### Fotos
+
+Zu jedem Eintrag – Flächensuche, Trümmersuche, Verbellen-Sitzung und freie Dokumentation –
+lassen sich Fotos hinzufügen. Auf dem Handy öffnet sich dabei Kamera oder Galerie.
+
+Beim Hinzufügen werden Bilder auf **1600 Pixel längste Kante** verkleinert und als JPEG
+gespeichert; aus einer 4-MB-Aufnahme werden so typischerweise 150 bis 250 kB.
+
+**Fotos liegen nicht im Datensatz, sondern als einzelne Dateien** unter `bilder/` im
+Daten-Repository; der Datensatz merkt sich nur die Verweise. Das ist kein Detail, sondern
+notwendig: Der Abgleich schreibt alle Datensätze als *eine* JSON-Datei. Ein eingebettetes Foto
+wöge darin rund 290 kB – schon drei würden die Datei über die 1-MB-Grenze der GitHub-Contents-API
+heben und damit unlesbar machen, und jedes Speichern übertrüge den gesamten Bestand erneut.
+
+Ein Foto von einem anderen Gerät wird erst geladen, wenn es angezeigt werden soll – so lädt
+niemand den ganzen Bildbestand der Staffel auf sein Handy. Bis dahin steht in der Vorschau
+*noch nicht geladen*.
+
+> Der Fototransport ist an den GitHub-Abgleich gebunden. Wer stattdessen Firestore nutzt,
+> behält seine Fotos lokal auf dem Gerät; dafür bräuchte es Firebase Storage.
+
 ### Zwei Sparten der Suche
 
 Fläche und Trümmer nutzen **dasselbe Protokoll** – bewusst eine Sparte statt einer eigenen
@@ -57,7 +78,7 @@ Stellen ab:
 | Gelände | offen, dicht, Dornen, hügelig … | Gebäude intakt, Gebäude mit Trümmer, Trümmerkegel, Kieswerk o.ä., Felssturz, Tunnelsystem, Erdrutsch/Lawine, sonstiges |
 | Windrichtung | ja | entfällt |
 | Suchteam | 6 Kriterien | ohne Grundlinie, Strukturen und Ecken/Grenzen; dafür Beweglichkeit/Sicherheit des Hundes und Schwierigkeit der Verstecke, dazu ein Freitextfeld **Hilfen** |
-| Versteckperson | Bild, Zeit, Fund, Radius | zusätzlich *Hund kommt hin*, Verdeckung (teilweise/komplett), Versteck (leicht/mittel/schwer) und die **Anzeige auf einer Skala 0–5** |
+| Versteckperson | Bild, Zeit, Fund, Radius, Anzeige 0–5 | zusätzlich *Hund kommt hin*, Verdeckung (teilweise/komplett) und Versteck (leicht/mittel/schwer) |
 | Hundeführer:in | 6 Kriterien | zusätzlich *Kann den Hund lesen* |
 
 Suchgebiet, Skizze, Verhalten Hund, Problemverhalten und Konsequenz sind in beiden Sparten gleich.
@@ -487,6 +508,7 @@ assets/js/
   rollen.js                Rollen, Sichtbarkeit, Bestätigungen
   update.js                Programm-Aktualisierung
   helferbilder.js          Ableitung der Helfer:in-Bilder aus den Suchen
+  fotos.js                 Fotos: Verkleinern, lokale Ablage, Warteschlange
   skizze.js                Zeichenfeld für das Suchgebiet
   ui.js                    Bausteine: Skala, Chips, Karten, Meldungen
   views/

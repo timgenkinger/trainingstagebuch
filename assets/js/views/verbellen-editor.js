@@ -14,7 +14,7 @@ import * as R from '../rollen.js';
 import * as V from '../verbellen.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
 import { esc, feld, textArea, textInput, select, karte, toast, frage, debounce, formatDatum, setPath } from '../ui.js';
-import { kopfKarte, statusAbzeichen, abschlussKarte } from './bausteine.js';
+import { kopfKarte, statusAbzeichen, fotosKarte, fotosAktivieren, abschlussKarte } from './bausteine.js';
 
 let sitzung = null;
 let dirty = false;
@@ -71,7 +71,9 @@ function ladeKatalogOhneDieseSitzung() {
 
 function zeichne(wurzel) {
   wurzel.innerHTML = html();
-  binde(wurzel.querySelector('.editor'));
+  const box = wurzel.querySelector('.editor');
+  binde(box);
+  fotosAktivieren(box, sitzung, () => markiere({ neuZeichnen: true }));
 }
 
 function markiere({ neuZeichnen = false } = {}) {
@@ -134,6 +136,8 @@ function html() {
     }))}
 
     <div data-bestaetigung>${bestaetigungsKarte(sitzung)}</div>
+
+    ${fotosKarte(sitzung)}
 
     <div data-abschluss>${karteFuerAbschluss()}</div>
 

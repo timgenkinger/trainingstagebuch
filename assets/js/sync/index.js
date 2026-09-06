@@ -11,6 +11,7 @@
 
 import { ladeConfig } from '../config.js';
 import * as store from '../store.js';
+import * as fotos from '../fotos.js';
 
 export const status = {
   zustand: 'aus', // aus | kein-token | verbinde | aktiv | offline | fehler
@@ -92,6 +93,9 @@ async function starteGithub(cfg) {
     const { angelegt } = await adapter.stelleBranchSicher(cfg.github);
     if (angelegt) notiere('info', `Datenbranch "${cfg.github.branch}" angelegt`);
 
+    // Fehlende Fotos werden erst geladen, wenn sie angezeigt werden sollen.
+    fotos.setzeHoler((id) => adapter.ladeFoto(cfg.github, id));
+
     await hole(cfg, true);
     abmelden = store.subscribe(() => planePush(cfg));
     window.addEventListener('online', () => planePush(cfg, 0));
@@ -142,7 +146,11 @@ function planePush(cfg, verzoegerung = 2500) {
 async function push(cfg) {
   if (!adapter || laeuft) return;
   const offen = store.offeneUploads();
-  if (!offen.length) return zeigeRuhe();
+  if (!offen.length) {
+    // Auch ohne Datensatzaenderung koennen Fotos warten.
+    if (navigator.onLine) await sendeFotos(cfg).catch((e) => console.warn(e));
+    return zeigeRuhe();
+  }
   if (!navigator.onLine) return setzeStatus('offline', `Offline – ${offen.length} Änderung(en) gepuffert`);
 
   laeuft = true;
@@ -155,11 +163,36 @@ async function push(cfg) {
     await store.markiereHochgeladen(stand, Date.now());
     status.letzterAbgleich = Date.now();
     if (geschrieben) notiere('gesendet', `${offen.length} Änderung(en) gesendet`);
+    await sendeFotos(cfg);
     zeigeRuhe();
   } catch (e) {
     melde(e);
   } finally {
     laeuft = false;
+  }
+}
+
+/**
+ * Fotos einzeln nachschieben. Sie liegen absichtlich nicht in der Datendatei
+ * (siehe fotos.js) und werden deshalb getrennt uebertragen.
+ */
+async function sendeFotos(cfg) {
+  const offen = await fotos.offeneUploads();
+  if (!offen.length) return;
+  setzeStatus('aktiv', `Sende ${offen.length} Foto(s) …`);
+  const fertig = [];
+  for (const f of offen) {
+    try {
+      await adapter.schreibeFoto(cfg.github, f.id, f.daten);
+      fertig.push(f.id);
+    } catch (e) {
+      console.warn('Foto nicht gesendet', f.id, e);
+      break; // beim naechsten Durchlauf erneut versuchen
+    }
+  }
+  if (fertig.length) {
+    await fotos.markiereHochgeladen(fertig);
+    notiere('gesendet', `${fertig.length} Foto(s) gesendet`);
   }
 }
 

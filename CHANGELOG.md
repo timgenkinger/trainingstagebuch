@@ -1,5 +1,18 @@
 # Änderungsprotokoll
 
+## 1.12.0 – 2026-09-06
+- **Fotos in allen vier Erfassungsformularen.** Auf dem Handy oeffnet sich Kamera oder
+  Galerie. Bilder werden auf 1600 Pixel verkleinert (aus 4 MB werden meist 150–250 kB),
+  als Vorschau angezeigt, antippbar in voller Groesse, einzeln entfernbar.
+- Fotos liegen NICHT im Datensatz, sondern als einzelne Dateien unter `bilder/` im
+  Daten-Repository; der Datensatz haelt nur die Verweise. Anders ginge es nicht: Der
+  Abgleich schreibt alle Datensaetze als eine JSON-Datei, und schon drei eingebettete
+  Fotos wuerden sie ueber die 1-MB-Grenze der Contents-API heben.
+- Fremde Fotos werden erst geladen, wenn sie angezeigt werden sollen – niemand laedt den
+  ganzen Bildbestand der Staffel auf sein Handy.
+- **Bewertung der Anzeige (Skala 0–5) jetzt auch in der Flaechensuche** je Versteckperson,
+  nicht nur in der Truemmersuche.
+
 ## 1.11.0 – 2026-09-06
 - **Trümmersuche als zweite Sparte der Suche.** Der Knopf „+ Neue Suche“ heisst jetzt
   „+ Flächensuche“, daneben steht „+ Trümmersuche“. Beide nutzen dasselbe Protokoll.

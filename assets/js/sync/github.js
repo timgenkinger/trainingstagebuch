@@ -171,6 +171,39 @@ function gleich(a, b) {
 }
 
 /* ---------------------------------------------------------------- */
+/* Fotos                                                             */
+/* ---------------------------------------------------------------- */
+
+/** Fotos liegen als einzelne Dateien neben der Datendatei, nicht darin. */
+function fotoPfad(cfg, id) {
+  const ordner = (cfg.pfad.includes('/') ? cfg.pfad.replace(/\/[^/]*$/, '/') : '') + 'bilder';
+  return `/repos/${cfg.owner}/${cfg.repo}/contents/${ordner}/${id}.jpg`;
+}
+
+export async function ladeFoto(cfg, id) {
+  const res = await anfrage(cfg, `${fotoPfad(cfg, id)}?ref=${encodeURIComponent(cfg.branch)}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new GhFehler(res.status, await fehlerText(res), 'foto-lesen');
+  const j = await res.json();
+  return 'data:image/jpeg;base64,' + (j.content || '').replace(/\s/g, '');
+}
+
+export async function schreibeFoto(cfg, id, dataUrl) {
+  const nurDaten = dataUrl.slice(dataUrl.indexOf(',') + 1);
+  const res = await anfrage(cfg, fotoPfad(cfg, id), {
+    method: 'PUT',
+    body: JSON.stringify({
+      message: `Foto ${id} (${geraeteName()})`,
+      content: nurDaten,
+      branch: cfg.branch,
+    }),
+  });
+  // 422 heisst hier in aller Regel: liegt schon vor. Fotos werden nie geaendert.
+  if (res.ok || res.status === 422) return true;
+  throw new GhFehler(res.status, await fehlerText(res), 'foto-schreiben');
+}
+
+/* ---------------------------------------------------------------- */
 /* Branch anlegen                                                    */
 /* ---------------------------------------------------------------- */
 
