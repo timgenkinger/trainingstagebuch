@@ -1,5 +1,11 @@
 # Änderungsprotokoll
 
+## 1.17.0 – 2026-09-09
+- **Anzahl der Beller je Versteckperson.** Neben der Note für die Anzeige lässt sich nun
+  eintragen, wie oft der Hund am Versteck angeschlagen hat – in beiden Sparten, direkt neben
+  Suchzeit und Radius. Das Feld ist freiwillig und wird für den Abschluss einer Suche nicht
+  verlangt; bereits dokumentierte Suchen bleiben unverändert und zeigen es leer.
+
 ## 1.16.1 – 2026-09-06
 - **Als Versteckperson stehen jetzt auch die Hundeführer:innen zur Auswahl.** Die Liste ist in
   zwei Gruppen geteilt – das Team und „Gäste und weitere“ –, sodass niemand doppelt gepflegt

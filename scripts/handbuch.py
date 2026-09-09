@@ -410,9 +410,9 @@ E += [
         ["Temperatur / Wetter", "Temperatur, Wind, Niederschlag, Licht, Windrichtung"],
         ["Suchgebiet", "Abmessungen, Suchzeit und das Zeichenfeld"],
         ["Versteckpersonen", "je Person: <b>wer sich versteckt hat</b>, Helfer:in-Bild, Zeit bis "
-                             "zum Fund, gefunden ja/nein, Abstand zur Hundeführer:in und die "
-                             "Anzeige auf einer Skala von 0 bis 5. Angezeigt wird durchgängig "
-                             "durch Bellen."],
+                             "zum Fund, gefunden ja/nein, Abstand zur Hundeführer:in, die "
+                             "<b>Anzahl der Beller</b> und die Anzeige auf einer Skala von 0 bis 5. "
+                             "Angezeigt wird durchgängig durch Bellen."],
         ["Team, Hund, Hundeführer:in", "je Kriterium eine Note von 1 bis 5 auf der Punkteskala. "
                                       "Bei der Hundeführer:in sieben Kriterien, darunter "
                                       "„Kann den Hund lesen“"],
@@ -437,6 +437,11 @@ E += [
       "festgehalten, wer dabei war, aber nicht, bei wem der Hund gefunden hat – auswerten ließ "
       "sich das nicht. Aus der Zuordnung je Person entsteht nun die Dashboard-Karte "
       "<b>Versteckpersonen</b>.", "text"),
+
+    p("Anzahl der Beller", "h3"),
+    p("Neben der Note für die Anzeige lässt sich eintragen, wie oft der Hund am Versteck "
+      "angeschlagen hat. Das Feld ist freiwillig – wer nicht mitzählt, lässt es leer; für den "
+      "Abschluss der Suche wird es nicht verlangt.", "text"),
 
     p("Was in der Trümmersuche anders ist", "h3"),
     tabelle([

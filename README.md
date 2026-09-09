@@ -106,7 +106,7 @@ Stellen ab:
 | Gelände | offen, dicht, Dornen, hügelig … | Gebäude intakt, Gebäude mit Trümmer, Trümmerkegel, Kieswerk o.ä., Felssturz, Tunnelsystem, Erdrutsch/Lawine, sonstiges |
 | Windrichtung | ja | entfällt |
 | Suchteam | 6 Kriterien | ohne Grundlinie, Strukturen und Ecken/Grenzen; dafür Beweglichkeit/Sicherheit des Hundes, dazu ein Freitextfeld **Hilfen** |
-| Versteckperson | Bild, Zeit, Fund, Radius, Anzeige 0–5 | zusätzlich *Hund kommt hin*, Verdeckung (teilweise/komplett) und Versteck (leicht/mittel/schwer) |
+| Versteckperson | Bild, Zeit, Fund, Radius, Anzahl der Beller, Anzeige 0–5 | zusätzlich *Hund kommt hin*, Verdeckung (teilweise/komplett) und Versteck (leicht/mittel/schwer) |
 
 Suchgebiet, Skizze, Verhalten Hund, **Verhalten Hundeführer:in**, Problemverhalten und
 Konsequenz sind in beiden Sparten gleich.
@@ -122,7 +122,7 @@ im Dashboard gibt es einen Spartenfilter.
 | Temperatur / Wetter / Tageszeit | getrennt nach Temperatur, Wind, Niederschlag, Licht + Windrichtung |
 | Skizzenfeld Suchgebiet | Zeichenfeld mit vier Stiften: Gebiet, Laufweg HF, Laufweg Hund, Helfer:in |
 | Namen der Helfer:innen | je Versteckperson auswählbar: alle Hundeführer:innen plus Gäste, neue über **+ neu**; Grundlage der Auswertung nach Person |
-| Suchzeit bis / Element Anzeige / Radius zur HF | Zeile je Versteckperson, beliebig viele, mit Helfer:in-Bild und Anzeigeart |
+| Suchzeit bis / Element Anzeige / Radius zur HF | Zeile je Versteckperson, beliebig viele, mit Helfer:in-Bild, **Anzahl der Beller** und Anzeigeart |
 | Team: Verlauf der Suche | 6 Kriterien auf der 5er-Skala, „Ablage vor Suche“ zusätzlich mit ✓/✗ |
 | Verhalten Hund + Problemverhalten | 4 Kriterien, Radius weit/mittel/eng, 6 Problemverhalten mit Kontextfeld |
 | Verhalten Hundeführer:in | 6 Kriterien, Selbstreflektion und Vorsätze |

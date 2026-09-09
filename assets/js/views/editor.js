@@ -277,10 +277,11 @@ function helferTabelle() {
         ${personWahl(h.personId, i)}
         <button type="button" class="btn btn--mini" data-person-neu="${i}">+ neu</button>
       </span>`, { hint: 'ermöglicht die Auswertung nach Versteckperson' })}
-      <div class="raster raster--3">
+      <div class="raster raster--4">
         ${feld('Helfer:in-Bild', select(`helfer.${i}.bildId`, h.bildId, HB.alleBilder().map((b) => ({ id: b.id, label: b.eigen ? b.label + ' (eigenes)' : b.label })), '– frei –'))}
         ${feld('Suchzeit bis (min)', textInput(`helfer.${i}.zeitBisMin`, h.zeitBisMin, { type: 'number', inputmode: 'decimal', min: 0, step: 0.5 }))}
         ${feld('Radius zur HF (m)', textInput(`helfer.${i}.radiusM`, h.radiusM, { type: 'number', inputmode: 'numeric', min: 0, step: 1 }))}
+        ${feld('Anzahl der Beller', textInput(`helfer.${i}.anzahlBeller`, h.anzahlBeller, { type: 'number', inputmode: 'numeric', min: 0, step: 1 }))}
       </div>
       ${S.sparteVon(suche) === 'truemmer' ? truemmerZeile(h, i) : ''}
       ${anzeigeZeile(h, i)}
@@ -343,7 +344,7 @@ function anzeigeZeile(h, i) {
 
 /* ---------------------------------------------------------------- */
 
-const ZAHLFELDER = new Set(['suchzeitMin', 'zeitBisMin', 'radiusM', 'wartezeitAutoMin']);
+const ZAHLFELDER = new Set(['suchzeitMin', 'zeitBisMin', 'radiusM', 'wartezeitAutoMin', 'anzahlBeller']);
 
 function binde(wurzel) {
   const feldWert = (el) => {

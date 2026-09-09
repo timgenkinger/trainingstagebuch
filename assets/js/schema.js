@@ -298,6 +298,8 @@ export function neueHelferZeile(nr) {
     zeitBisMin: null,
     gefunden: null,
     radiusM: null,
+    /** Wie oft der Hund am Versteck angeschlagen hat. */
+    anzahlBeller: null,
     // nur in der Trümmersuche verwendet
     kommtHin: null,
     verdeckung: '',
