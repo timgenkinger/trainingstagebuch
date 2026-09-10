@@ -255,7 +255,8 @@ in vier Schritten festlegt. Erst danach zeigt die App Hunde und Dokumentation.
 | | **Hundeführer:in** | **Ausbilder:in** |
 |---|---|---|
 | Sichtbare Hunde | nur die zugeordneten | alle |
-| Dokumentieren | ja | ja |
+| Dokumentieren | ja – alle vier Arten | ja |
+| Hunde zuordnen, umbenennen, entfernen | nein | ja |
 | Einheiten bestätigen | nein | ja |
 | Daten sichern und einspielen | nein | ja |
 | Dashboard, Verbellen-Stand, Helfer:in-Bilder | nur wenn freigegeben | ja |
@@ -268,6 +269,12 @@ dieses Repository öffentlich ist. Der Weg zurück zur Hundeführer:in-Rolle bra
 Auch hier gilt die Einordnung von oben: Das Passwort verhindert, dass jemand die Rolle mal eben
 umstellt. Es ist keine Zugriffssperre – die Prüfung läuft im Browser und ließe sich mit
 Entwicklerwerkzeugen umgehen.
+
+**Zuordnen darf nur die Ausbildung.** Hundeführer:innen sehen unter *Einstellungen → Hunde* nur
+ihre eigenen Hunde und dort keine Zuordnungs-Menüs – sonst könnte sich jede:r dem Hund einer
+anderen Person zuordnen und ihn danach in der Erfassung auswählen. Aus demselben Grund bietet der
+Einrichtungsassistent nur Hunde an, die noch **niemandem** zugeordnet sind; ein selbst angelegter
+Hund gehört der anlegenden Person.
 
 Die Zuordnung erfolgt unter **Einstellungen → Hunde**, je Hund über die Frage
 *„Wer führt <Hundename>?"*: Bereits zugeordnete Personen stehen als Marken darunter und lassen
@@ -287,6 +294,10 @@ bleibt er in der Liste sichtbar. So schreibt ein Öffnen des Eintrags ihn nicht 
 
 Ob Hundeführer:innen die Auswertungen **ihrer eigenen** Hunde einsehen dürfen, entscheidet die
 Ausbildung mit einem Schalter; ab Werk ist das aus.
+
+**Dokumentieren geht immer.** Die Rolle entscheidet nur über die *Auswertungen* – Dashboard,
+Verbellen-Fortschritt und Helfer:in-Bilder. Alle vier Erfassungsmasken, die Verbellen-Sitzung
+eingeschlossen, stehen beiden Rollen offen.
 
 > ### Wichtig: Rollen ordnen die Ansicht, sie schützen die Daten nicht
 >

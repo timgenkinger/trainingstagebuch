@@ -28,9 +28,9 @@ const ROUTEN = [
   { muster: /^#\/doku\/(.+)$/, view: vFreidoku, tab: 'suchen', params: (m) => ({ id: m[1] }) },
   { muster: /^#\/verbellen-sitzung\/neu$/, view: vVerbellenEditor, tab: 'verbellen', params: () => ({}) },
   { muster: /^#\/verbellen-sitzung\/(.+)$/, view: vVerbellenEditor, tab: 'verbellen', params: (m) => ({ id: m[1] }) },
-  { muster: /^#\/verbellen$/, view: vVerbellen, tab: 'verbellen' },
-  { muster: /^#\/dashboard$/, view: vDashboard, tab: 'dashboard' },
-  { muster: /^#\/bilder$/, view: vBilder, tab: 'bilder' },
+  { muster: /^#\/verbellen$/, view: vVerbellen, tab: 'verbellen', nurAuswertung: true },
+  { muster: /^#\/dashboard$/, view: vDashboard, tab: 'dashboard', nurAuswertung: true },
+  { muster: /^#\/bilder$/, view: vBilder, tab: 'bilder', nurAuswertung: true },
   { muster: /^#\/einstellungen$/, view: vEinstellungen, tab: 'mehr' },
   { muster: /^#\/einrichtung$/, view: vEinrichtung, tab: 'mehr' },
   { muster: /^#\/start$/, view: vStart, tab: '' },
@@ -42,7 +42,12 @@ let aktuelleView = null;
  * @param {boolean} navigiert  true = echter Seitenwechsel (dann nach oben scrollen),
  *                             false = stille Auffrischung, z.B. weil neue Daten eintrafen.
  */
-/** Ansichten, die nur mit Auswertungsrecht offenstehen. */
+/**
+ * Reiter, die nur mit Auswertungsrecht in der Navigation erscheinen.
+ * Welche *Ansicht* gesperrt ist, steht dagegen als `nurAuswertung` an der
+ * Route: Die Erfassungsmaske einer Verbellen-Sitzung traegt zwar denselben
+ * Reiter, ist aber keine Auswertung und beiden Rollen erlaubt.
+ */
 const NUR_AUSWERTUNG = new Set(['dashboard', 'verbellen', 'bilder']);
 
 async function route(navigiert = true) {
@@ -69,7 +74,7 @@ async function route(navigiert = true) {
   }
 
   // Zugriff auf die Auswertungen prüfen, bevor die Ansicht gebaut wird.
-  if (NUR_AUSWERTUNG.has(treffer.r.tab) && !R.darfAuswertungSehen()) {
+  if (treffer.r.nurAuswertung && !R.darfAuswertungSehen()) {
     aktuelleView = null;
     markiereTab('');
     document.getElementById('view').innerHTML = `<div class="seite"><div class="leer">

@@ -132,8 +132,13 @@ function schrittPerson() {
 /* ---- 3. Hund ---- */
 
 function schrittHund() {
-  const alle = store.hunde();
+  // Uebernehmen laesst sich nur, was noch niemandem gehoert. Sonst koennte
+  // sich jede:r den Hund einer anderen Person zuordnen und ihn danach in der
+  // Erfassung auswaehlen. Die Ausbildung darf alles zuordnen.
   const meine = R.meineHunde();
+  const alle = R.istAusbilder()
+    ? store.hunde()
+    : store.hunde().filter((h) => !(h.hfIds || []).length || (h.hfIds || []).includes(R.meinePersonId()));
   return karte('Dein Hund', `
     <p class="text">Du kannst später weitere Hunde ergänzen. Ein Hund kann auch mehreren
       Personen zugeordnet sein.</p>
@@ -143,7 +148,7 @@ function schrittHund() {
     ${alle.length ? `
       ${feld('Vorhandenen Hund zuordnen', select('hundId', z.hundId,
         alle.filter((h) => !meine.some((m) => m.id === h.id)).map((h) => ({ id: h.id, label: h.name })),
-        '– keinen –'))}
+        '– keinen –'), { hint: R.istAusbilder() ? '' : 'nur Hunde, die noch niemandem zugeordnet sind' })}
     ` : ''}
 
     ${feld('Neuen Hund anlegen', textInput('neuerHund', z.neuerHund, { placeholder: 'Name des Hundes' }))}

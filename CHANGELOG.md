@@ -1,5 +1,21 @@
 # Änderungsprotokoll
 
+## 1.18.1 – 2026-09-10
+- **Verbellen liess sich als Hundeführer:in gar nicht erfassen.** Die Erfassungsmaske hing an
+  derselben Sperre wie der Fortschrittskatalog, weil beide denselben Reiter tragen – der Eintrag
+  „Verbellen“ im Plusmenü endete deshalb bei „Diese Auswertung ist der Ausbildung vorbehalten“.
+  Die Sperre hängt jetzt an der einzelnen Ansicht statt am Reiter: Dokumentieren geht in beiden
+  Rollen, vorbehalten bleiben nur Dashboard, Fortschrittskatalog und Helfer:in-Bilder.
+- Im leeren Zustand der Übersicht fehlte das Verbellen unter den Möglichkeiten. Wer bei der
+  Einrichtung keinen Verbellen-Stand angab, hatte gar keinen Datensatz – und damit nirgends einen
+  Weg zur ersten Sitzung.
+- **Hunde anderer Hundeführer:innen liessen sich übernehmen.** Unter *Einstellungen → Hunde* sah
+  jede:r alle Hunde samt Zuordnungs-Menü und konnte sich einem fremden Hund zuordnen; danach stand
+  er in der Erfassung zur Auswahl. Hundeführer:innen sehen dort jetzt nur ihre eigenen Hunde, ohne
+  Zuordnen, Lösen und Entfernen – doppelt abgesichert, sodass auch eine veraltete Ansicht nichts
+  bewirkt. Der Einrichtungsassistent bietet nur noch Hunde an, die niemandem zugeordnet sind, und
+  ein selbst angelegter Hund gehört der anlegenden Person.
+
 ## 1.18.0 – 2026-09-10
 Aus dem ersten Nutzerfeedback nach dem Livegang.
 

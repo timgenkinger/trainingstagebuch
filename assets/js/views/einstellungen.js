@@ -55,7 +55,9 @@ function zeichne(wurzel) {
 function html() {
   const cfg = ladeConfig();
   const s = sync.status;
-  const hunde = store.hunde();
+  // Hundefuehrer:innen sehen hier nur ihre eigenen Hunde. Sonst koennten sie
+  // sich einem fremden Hund zuordnen und ihn danach in der Erfassung waehlen.
+  const hunde = R.istAusbilder() ? store.hunde() : R.meineHunde();
   const personen = store.personen();
   const muell = store.papierkorb();
   const entwuerfe = store.entwuerfe();
@@ -155,7 +157,9 @@ function html() {
 
     ${karte('Hunde', `
       <div class="stamm-liste">
-        ${hunde.length ? hunde.map((h) => hundZeile(h, personen)).join('') : leer('Noch kein Hund angelegt.')}
+        ${hunde.length
+          ? hunde.map((h) => hundZeile(h, personen)).join('')
+          : leer(R.istAusbilder() ? 'Noch kein Hund angelegt.' : 'Dir ist noch kein Hund zugeordnet.')}
       </div>
       <div class="btn-zeile">
         <input class="input" placeholder="Name des Hundes" data-neu-hund>
@@ -310,6 +314,10 @@ function uhrzeit(ts) {
  * Beschriftung und nicht nur ein allgemeines "Zuordnung".
  */
 function hundZeile(h, personen) {
+  // Wer einen Hund fuehrt, entscheidet die Ausbildung. Duerfte das jede:r
+  // selbst, koennte man sich einem fremden Hund zuordnen und ihn danach in
+  // der Erfassung auswaehlen.
+  const darfZuordnen = R.istAusbilder();
   const zugeordnet = (h.hfIds || []).map((id) => store.get(id)).filter(Boolean);
   const offen = personen.filter((p) => !(h.hfIds || []).includes(p.id));
   const name = h.name?.trim() || 'diesem Hund';
@@ -318,8 +326,10 @@ function hundZeile(h, personen) {
     <div class="stamm__zeile">
       <input class="input input--schlank" value="${esc(h.name || '')}" data-rename="${esc(h.id)}"
         aria-label="Name des Hundes">
-      <button type="button" class="btn btn--mini btn--gefahr-still" data-del="${esc(h.id)}"
-        aria-label="Hund entfernen">×</button>
+      ${darfZuordnen
+        ? `<button type="button" class="btn btn--mini btn--gefahr-still" data-del="${esc(h.id)}"
+            aria-label="Hund entfernen">×</button>`
+        : ''}
     </div>
 
     <div class="zuordnung">
@@ -328,21 +338,25 @@ function hundZeile(h, personen) {
       ${zugeordnet.length
         ? `<div class="zuordnung__liste">
             ${zugeordnet.map((p) => `<span class="zuordnung__tag">${esc(p.name)}
-              <button type="button" data-zuordnung-weg="${esc(h.id)}:${esc(p.id)}"
-                aria-label="${esc(p.name)} von ${esc(name)} lösen" title="Zuordnung lösen">×</button>
+              ${darfZuordnen
+                ? `<button type="button" data-zuordnung-weg="${esc(h.id)}:${esc(p.id)}"
+                    aria-label="${esc(p.name)} von ${esc(name)} lösen" title="Zuordnung lösen">×</button>`
+                : ''}
             </span>`).join('')}
           </div>`
         : `<small class="stamm__warnung">Niemandem zugeordnet – nur die Ausbildung sieht ${esc(name)}.</small>`}
 
-      ${personen.length
-        ? (offen.length
-            ? `<select class="input input--schlank zuordnung__auswahl" data-zuordnung-add="${esc(h.id)}"
-                aria-label="Hundeführer:in zu ${esc(name)} zuordnen">
-                <option value="">+ Hundeführer:in zuordnen …</option>
-                ${offen.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}
-              </select>`
-            : '<small class="zuordnung__fertig">Alle Hundeführer:innen sind zugeordnet.</small>')
-        : '<small class="stamm__warnung">Erst Hundeführer:innen anlegen, dann zuordnen.</small>'}
+      ${!darfZuordnen
+        ? '<small class="karte__hint">Die Zuordnung ändert die Ausbildung.</small>'
+        : personen.length
+          ? (offen.length
+              ? `<select class="input input--schlank zuordnung__auswahl" data-zuordnung-add="${esc(h.id)}"
+                  aria-label="Hundeführer:in zu ${esc(name)} zuordnen">
+                  <option value="">+ Hundeführer:in zuordnen …</option>
+                  ${offen.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}
+                </select>`
+              : '<small class="zuordnung__fertig">Alle Hundeführer:innen sind zugeordnet.</small>')
+          : '<small class="stamm__warnung">Erst Hundeführer:innen anlegen, dann zuordnen.</small>'}
     </div>
   </div>`;
 }
@@ -362,6 +376,11 @@ function binde(box, wurzel) {
 
     const zweg = t.closest('[data-zuordnung-weg]');
     if (zweg) {
+      if (!R.istAusbilder()) {
+        toast('Die Zuordnung von Hunden ist der Ausbildung vorbehalten.', 'fehler');
+        zeichne(wurzel);
+        return;
+      }
       const [hundId, personId] = zweg.dataset.zuordnungWeg.split(':');
       const h = store.get(hundId);
       if (h) {
@@ -408,7 +427,10 @@ function binde(box, wurzel) {
     if (t.closest('[data-add-hund]')) {
       const el = box.querySelector('[data-neu-hund]');
       if (!el.value.trim()) return;
-      await store.put({ type: 'hund', name: el.value.trim() });
+      // Ein selbst angelegter Hund gehoert der anlegenden Person – sonst
+      // waere er fuer sie sofort wieder unsichtbar.
+      const eigen = R.istAusbilder() ? [] : [R.meinePersonId()].filter(Boolean);
+      await store.put({ type: 'hund', name: el.value.trim(), hfIds: eigen });
       zeichne(wurzel);
       return;
     }
@@ -431,6 +453,12 @@ function binde(box, wurzel) {
 
     const del = t.closest('[data-del]');
     if (del) {
+      // Ein Hund gehoert dem Team, nicht dem Geraet: Entfernen wirkt fuer alle.
+      if (store.get(del.dataset.del)?.type === 'hund' && !R.istAusbilder()) {
+        toast('Hunde entfernt nur die Ausbildung.', 'fehler');
+        zeichne(wurzel);
+        return;
+      }
       if (await frage('Eintrag entfernen? Bereits dokumentierte Suchen bleiben erhalten.', { ok: 'Entfernen', gefahr: true })) {
         await store.entferne(del.dataset.del);
         zeichne(wurzel);
@@ -497,6 +525,11 @@ function binde(box, wurzel) {
   box.addEventListener('change', async (e) => {
     const zadd = e.target.closest('[data-zuordnung-add]');
     if (zadd) {
+      if (!R.istAusbilder()) {
+        toast('Die Zuordnung von Hunden ist der Ausbildung vorbehalten.', 'fehler');
+        zeichne(wurzel);
+        return;
+      }
       const personId = zadd.value;
       if (!personId) return;
       const h = store.get(zadd.dataset.zuordnungAdd);

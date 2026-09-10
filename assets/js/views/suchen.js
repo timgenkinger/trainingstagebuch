@@ -72,10 +72,11 @@ function html() {
   if (!alle.length) {
     return `<div class="seite">
       ${leer(
-        'Noch nichts dokumentiert. Eine Suche folgt dem Protokoll aus dem Heft, eine freie Dokumentation hat nur Grundwerte, Skizze und Freitext.',
+        'Noch nichts dokumentiert. Eine Suche folgt dem Protokoll aus dem Heft, eine Verbellen-Sitzung dem Trainingsplan, eine freie Dokumentation hat nur Grundwerte, Skizze und Freitext.',
         `<div class="btn-zeile btn-zeile--mitte">
           <a class="btn btn--primaer" href="#/suche/neu">Erste Flächensuche anlegen</a>
           <a class="btn btn--truemmer" href="#/suche/neu-truemmer">Trümmersuche</a>
+          <a class="btn btn--still" href="#/verbellen-sitzung/neu">Verbellen</a>
           <a class="btn btn--still" href="#/doku/neu">Freie Dokumentation</a>
         </div>`
       )}

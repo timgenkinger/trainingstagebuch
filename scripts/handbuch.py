@@ -371,6 +371,7 @@ E += [
         ["Einheiten bestätigen", "nein", "ja"],
         ["Daten sichern und einspielen", "nein", "ja"],
         ["Dashboard, Verbellen-Stand, Helfer:in-Bilder", "nur wenn freigegeben", "ja"],
+        ["Hunde zuordnen, umbenennen, entfernen", "nein", "ja"],
     ], [62 * mm, (BREITE - 62 * mm) / 2, (BREITE - 62 * mm) / 2]),
     Spacer(1, 8),
 
@@ -379,7 +380,15 @@ E += [
       "Hundeführer:in-Rolle braucht keines. Das Passwort steht bewusst nicht im Programmcode – "
       "hinterlegt ist nur ein Prüfwert, aus dem es sich nicht zurückrechnen lässt.", "text"),
 
+    p("Dokumentieren geht in beiden Rollen – alle vier Erfassungsmasken, die Verbellen-Sitzung "
+      "eingeschlossen. Die Rolle entscheidet nur ueber die Auswertungen.", "text"),
+
     p("3.2 &nbsp; Hunde zuordnen (Ausbildung)", "h2"),
+    p("Wer einen Hund fuehrt, legt allein die Ausbildung fest. Hundefuehrer:innen sehen unter "
+      "<b>Einstellungen – Hunde</b> nur ihre eigenen Hunde und dort keine Zuordnungs-Menues; "
+      "andernfalls koennte sich jede:r dem Hund einer anderen Person zuordnen und ihn danach in "
+      "der Erfassung auswaehlen. Der Einrichtungsassistent bietet aus demselben Grund nur Hunde "
+      "an, die noch niemandem zugeordnet sind.", "text"),
     p("Unter <b>Einstellungen – Hunde</b> steht bei jedem Hund die Frage "
       "<i>„Wer führt &lt;Hundename&gt;?“</i>. Zugeordnete Personen erscheinen als Marken und lassen "
       "sich einzeln lösen; weitere kommen über das Auswahlmenü dazu.", "text"),
