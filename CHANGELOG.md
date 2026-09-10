@@ -1,5 +1,15 @@
 # Änderungsprotokoll
 
+## 1.19.1 – 2026-09-10
+- **Die Einstellungen liefen auf schmalen Geräten seitlich aus dem Bild.** Knöpfe durften nicht
+  umbrechen (`white-space: nowrap`), sodass lange Beschriftungen wie „Lokale Daten auf diesem
+  Gerät löschen“ auf 303 px kamen – mehr, als eine Karte auf einem schmalen Display hergibt.
+  Als Home-Bildschirm-App verkleinert iOS die Seite nicht, sondern macht sie querschiebbar;
+  daher der schwarze Streifen rechts und die abgeschnittene Kopfzeile.
+  Knöpfe brechen jetzt um, wenn der Platz nicht reicht. Auf üblichen Handybreiten ändert sich
+  dadurch nichts – bei 375 px bricht kein einziger Knopf um.
+- Geprüft von 280 bis 414 px über alle Ansichten und beide Rollen: kein Querüberlauf mehr.
+
 ## 1.19.0 – 2026-09-10
 - **Der Durchgang des Tages ist jetzt Pflichtangabe** – in allen vier Erfassungsmasken. Ohne ihn
   lässt sich ein Eintrag nicht mehr abschließen und geht damit auch nicht ins Team.
