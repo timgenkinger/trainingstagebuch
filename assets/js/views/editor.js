@@ -103,7 +103,31 @@ function markiere() {
   statusSetzen('Speichere …');
   aktualisiereAbschluss();
   aktualisiereKopf();
+  aktualisiereHelferMarker();
   speichereBald();
+}
+
+/**
+ * Markiert Versteckpersonen, an denen etwas steht, denen aber das Ergebnis
+ * fehlt. Die Maske zeichnet die Helferkarten beim Tippen nicht neu, deshalb
+ * wird nur die Markierung nachgezogen – ein Neuaufbau wuerde den Fokus und
+ * die Cursorposition im gerade bearbeiteten Feld verlieren.
+ */
+function aktualisiereHelferMarker() {
+  document.querySelectorAll('.helfer').forEach((el, i) => {
+    const h = suche.helfer?.[i];
+    const offen = S.helferErfasst(h) && h.gefunden !== true && h.gefunden !== false;
+    el.classList.toggle('helfer--offen', offen);
+    const vorhanden = el.querySelector('.helfer__fehlt');
+    if (offen && !vorhanden) {
+      const hinweis = document.createElement('small');
+      hinweis.className = 'helfer__fehlt';
+      hinweis.textContent = 'Ergebnis fehlt';
+      el.querySelector('.helfer__kopf strong').after(hinweis);
+    } else if (!offen && vorhanden) {
+      vorhanden.remove();
+    }
+  });
 }
 
 /* ---------------------------------------------------------------- */
@@ -264,9 +288,11 @@ function eigeneKriterien(gruppe) {
 function helferTabelle() {
   return `<div class="helfer-liste">${suche.helfer
     .map(
-      (h, i) => `<div class="helfer">
+      (h, i) => `<div class="helfer${S.helferErfasst(h) && h.gefunden !== true && h.gefunden !== false ? ' helfer--offen' : ''}">
       <div class="helfer__kopf">
         <strong>Helfer:in ${i + 1}</strong>
+        ${S.helferErfasst(h) && h.gefunden !== true && h.gefunden !== false
+          ? '<small class="helfer__fehlt">Ergebnis fehlt</small>' : ''}
         <span class="helfer__gefunden">
           <button type="button" class="mini-chip${h.gefunden === true ? ' mini-chip--an' : ''}" data-tri="helfer.${i}.gefunden" data-wert="true">gefunden</button>
           <button type="button" class="mini-chip${h.gefunden === false ? ' mini-chip--an mini-chip--rot' : ''}" data-tri="helfer.${i}.gefunden" data-wert="false">nicht gefunden</button>

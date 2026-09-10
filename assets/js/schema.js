@@ -496,11 +496,32 @@ export function gesamtScore(suche) {
  * ausgeführt gilt. Nur vollständige Suchen lassen sich abschließen und
  * landen damit im gemeinsamen Datenbestand.
  */
+/**
+ * Gilt eine Versteckperson-Zeile als erfasst? Sobald irgendetwas an ihr steht.
+ * Die Maske legt vier leere Zeilen an; unberuehrte davon sind keine
+ * dokumentierte Versteckperson und werden bei den Pflichtangaben uebergangen.
+ */
+export function helferErfasst(h) {
+  if (!h) return false;
+  return !!(
+    h.personId || h.bildId || (h.beschreibung || '').trim() || h.verdeckung || h.versteck
+    || Number(h.zeitBisMin) > 0 || Number(h.radiusM) > 0 || Number(h.anzahlBeller) > 0
+    || typeof h.anzeigeNote === 'number'
+    || h.gefunden === true || h.gefunden === false
+    || h.kommtHin === true || h.kommtHin === false
+  );
+}
+
 export const PFLICHT = [
   {
     id: 'datum',
     label: 'Datum',
     pruefe: (s) => !!s.datum,
+  },
+  {
+    id: 'durchgang',
+    label: 'Durchgang des Tages',
+    pruefe: (s) => Number(s.durchgang) > 0,
   },
   {
     id: 'ort',
@@ -524,8 +545,12 @@ export const PFLICHT = [
   },
   {
     id: 'versteck',
-    label: 'Mindestens eine Versteckperson mit Ergebnis (gefunden / nicht gefunden)',
-    pruefe: (s) => (s.helfer || []).some((h) => h.gefunden === true || h.gefunden === false),
+    label: 'Bei jeder erfassten Versteckperson: gefunden / nicht gefunden',
+    pruefe: (s) => {
+      const erfasst = (s.helfer || []).filter(helferErfasst);
+      return erfasst.length > 0
+        && erfasst.every((h) => h.gefunden === true || h.gefunden === false);
+    },
   },
   {
     id: 'team',
@@ -547,6 +572,7 @@ export const PFLICHT = [
 /** Pflichtangaben einer freien Dokumentation – bewusst schlank gehalten. */
 export const PFLICHT_FREIDOKU = [
   { id: 'datum', label: 'Datum', pruefe: (d) => !!d.datum },
+  { id: 'durchgang', label: 'Durchgang des Tages', pruefe: (d) => Number(d.durchgang) > 0 },
   { id: 'titel', label: 'Überschrift', pruefe: (d) => !!(d.titel || '').trim() },
   { id: 'hund', label: 'Hund ausgewählt', pruefe: (d) => !!d.hundId },
   {
@@ -559,6 +585,7 @@ export const PFLICHT_FREIDOKU = [
 /** Pflichtangaben einer Verbellen-Sitzung. */
 export const PFLICHT_VERBELLEN = [
   { id: 'datum', label: 'Datum', pruefe: (v) => !!v.datum },
+  { id: 'durchgang', label: 'Durchgang des Tages', pruefe: (v) => Number(v.durchgang) > 0 },
   { id: 'hund', label: 'Hund ausgewählt', pruefe: (v) => !!v.hundId },
   {
     id: 'stufe',

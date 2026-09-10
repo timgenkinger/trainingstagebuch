@@ -1,5 +1,21 @@
 # Änderungsprotokoll
 
+## 1.19.0 – 2026-09-10
+- **Der Durchgang des Tages ist jetzt Pflichtangabe** – in allen vier Erfassungsmasken. Ohne ihn
+  lässt sich ein Eintrag nicht mehr abschließen und geht damit auch nicht ins Team.
+- **Jede erfasste Versteckperson braucht ein Ergebnis.** Bisher genügte *eine* Zeile mit
+  gefunden / nicht gefunden; ausgefüllte Zeilen ohne Ergebnis rutschten mit durch und fehlten
+  danach in der Trefferquote. Als erfasst gilt eine Zeile, sobald irgendetwas an ihr steht –
+  Name, Bild, Zeit, Radius, Anzahl der Beller, Anzeige oder Bemerkung. Unberührte Zeilen bleiben
+  außen vor, damit niemand vor jedem Abschluss überzählige Zeilen löschen muss.
+- Zeilen, denen das Ergebnis fehlt, sind orange umrandet und mit *Ergebnis fehlt* markiert – bei
+  vier Zeilen wäre sonst nicht erkennbar, welche gemeint ist. Die Markierung läuft beim Tippen
+  mit, ohne die Karte neu zu zeichnen, damit der Cursor im Feld bleibt.
+- Bereits abgeschlossene Einträge bleiben abgeschlossen; die neuen Regeln gelten erst beim
+  nächsten Abschließen.
+- Neu `--warn-text`: `--orange` ist eine Flächenfarbe und erreichte als Schrift nur 3,1:1 (hell)
+  bzw. 4,1:1 (dunkel). Die neue Variable ist je Modus gesetzt (5,8:1 und 7,2:1).
+
 ## 1.18.1 – 2026-09-10
 - **Verbellen liess sich als Hundeführer:in gar nicht erfassen.** Die Erfassungsmaske hing an
   derselben Sperre wie der Fortschrittskatalog, weil beide denselben Reiter tragen – der Eintrag

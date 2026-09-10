@@ -527,13 +527,22 @@ E += [
       "die fehlenden auf. Er läuft bei jeder Eingabe mit. Sind alle da, wird der Knopf "
       "<b>Abschließen und mit dem Team teilen</b> frei.", "text"),
     tabelle([
-        ["Suche", "9 Angaben: Datum, Ort, Hund, Hundeführer:in, Suchzeit, mindestens eine "
-                  "Versteckperson mit Ergebnis sowie je eine Bewertung bei Team, Hund und Hundeführer:in"],
-        ["Verbellen", "4 Angaben: Datum, Hund, mindestens eine bearbeitete Stufe und mindestens "
-                      "eine gelungene Wiederholung"],
-        ["Freie Doku", "4 Angaben: Datum, Überschrift, Hund sowie Freitext oder Skizze"],
+        ["Suche", "10 Angaben: Datum, <b>Durchgang des Tages</b>, Ort, Hund, Hundeführer:in, "
+                  "Suchzeit, das Ergebnis <b>jeder erfassten Versteckperson</b> sowie je eine "
+                  "Bewertung bei Team, Hund und Hundeführer:in"],
+        ["Verbellen", "5 Angaben: Datum, <b>Durchgang des Tages</b>, Hund, mindestens eine "
+                      "bearbeitete Stufe und mindestens eine gelungene Wiederholung"],
+        ["Freie Doku", "5 Angaben: Datum, <b>Durchgang des Tages</b>, Überschrift, Hund sowie "
+                       "Freitext oder Skizze"],
     ], [28 * mm, BREITE - 28 * mm], kopf=False),
     Spacer(1, 8),
+    p("Was heisst „erfasste Versteckperson“?", "h3"),
+    p("Die Maske legt vier leere Zeilen an. Sobald an einer Zeile irgendetwas steht – Name, Bild, "
+      "Zeit, Radius, Anzahl der Beller, Anzeige oder Bemerkung – gilt sie als erfasst und braucht "
+      "<b>gefunden</b> oder <b>nicht gefunden</b>. Sie wird dann orange umrandet und mit "
+      "<i>Ergebnis fehlt</i> markiert, damit bei mehreren Zeilen erkennbar bleibt, welche gemeint "
+      "ist. Unberuehrte Zeilen bleiben aussen vor – niemand muss vor dem Abschliessen "
+      "ueberzaehlige Zeilen loeschen.", "text"),
     p("Ein abgeschlossener Eintrag lässt sich <b>wieder öffnen</b> und wird dann erneut zum "
       "Entwurf. Der bereits geteilte Stand bleibt beim Team, bis er wieder abgeschlossen wird.", "text"),
 

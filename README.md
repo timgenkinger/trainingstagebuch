@@ -49,7 +49,8 @@ Ein Klick daneben oder `Esc` schließt es wieder.
 Alle teilen sich denselben Block **Grundwerte**. Er beginnt mit der **Wartezeit im Auto bis zur
 Suche** – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet –
 und dem **Durchgang des Tages** (1, 2, 3 …), der festhält, der wievielte Einsatz das an diesem Tag
-war; der dritte Durchgang steht unter anderen Voraussetzungen als der erste.
+war; der dritte Durchgang steht unter anderen Voraussetzungen als der erste. Beide sind
+Pflichtangaben – ohne sie lässt sich ein Eintrag nicht abschließen.
 Danach folgen Datum, Ort, Hund, Hundeführer:in sowie Gelände und Wetter.
 
 ### Fotos
@@ -371,14 +372,21 @@ keine halb ausgefüllten Formulare, die in der Auswertung Unsinn erzeugen.
 Abschließen lässt sich ein Eintrag erst, wenn alle Pflichtangaben vorliegen. Die Maske zeigt
 unten laufend, was noch fehlt – und aktualisiert das bei jeder Eingabe.
 
-**Suche (9 Angaben):** Datum, Ort, Hund, Hundeführer:in, Suchzeit, mindestens eine
-Versteckperson mit Ergebnis (gefunden / nicht gefunden) sowie mindestens je eine Bewertung
-bei Team, Hund und Hundeführer:in.
+**Suche (10 Angaben):** Datum, **Durchgang des Tages**, Ort, Hund, Hundeführer:in, Suchzeit,
+das Ergebnis **jeder erfassten Versteckperson** (gefunden / nicht gefunden) sowie mindestens je
+eine Bewertung bei Team, Hund und Hundeführer:in.
 
-**Freie Dokumentation (4 Angaben):** Datum, Überschrift, Hund sowie Freitext oder Skizze.
+> **Was heißt „erfasst"?** Die Maske legt vier leere Versteckperson-Zeilen an. Sobald an einer
+> Zeile irgendetwas steht – Name, Bild, Zeit, Radius, Anzahl der Beller, Anzeige oder Bemerkung –
+> gilt sie als erfasst und braucht ein Ergebnis; sie wird dann orange umrandet und mit
+> *Ergebnis fehlt* markiert. Unberührte Zeilen bleiben außen vor, damit niemand vor jedem
+> Abschluss überzählige Zeilen löschen muss.
 
-**Verbellen-Sitzung (4 Angaben):** Datum, Hund, mindestens eine bearbeitete Stufe und mindestens
-eine gelungene Wiederholung. Solange eine Sitzung Entwurf ist, zählt sie auch nicht im
+**Freie Dokumentation (5 Angaben):** Datum, **Durchgang des Tages**, Überschrift, Hund sowie
+Freitext oder Skizze.
+
+**Verbellen-Sitzung (5 Angaben):** Datum, **Durchgang des Tages**, Hund, mindestens eine
+bearbeitete Stufe und mindestens eine gelungene Wiederholung. Solange eine Sitzung Entwurf ist, zählt sie auch nicht im
 Fortschrittskatalog.
 
 Wer eine abgeschlossene Suche nachträglich korrigieren will, öffnet sie wieder – sie wird dann
