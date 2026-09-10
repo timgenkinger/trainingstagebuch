@@ -4,7 +4,7 @@ import * as store from '../store.js';
 import * as R from '../rollen.js';
 import * as S from '../schema.js';
 import { esc, karte, leer, formatNote, formatMinuten, runde, skalaFarbe, formatDatum } from '../ui.js';
-import { linienDiagramm, balken, stapel, sparkline } from '../charts.js';
+import { linienDiagramm, balken, stapel, sparkline, balkenBreite } from '../charts.js';
 import * as V from '../verbellen.js';
 import * as HB from '../helferbilder.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
@@ -42,11 +42,17 @@ function datensatz() {
 
 function html() {
   const alle = store.suchen();
+  // Das Verbellen steht bewusst ausserhalb: Es wird aus den Sitzungen
+  // abgeleitet und nicht aus Suchen. Frueher verschwand es mit, solange
+  // noch keine Suche dokumentiert war.
   if (!alle.length) {
-    return `<div class="seite">${leer(
-      'Sobald die erste Suche dokumentiert ist, erscheinen hier die Auswertungen.',
-      '<a class="btn btn--primaer" href="#/suche/neu">Erste Suche anlegen</a>'
-    )}</div>`;
+    return `<div class="seite">
+      ${verbellenBlock()}
+      ${leer(
+        'Sobald die erste Suche dokumentiert ist, erscheinen hier auch die Auswertungen der Suchen.',
+        '<a class="btn btn--primaer" href="#/suche/neu">Erste Suche anlegen</a>'
+      )}
+    </div>`;
   }
 
   const daten = datensatz();
@@ -85,12 +91,13 @@ function html() {
 
     ${freie ? `<p class="karte__hint">${freie} freie Dokumentation(en) sind hier nicht enthalten –
       sie tragen keine Bewertungen. <a href="#/suchen">In der Übersicht ansehen →</a></p>` : ''}
+    ${verbellenBlock()}
     ${daten.length ? inhalt(daten) : leer('Für diesen Filter gibt es keine abgeschlossenen Suchen.')}
   </div>`;
 }
 
 function inhalt(daten) {
-  return verbellenBlock() + versteckBlock(daten) + personenBlock(daten) + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
+  return versteckBlock(daten) + personenBlock(daten) + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
 }
 
 /* -------------------- Kennzahlen -------------------- */
@@ -140,7 +147,11 @@ function zeitraumText(daten) {
  */
 function verbellenBlock() {
   const hunde = filter.hundId ? [store.get(filter.hundId)].filter(Boolean) : R.meineHunde();
-  if (!hunde.length) return '';
+  if (!hunde.length) {
+    return karte('Verbellen', `<p class="karte__hint">${R.eingerichtet()
+      ? 'Dir ist noch kein Hund zugeordnet – das macht die Ausbildung unter Einstellungen.'
+      : 'Dieses Gerät ist noch niemandem zugeordnet – bitte über den <a href="#/start">Einrichtungsassistenten</a> einrichten.'}</p>`);
+  }
 
   const zeilen = hunde.map((h) => {
     const kat = V.katalog(h.id);
@@ -162,7 +173,7 @@ function verbellenBlock() {
               <span class="vb-zeile__wert">${z.f.fertig} / ${z.f.gesamt}
                 <small>${Math.round(z.f.anteil * 100)} %</small></span>
             </div>
-            <span class="fortschritt-balken"><span style="width:${runde(z.f.anteil * 100, 1)}%"></span></span>
+            <span class="fortschritt-balken"><span style="width:${runde(balkenBreite(z.f.anteil), 1)}%"></span></span>
             <div class="vb-zeile__zeile2">
               <span class="tag">Box ${z.f.stufenFertig.box}/${VERBELLEN_PLAN.box.length} Stufen</span>
               <span class="tag">Mensch ${z.f.stufenFertig.mensch}/${VERBELLEN_PLAN.mensch.length} Stufen</span>

@@ -142,7 +142,7 @@ function html() {
 
 /* ---------------------------------------------------------------- */
 
-const ZAHLFELDER = new Set(['wartezeitAutoMin']);
+const ZAHLFELDER = new Set(['wartezeitAutoMin', 'durchgang']);
 
 function binde(wurzel) {
   const wert = (el) => {

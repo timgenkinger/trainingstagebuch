@@ -8,22 +8,39 @@
 import * as store from '../store.js';
 import * as S from '../schema.js';
 import * as R from '../rollen.js';
-import { esc, feld, textInput, textArea, select, karte, chipGruppe, formatDatum, toast, frage } from '../ui.js';
+import { esc, feld, textInput, textArea, select, karte, chipGruppe, formatDatum, toast, frage, runde } from '../ui.js';
+import { balkenBreite } from '../charts.js';
 import * as F from '../fotos.js';
 
-/** Wartezeit im Auto – steht in beiden Masken ganz oben. */
+/**
+ * Wartezeit im Auto und Durchgang des Tages – stehen in allen Masken ganz oben.
+ * Beide beschreiben, unter welchen Umstaenden der Hund an den Start ging.
+ */
 export function wartezeitFeld(rec) {
-  return feld(
-    'Wartezeit im Auto bis zur Suche (min)',
-    textInput('wartezeitAutoMin', rec.wartezeitAutoMin, {
-      type: 'number',
-      inputmode: 'numeric',
-      min: 0,
-      step: 5,
-      placeholder: 'z.B. 45',
-    }),
-    { hint: 'prägt Anspannung und Motivation beim Start' }
-  );
+  return `<div class="raster raster--2">
+    ${feld(
+      'Wartezeit im Auto bis zur Suche (min)',
+      textInput('wartezeitAutoMin', rec.wartezeitAutoMin, {
+        type: 'number',
+        inputmode: 'numeric',
+        min: 0,
+        step: 5,
+        placeholder: 'z.B. 45',
+      }),
+      { hint: 'prägt Anspannung und Motivation beim Start' }
+    )}
+    ${feld(
+      'Durchgang des Tages',
+      textInput('durchgang', rec.durchgang, {
+        type: 'number',
+        inputmode: 'numeric',
+        min: 1,
+        step: 1,
+        placeholder: 'z.B. 1',
+      }),
+      { hint: 'der wievielte Durchgang an diesem Tag' }
+    )}
+  </div>`;
 }
 
 /**
@@ -126,7 +143,7 @@ export function abschlussKarte(rec, texte) {
 
   return karte(`${texte.wasIstEs} abschließen`, `
     <div class="fortschritt-zeile">
-      <span class="fortschritt-balken"><span style="width:${Math.round((v.erfuellt / v.gesamt) * 100)}%"></span></span>
+      <span class="fortschritt-balken"><span style="width:${runde(balkenBreite(v.erfuellt / v.gesamt), 1)}%"></span></span>
       <strong>${v.erfuellt} von ${v.gesamt}</strong>
     </div>
     ${v.vollstaendig

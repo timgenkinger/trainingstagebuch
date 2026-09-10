@@ -169,6 +169,7 @@ function zeile2(s) {
   return `
     ${hund ? `<span class="tag">🐕 ${esc(hund.name)}</span>` : ''}
     ${hf ? `<span class="tag">👤 ${esc(hf.name)}</span>` : ''}
+    ${s.durchgang ? `<span class="tag">🔁 ${esc(String(s.durchgang))}. Durchgang</span>` : ''}
     ${s.wartezeitAutoMin ? `<span class="tag">🚗 ${esc(formatMinuten(s.wartezeitAutoMin))} Wartezeit</span>` : ''}`;
 }
 

@@ -156,8 +156,10 @@ function syncAnzeige() {
         offline: 'Offline',
         fehler: 'Sync-Fehler',
       }[s.zustand] || s.zustand;
-    chip.innerHTML = `<span class="punkt"></span><span>${esc(text)}</span>`;
+    chip.innerHTML = `<span class="punkt"></span><span class="sync-chip__text">${esc(text)}</span>`;
     chip.title = s.text;
+    // Auf schmalen Geraeten bleibt nur der Punkt sichtbar – die Lage steht dann hier.
+    chip.setAttribute('aria-label', `Abgleich: ${text}`);
   });
 }
 
@@ -219,7 +221,10 @@ function fabMenue() {
 /* ---------------- Start ---------------- */
 
 async function start() {
-  document.getElementById('version-badge').textContent = versionString();
+  const vb = document.getElementById('version-badge');
+  vb.textContent = versionString();
+  // Auf schmalen Geraeten wird der Text abgeschnitten – vollstaendig bleibt er hier.
+  vb.title = versionString();
   document.title = APP_NAME;
 
   await store.init();

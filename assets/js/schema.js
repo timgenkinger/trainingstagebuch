@@ -326,6 +326,8 @@ export function neueSuche(defaults = {}) {
     // Wartezeit im Auto vor dem Einsatz – beeinflusst Anspannung und Motivation
     // des Hundes und gehört deshalb an den Anfang der Grundwerte.
     wartezeitAutoMin: null,
+    /** Der wievielte Durchgang des Tages – 1, 2, 3 … */
+    durchgang: null,
     ort: '',
     hundId: defaults.hundId || '',
     hfId: defaults.hfId || '',
@@ -384,6 +386,8 @@ export function neueFreieDoku(defaults = {}) {
     fotos: [],
     datum: heute,
     wartezeitAutoMin: null,
+    /** Der wievielte Durchgang des Tages – 1, 2, 3 … */
+    durchgang: null,
     titel: '',
     ort: '',
     hundId: defaults.hundId || '',
@@ -420,6 +424,8 @@ export function neueVerbellenSitzung(defaults = {}) {
     fotos: [],
     datum: heute,
     wartezeitAutoMin: null,
+    /** Der wievielte Durchgang des Tages – 1, 2, 3 … */
+    durchgang: null,
     ort: '',
     hundId: defaults.hundId || '',
     hfId: defaults.hfId || '',

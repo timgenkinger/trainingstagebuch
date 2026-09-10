@@ -230,7 +230,7 @@ function zusatzHtml(i, zi, z) {
 
 /* ---------------------------------------------------------------- */
 
-const ZAHLFELDER = new Set(['wartezeitAutoMin']);
+const ZAHLFELDER = new Set(['wartezeitAutoMin', 'durchgang']);
 
 function binde(wurzel) {
   wurzel.addEventListener('input', (e) => {

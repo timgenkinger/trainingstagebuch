@@ -1,5 +1,29 @@
 # Änderungsprotokoll
 
+## 1.18.0 – 2026-09-10
+Aus dem ersten Nutzerfeedback nach dem Livegang.
+
+- **Durchgang des Tages in allen vier Formularen.** Neben der Wartezeit im Auto steht jetzt, der
+  wievielte Einsatz das an diesem Tag war (1, 2, 3 …). Ein dritter Durchgang steht unter anderen
+  Voraussetzungen als der erste – ohne diese Angabe liessen sich die Bewertungen nicht sauber
+  einordnen. Das Feld ist freiwillig und erscheint als Marke in der Übersicht.
+- **Der rechte Rand der Kopfzeile läuft nicht mehr über.** Bei langen Namen schoben Namensschild,
+  Abgleich-Status und Neu-laden die Kopfzeile über den roten Grund hinaus und die ganze Seite
+  liess sich seitlich schieben. Ursache: Flex-Kinder schrumpfen von Haus aus nicht unter ihre
+  Inhaltsbreite. Jetzt gibt zuerst der Schriftzug nach, das Namensschild kürzt mit „…“, und unter
+  400 px zeigt der Abgleich nur noch seinen farbigen Punkt – die Lage steht weiterhin in der
+  Beschriftung und beim Antippen.
+- **Fortschrittsbalken werden wieder angezeigt.** Der Balken ist ein `<span>` und war deshalb
+  inline – Höhe und Breite blieben wirkungslos, sobald er nicht in einer Flex-Zeile stand. Im
+  Dashboard war der Verbellen-Balken dadurch unsichtbar, obwohl Daten vorhanden waren. Zusätzlich
+  bleibt ein angefangener Plan jetzt sichtbar: 3 von 331 Unterübungen ergaben 2,8 px und damit
+  nichts Erkennbares. Genau 0 bleibt weiterhin leer.
+- **Das Verbellen erscheint im Dashboard immer.** Bisher hing der gesamte Dashboard-Inhalt an den
+  Suchen – wer nur Verbellen-Sitzungen dokumentiert hatte, sah davon nichts, obwohl das Verbellen
+  gar nicht aus Suchen abgeleitet wird. Ohne zugeordneten Hund steht dort jetzt der Grund.
+- **Tippfehler im Verbellen-Plan:** 156 Unterübungen sagten „Besättigung“ statt „Bestätigung“. Der
+  Fortschritt bleibt unberührt, da der Katalog über die Position zählt und nicht über den Text.
+
 ## 1.17.0 – 2026-09-09
 - **Anzahl der Beller je Versteckperson.** Neben der Note für die Anzeige lässt sich nun
   eintragen, wie oft der Hund am Versteck angeschlagen hat – in beiden Sparten, direkt neben

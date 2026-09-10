@@ -92,6 +92,17 @@ export function balken(items, opts = {}) {
     .join('')}</div>`;
 }
 
+/**
+ * Breite eines Fortschrittsbalkens in Prozent.
+ * Sobald es ueberhaupt Fortschritt gibt, bleibt der Balken sichtbar – bei
+ * 3 von 331 Unteruebungen waeren es sonst 2,8 px und damit nicht erkennbar.
+ * Genau 0 bleibt leer, sonst sae he ein unbegonnener Plan begonnen aus.
+ */
+export function balkenBreite(anteil) {
+  const p = Math.max(0, Math.min(100, (Number(anteil) || 0) * 100));
+  return p > 0 ? Math.max(p, 1.5) : 0;
+}
+
 /** Gestapelter Fortschrittsbalken (Helfer:in-Bilder). */
 export function stapel(segmente, gesamt) {
   const s = segmente

@@ -344,7 +344,7 @@ function anzeigeZeile(h, i) {
 
 /* ---------------------------------------------------------------- */
 
-const ZAHLFELDER = new Set(['suchzeitMin', 'zeitBisMin', 'radiusM', 'wartezeitAutoMin', 'anzahlBeller']);
+const ZAHLFELDER = new Set(['suchzeitMin', 'zeitBisMin', 'radiusM', 'wartezeitAutoMin', 'anzahlBeller', 'durchgang']);
 
 function binde(wurzel) {
   const feldWert = (el) => {

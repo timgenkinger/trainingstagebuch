@@ -101,7 +101,8 @@ a { color: var(--marke-dunkel); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: .75rem;
+  gap: .5rem;
+  min-width: 0;
   padding: .55rem .9rem .4rem;
   max-width: 1180px;
   margin: 0 auto;
@@ -113,9 +114,13 @@ a { color: var(--marke-dunkel); }
   gap: .6rem;
   text-decoration: none;
   color: #fff;
+  min-width: 0;      /* sonst draengt der Schriftzug die rechte Seite hinaus */
+  flex: 0 12 auto;   /* gibt vor der rechten Seite nach */
 }
 .marke__logo { width: 30px; height: 30px; color: #fff; flex: none; }
-.marke__text { display: flex; flex-direction: column; line-height: 1.1; }
+.marke__text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
+.marke__text strong,
+.marke__text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .marke__text strong { font-size: 1rem; letter-spacing: -.01em; }
 .marke__text small { font-size: .7rem; color: #fff; font-variant-numeric: tabular-nums; }
 
@@ -781,6 +786,10 @@ code {
 }
 .fortschritt-zeile { display: flex; align-items: center; gap: .7rem; margin-bottom: .7rem; }
 .fortschritt-balken {
+  /* Als <span> waere das Element inline und ignorierte Hoehe und Breite –
+     ausserhalb von .fortschritt-zeile blieb der Balken deshalb unsichtbar. */
+  display: block;
+  width: 100%;
   flex: 1;
   height: 10px;
   border-radius: 999px;
@@ -935,7 +944,18 @@ code {
 .btn-zeile--mitte { justify-content: center; }
 
 /* --- Knopf zum manuellen Neuladen, neben der Statusanzeige --- */
-.kopf__rechts { display: flex; align-items: center; gap: .4rem; }
+.kopf__rechts { display: flex; align-items: center; gap: .4rem; min-width: 0; flex: 0 1 auto; }
+/* Abgleich-Status und Neu-laden bleiben ganz; nur der Name gibt Platz ab. */
+.kopf__rechts .sync-chip { flex: 0 0 auto; }
+.marke__text { min-width: 3.5rem; }
+
+/* Auf schmalen Geraeten passen Name, Status und Schriftzug nicht nebeneinander.
+   Der farbige Punkt traegt die Lage des Abgleichs ohnehin – das Wort entfaellt,
+   die Beschriftung bleibt ueber aria-label und title erhalten. */
+@media (max-width: 400px) {
+  .sync-chip__text { display: none; }
+  .sync-chip { padding: .3rem .45rem; }
+}
 .kopf-knopf {
   width: 40px;
   height: 40px;
@@ -1067,6 +1087,7 @@ span.wdh { cursor: default; }
 .stufe-karte__text strong { display: block; font-size: .9rem; line-height: 1.3; }
 .stufe-karte__text small { font-size: .74rem; color: var(--text-leise); }
 .stufe-karte__balken {
+  display: block;
   grid-column: 1 / -1;
   height: 5px; border-radius: 999px; background: var(--flaeche-2); overflow: hidden;
 }
@@ -1118,6 +1139,8 @@ span.wdh { cursor: default; }
   color: #fff;
   white-space: nowrap;
   max-width: 9rem;
+  min-width: 5rem;   /* "Ausbildung" bzw. ein erkennbarer Namensanfang */
+  flex: 0 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
 }

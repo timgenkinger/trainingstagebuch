@@ -269,10 +269,12 @@ E += [
     Spacer(1, 6),
 
     p("Allen gemeinsam: die Grundwerte", "h2"),
-    p("Jeder Eintrag beginnt mit denselben Angaben. Ganz oben steht die "
-      "<b>Wartezeit im Auto bis zur Suche</b> – sie prägt Anspannung und Motivation beim Start "
-      "und wird im Dashboard eigens ausgewertet. Danach folgen Datum, Ort, Hund und "
-      "Hundeführer:in sowie Gelände und Wetter.", "text"),
+    p("Jeder Eintrag beginnt mit denselben Angaben. Ganz oben stehen die <b>Wartezeit im Auto bis "
+      "zur Suche</b> – sie prägt Anspannung und Motivation beim Start und wird im Dashboard eigens "
+      "ausgewertet – und der <b>Durchgang des Tages</b>: der wievielte Einsatz das an diesem Tag "
+      "war. Ein dritter Durchgang steht unter anderen Voraussetzungen als der erste; ohne diese "
+      "Angabe liessen sich die Bewertungen nicht sauber einordnen. Danach folgen Datum, Ort, Hund "
+      "und Hundeführer:in sowie Gelände und Wetter.", "text"),
 
     p("Was zusätzlich mitläuft", "h2"),
     liste([
@@ -405,7 +407,8 @@ E += [
       "erscheinen in der Übersicht mit einer Marke <i>Fläche</i> beziehungsweise <i>Trümmer</i>.", "text"),
     tabelle([
         ["Abschnitt", "Inhalt"],
-        ["Grundwerte", "Wartezeit im Auto, Datum, Ort, Hund, Hundeführer:in, Trainingsziel"],
+        ["Grundwerte", "Wartezeit im Auto, Durchgang des Tages, Datum, Ort, Hund, "
+                       "Hundeführer:in, Trainingsziel"],
         ["Geländebeschaffenheit", "offen, dicht, Dornen, hügelig, steil und weitere"],
         ["Temperatur / Wetter", "Temperatur, Wind, Niederschlag, Licht, Windrichtung"],
         ["Suchgebiet", "Abmessungen, Suchzeit und das Zeichenfeld"],

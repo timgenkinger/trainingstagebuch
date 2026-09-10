@@ -8,6 +8,7 @@ import * as R from '../rollen.js';
 import * as V from '../verbellen.js';
 import { VERBELLEN_PLAN, WEGE } from '../verbellen-plan.js';
 import { esc, karte, leer, formatDatum, runde, frage, toast } from '../ui.js';
+import { balkenBreite } from '../charts.js';
 
 const zustand = { hundId: '', weg: 'box', nurOffen: false, offeneStufe: null };
 
@@ -56,7 +57,7 @@ function html() {
 
     ${karte('Stand', `
       <div class="fortschritt-zeile">
-        <span class="fortschritt-balken"><span style="width:${runde(fort.anteil * 100, 1)}%"></span></span>
+        <span class="fortschritt-balken"><span style="width:${runde(balkenBreite(fort.anteil), 1)}%"></span></span>
         <strong>${fort.fertig} von ${fort.gesamt}</strong>
       </div>
       <div class="kacheln kacheln--schlank">

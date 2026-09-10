@@ -46,8 +46,10 @@ Der rote Knopf unten rechts öffnet ein Menü mit **allen vier Möglichkeiten** 
 stillschweigend nur in die Flächensuche, was die anderen Dokumentarten verstecken konnte.
 Ein Klick daneben oder `Esc` schließt es wieder.
 
-Beide teilen sich denselben Block **Grundwerte**, der mit der **Wartezeit im Auto bis zur Suche**
-beginnt – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet.
+Alle teilen sich denselben Block **Grundwerte**. Er beginnt mit der **Wartezeit im Auto bis zur
+Suche** – sie prägt Anspannung und Motivation beim Start und wird im Dashboard mit ausgewertet –
+und dem **Durchgang des Tages** (1, 2, 3 …), der festhält, der wievielte Einsatz das an diesem Tag
+war; der dritte Durchgang steht unter anderen Voraussetzungen als der erste.
 Danach folgen Datum, Ort, Hund, Hundeführer:in sowie Gelände und Wetter.
 
 ### Fotos
@@ -117,7 +119,7 @@ im Dashboard gibt es einen Spartenfilter.
 
 | Heft | App |
 |---|---|
-| Datum, Ort, Trainingsziel | Grundwerte, zusätzlich Wartezeit im Auto, Hund und Hundeführer:in |
+| Datum, Ort, Trainingsziel | Grundwerte, zusätzlich Wartezeit im Auto, Durchgang des Tages, Hund und Hundeführer:in |
 | Geländebeschaffenheit | Mehrfachauswahl (offen, dicht, Dornen, hügelig, steil …) |
 | Temperatur / Wetter / Tageszeit | getrennt nach Temperatur, Wind, Niederschlag, Licht + Windrichtung |
 | Skizzenfeld Suchgebiet | Zeichenfeld mit vier Stiften: Gebiet, Laufweg HF, Laufweg Hund, Helfer:in |

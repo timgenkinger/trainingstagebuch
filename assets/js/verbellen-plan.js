@@ -28,23 +28,23 @@ const BOX = [
   },
   {n:4, title:"Bridge 1 - HF bewegt sich zum Hund (Abstand 15m)", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung nach 3m",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung nach 3m`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung nach 3m`)
   ]},
   {n:5, title:"Bridge 2 - HF bewegt sich weiter Hund (Abstand 15m)", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung nach 10m",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung nach 10m`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung nach 10m`)
   ]},
   {n:6, title:"Bridge 3 - HF bewegt sich bis zum Hund (Abstand 15m)", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund`)
   ]},
   {n:7, title:"Bridge 4 - HF läuft zum Hund auf die eine Seite und dann ein U um den Hund (Abstand 15m)", items:[
     "Hundführer bewegt sich auf Hund zu Bestätigung beim Hund",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund`)
   ]},
   {n:8, title:"Bridge 5 - HF bewegt sich bis zum Hund und kniet hin (Abstand 15m)", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Knien",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Knien`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Knien`)
   ]},
   {n:9, title:"Bridge 6 - Stehende Person im Umfeld >10m der VP - HF steht (Abstand 15m)", items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:10, title:"Bridge 7 - 2 stehende Person im Umfeld der VP (>10m)- HF steht (Abstand 15m)", items: rep([5,10,20,30], c=>`${c}x Bellen`)},
@@ -61,7 +61,7 @@ const BOX = [
   {n:21, title:"Bridge 17 - Ablenkung durch Klatschen und Scharren ( je 2 Personen) - 2. Person steht hinter der Box", items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:22, title:"Bridge 18 - HF bewegt sich bis zum Hund (Abstand 15m) und Hund bellt weiter", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund nach 5x Bellen`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund nach 5x Bellen`)
   ]},
   {n:23, title:"Bridge 19 - Ablenkung durch Stehenden Hund im Hintergrund", items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:24, title:"Bridge 20 - Ablenkung durch Hund an der Leine im Hintergrund", items:[
@@ -74,11 +74,11 @@ const BOX = [
   {n:26, title:"Bridge 22 - Ablenkung durch Hund mit klingelnder Kenndecke", items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:27, title:"Bridge 23 - HF bewegt sich bis zum Hund (Abstand 15m) und geht mit der Hand über ihn", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hand in Richtung des Hundes",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund, wenn Hand in Richtung des Hundes`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hand in Richtung des Hundes`)
   ]},
   {n:28, title:"Bridge 24 - HF bewegt sich bis zum Hund (Abstand 15m) und berührt Hund", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hund berührt",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund, wenn Hund berührt`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hund berührt`)
   ]},
   {n:29, title:"Bridge 25 - HF bewegt sich am Hund vorbei (Abstand 15m)", items: rep([5,10,20,30], c=>`${c}x Bellen dann los + Bestätigung, wenn am Hund vorbei`)},
   {n:30, title:"Bridge 26 - HF bewegt sich am Hund vorbei (Abstand 15m)", items: rep([5,10,20,30], c=>`${c}x Bellen dann los + Bestätigung, wenn 5m am Hund vorbei`)},
@@ -103,23 +103,23 @@ const MENSCH = [
   },
   {n:6, title:"Bridge 1 - HF bewegt sich zum Hund (Abstand 15m)", req:[6,11], items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung nach 3m",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung nach 3m`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung nach 3m`)
   ]},
   {n:7, title:"Bridge 2 - HF bewegt sich weiter Hund (Abstand 15m)", req:[7,12], items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung nach 10m",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung nach 10m`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung nach 10m`)
   ]},
   {n:8, title:"Bridge 3 - HF bewegt sich bis zum Hund (Abstand 15m)", req:[8,13], items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund`)
   ]},
   {n:9, title:"Bridge 4 - HF läuft zum Hund auf die eine Seite und dann ein U um den Hund (Abstand 15m)", req:[9,14], items:[
     "Hundführer bewegt sich auf Hund zu Bestätigung beim Hund",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund`)
   ]},
   {n:10, title:"Bridge 5 - HF bewegt sich bis zum Hund und kniet hin (Abstand 15m)", req:[10,15], items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Knien",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Knien`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Knien`)
   ]},
   {n:11, title:"Bridge 6 - Stehende Person im Umfeld >10m der VP - HF steht (Abstand 15m)", req:[11,16], items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:12, title:"Bridge 7 - 2 stehende Person im Umfeld der VP (>10m)- HF steht (Abstand 15m)", req:[12,17], items: rep([5,10,20,30], c=>`${c}x Bellen`)},
@@ -139,7 +139,7 @@ const MENSCH = [
   {n:26, title:"Bridge 20 - Bewegung der VP - VP bewegt sich etwas schneller z.B. kratzen", req:[26,31], items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:27, title:"Bridge 21 - HF bewegt sich bis zum Hund (Abstand 15m) und Hund bellt weiter", req:[27,32], items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund nach 5x Bellen`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund nach 5x Bellen`)
   ]},
   {n:28, title:"Bridge 22 - Ablenkung durch Stehenden Hund im Hintergrund", req:[28,33], items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:29, title:"Bridge 23 - Ablenkung durch Hund an der Leine im Hintergrund", req:[29,33], items:[
@@ -153,11 +153,11 @@ const MENSCH = [
   {n:32, title:"Bridge 26- VP Liegend", req:[32,33], items: rep([5,10,20,30], c=>`${c}x Bellen`)},
   {n:33, title:"Bridge 27 - HF bewegt sich bis zum Hund (Abstand 15m) und geht mit der Hand über ihn", req:[33,33], items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hand in Richtung des Hundes",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund, wenn Hand in Richtung des Hundes`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hand in Richtung des Hundes`)
   ]},
   {n:34, title:"Bridge 28 - HF bewegt sich bis zum Hund (Abstand 15m) und berührt Hund", req:"all", items:[
     "Hundführer bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hund berührt",
-    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Besättigung beim Hund, wenn Hund berührt`)
+    ...rep([5,10,15,20], c=>`${c}x Bellen + HF bewegt sich auf Hund zu - Bestätigung beim Hund, wenn Hund berührt`)
   ]},
   {n:35, title:"Bridge 29 - HF bewegt sich am Hund vorbei (Abstand 15m)", req:"all", items: rep([5,10,20,30], c=>`${c}x Bellen dann los + Bestätigung, wenn am Hund vorbei`)},
   {n:36, title:"Bridge 30 - HF bewegt sich am Hund vorbei (Abstand 15m)", req:"all", items: rep([5,10,20,30], c=>`${c}x Bellen dann los + Bestätigung, wenn 5m am Hund vorbei`)},
