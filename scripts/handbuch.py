@@ -235,11 +235,12 @@ for nr, titel in [
     ("3", "Rollen: Hundeführer:in und Ausbildung"),
     ("4", "Dokumentieren"),
     ("5", "Abschließen und Bestätigen"),
-    ("6", "Auswertungen"),
-    ("7", "Online-Abgleich"),
-    ("8", "Aktualisieren"),
-    ("9", "Was die Anwendung nicht leistet"),
-    ("10", "Für die Betreuung der Anwendung"),
+    ("6", "Nachweise: Führerschein und Impfungen"),
+    ("7", "Auswertungen"),
+    ("8", "Online-Abgleich"),
+    ("9", "Aktualisieren"),
+    ("10", "Was die Anwendung nicht leistet"),
+    ("11", "Für die Betreuung der Anwendung"),
 ]:
     E.append(Paragraph(f'<font color="#E30613"><b>{nr}</b></font>&nbsp;&nbsp;&nbsp;{titel}', S["inhalt"]))
 E += [PageBreak()]
@@ -372,6 +373,8 @@ E += [
         ["Daten sichern und einspielen", "nein", "ja"],
         ["Dashboard, Verbellen-Stand, Helfer:in-Bilder", "nur wenn freigegeben", "ja"],
         ["Hunde zuordnen, umbenennen, entfernen", "nein", "ja"],
+        ["Führerscheinkontrolle bestätigen", "nein", "ja"],
+        ["Impfung eintragen", "ja – wartet auf Bestätigung", "ja – gilt sofort"],
     ], [62 * mm, (BREITE - 62 * mm) / 2, (BREITE - 62 * mm) / 2]),
     Spacer(1, 8),
 
@@ -561,11 +564,71 @@ E += [
 
 # ---- 6 --------------------------------------------------------------------
 E += [
-    p("6 &nbsp; Auswertungen", "h1"),
+    p("6 &nbsp; Nachweise: Führerschein und Impfungen", "h1"),
+    p("Neben der Trainingsdokumentation führt die Anwendung zwei wiederkehrende Nachweise. "
+      "Beide stehen unter dem Reiter <b>Nachweise</b>.", "text"),
+    tabelle([
+        ["", "Führerscheinkontrolle", "Impfungen (SPL, Tollwut)"],
+        ["gehört zu", "jeder Hundeführer:in", "jedem Hund"],
+        ["Abstand", "alle 6 Monate", "laut Impfpass, Vorschlag 12 Monate"],
+        ["eintragen", "nur die Ausbildung", "Hundeführer:in oder Ausbildung"],
+        ["gilt ab", "sofort", "mit der Bestätigung durch die Ausbildung"],
+    ], [26 * mm, (BREITE - 26 * mm) / 2, (BREITE - 26 * mm) / 2]),
+    Spacer(1, 8),
+
+    p("6.1 &nbsp; Führerscheinkontrolle (Ausbildung)", "h2"),
+    liste([
+        "Bei der Person auf <b>Kontrolle bestätigen</b> tippen.",
+        "Der Dialog schlägt heute als Kontrolldatum und in sechs Monaten als nächste Kontrolle "
+        "vor. Beides lässt sich anpassen; ein Datum in der Zukunft wird abgelehnt.",
+        "Festgehalten wird, wer bestätigt hat. Den nächsten Termin kann die Ausbildung später "
+        "ändern, eine versehentliche Bestätigung über das × wieder entfernen – dann gilt die "
+        "vorherige Kontrolle wieder.",
+    ]),
+
+    p("6.2 &nbsp; Impfungen", "h2"),
+    p("Je Hund gibt es SPL und Tollwut, jeweils mit letzter und nächster Impfung. Über "
+      "<b>+ Impfung eintragen</b> werden Impfdatum und nächster Termin aus dem Impfpass "
+      "übernommen.", "text"),
+    liste([
+        "<b>Hundeführer:in trägt ein:</b> Die Impfung wartet auf Bestätigung und zählt noch "
+        "nicht. Solange sie wartet, lässt sie sich selbst wieder entfernen.",
+        "<b>Ausbildung bestätigt:</b> Offene Eintragungen stehen gesammelt oben auf der Seite "
+        "Nachweise. Mit <b>Bestätigen</b> gelten sie.",
+        "<b>Ausbildung trägt selbst ein:</b> Die Impfung gilt sofort.",
+    ]),
+    kasten("Warum zwölf Monate nur ein Vorschlag sind",
+           "Wie lange eine Impfung gilt, hängt vom Impfstoff ab und steht im Impfpass. Der "
+           "Vorschlag ist bewusst knapp gewählt: Ein zu früher Termin warnt zu früh, ein zu "
+           "später zu spät."),
+
+    p("6.3 &nbsp; Einblendungen", "h2"),
+    p("Über jeder Seite erscheint ein Hinweis, sobald ein Termin <b>einen Monat oder weniger</b> "
+      "entfernt ist, und rot, sobald er <b>überschritten</b> ist. Ein Tippen darauf öffnet die "
+      "Nachweise.", "text"),
+    tabelle([
+        ["Hinweis", "Wann"],
+        ["Führerscheinkontrolle fällig am … – in 10 Tagen.", "ab einem Monat vor dem Termin"],
+        ["Führerscheinkontrolle überfällig seit …", "nach dem Termin"],
+        ["Anni: SPL-Impfung abgelaufen seit …", "nach dem Termin"],
+        ["Anni: Tollwut-Impfung vom … eingetragen – wartet auf Bestätigung.",
+         "fällig oder abgelaufen, aber schon neu eingetragen"],
+    ], [BREITE * 0.6, BREITE * 0.4]),
+    Spacer(1, 6),
+    p("Die Einblendung gilt der Person am Gerät: ihrer eigenen Kontrolle und den Hunden, die "
+      "sie tatsächlich führt. Die Ausbildung sieht zusätzlich, wie viele Eintragungen auf ihre "
+      "Bestätigung warten. „Noch nicht erfasst“ blendet nichts ein – das ist weder fällig noch "
+      "abgelaufen.", "text"),
+    PageBreak(),
+]
+
+# ---- 7 --------------------------------------------------------------------
+E += [
+    p("7 &nbsp; Auswertungen", "h1"),
     p("Alle Auswertungen rechnen ausschließlich mit <b>abgeschlossenen</b> Einträgen. "
       "Entwürfe verfälschen also nichts.", "text"),
 
-    p("6.1 &nbsp; Dashboard", "h2"),
+    p("7.1 &nbsp; Dashboard", "h2"),
     liste([
         "<b>Kennzahlen:</b> Anzahl Suchen, Ø Gesamtnote, Trefferquote, Ø Zeit bis zum Fund, "
         "Ø Radius bei Fund, gesamte Suchzeit, Suchen mit Fehlanzeige, Ø Wartezeit im Auto.",
@@ -589,12 +652,12 @@ E += [
     p("Filter nach Hund und Zeitraum stehen oben. Ohne Hundefilter erscheint beim Verbellen "
       "eine Zeile je Hund – die ganze Staffel auf einen Blick.", "text"),
 
-    p("6.2 &nbsp; Verbellen-Stand", "h2"),
+    p("7.2 &nbsp; Verbellen-Stand", "h2"),
     p("Gesamtfortschritt, beide Wege getrennt, die Stufe, an der gerade gearbeitet wird, und "
       "je Stufe aufklappbar der Stand jeder Unterübung mit dem Datum, an dem sie sicher wurde. "
       "Filter für einen einzelnen Weg und für offene Stufen.", "text"),
 
-    p("6.3 &nbsp; Helfer:in-Bilder", "h2"),
+    p("7.3 &nbsp; Helfer:in-Bilder", "h2"),
     p("Alle Bilder der Liste je Hund, in vier Stufen: kennengelernt, kurze Anzeige, "
       "längere Anzeige, gemeistert. Die im Heft fett gedruckten sind als <b>wichtig</b> markiert. Eigene Bilder lassen sich hier anlegen und stehen danach in jeder Sucherfassung zur Auswahl.", "text"),
     liste([
@@ -610,12 +673,12 @@ E += [
 
 # ---- 7 --------------------------------------------------------------------
 E += [
-    p("7 &nbsp; Online-Abgleich", "h1"),
+    p("8 &nbsp; Online-Abgleich", "h1"),
     p("Alle Geräte gleichen sich über eine gemeinsame Datei in einem <b>privaten</b> "
       "GitHub-Repository ab. Die Adresse der Ablage ist bereits eingebaut – im Team muss nur "
       "noch der persönliche Zugangs-Token eingetragen werden.", "text"),
 
-    p("7.1 &nbsp; Token einrichten (einmal je Gerät)", "h2"),
+    p("8.1 &nbsp; Token einrichten (einmal je Gerät)", "h2"),
     liste([
         "Auf github.com anmelden und unter <b>Settings – Developer settings – "
         "Fine-grained tokens</b> einen Token erzeugen.",
@@ -629,7 +692,7 @@ E += [
       "erste Teil. Der Token wird ausschließlich im Browser des jeweiligen Geräts gespeichert "
       "und landet nie in einem Export oder in der Sicherungsdatei.", "text"),
 
-    p("7.2 &nbsp; Wie der Abgleich arbeitet", "h2"),
+    p("8.2 &nbsp; Wie der Abgleich arbeitet", "h2"),
     liste([
         "Jede Eingabe landet <b>sofort</b> auf dem Gerät. Es gibt keinen Speichern-Knopf.",
         "Der Abgleich <b>mischt</b> nur: Bei jedem Datensatz gewinnt der jüngere Stand. "
@@ -645,7 +708,7 @@ E += [
       "<i>Verbinde</i> oder <i>Offline</i>, grün <i>Synchron</i>. Ein Tippen darauf führt zu "
       "den Einstellungen, wo auch ein Protokoll der letzten Vorgänge steht.", "text"),
 
-    p("7.3 &nbsp; Sicherung", "h2"),
+    p("8.3 &nbsp; Sicherung", "h2"),
     p("Unter <b>Einstellungen – Sicherung</b> lassen sich alle Daten als JSON-Datei ausgeben und "
       "wieder einlesen. Der Import mischt ebenfalls nur; bestehende neuere Datensätze bleiben "
       "erhalten. Gelöschte Einträge liegen im <b>Papierkorb</b> und lassen sich wiederherstellen.", "text"),
@@ -658,7 +721,7 @@ E += [
     PageBreak(),
 
     # ---- 8 ----
-    p("8 &nbsp; Aktualisieren", "h1"),
+    p("9 &nbsp; Aktualisieren", "h1"),
     p("Die Anwendung meldet sich selbst, wenn eine neue Fassung bereitliegt: Oben erscheint ein "
       "Balken <b>Eine neue Version ist verfügbar</b>. Ein Tippen darauf lädt sie.", "text"),
     p("Daneben gibt es oben rechts den <b>Aktualisieren-Knopf</b> (Kreispfeil). Er ist sicherer "
@@ -672,7 +735,7 @@ E += [
     Spacer(1, 4),
 
     # ---- 9 ----
-    p("9 &nbsp; Was die Anwendung nicht leistet", "h1"),
+    p("10 &nbsp; Was die Anwendung nicht leistet", "h1"),
     p("Damit niemand von falschen Annahmen ausgeht:", "text"),
     kasten("Die Rollen ordnen die Ansicht, sie schützen die Daten nicht",
            "Alle Geräte teilen sich eine Datei und einen Zugangs-Token. Wer den Token hat, kann "
@@ -694,10 +757,10 @@ E += [
     PageBreak(),
 
     # ---- 10 ----
-    p("10 &nbsp; Für die Betreuung der Anwendung", "h1"),
+    p("11 &nbsp; Für die Betreuung der Anwendung", "h1"),
     p("Dieser Abschnitt richtet sich an die Person, welche die Anwendung technisch betreut.", "text"),
 
-    p("10.1 &nbsp; Aufbau", "h2"),
+    p("11.1 &nbsp; Aufbau", "h2"),
     p("Eine statische Web-Anwendung ohne Baukette und ohne Fremdbibliotheken: reines "
       "JavaScript in Modulen, ausgeliefert über GitHub Pages. Die Daten liegen lokal in "
       "IndexedDB und werden als eine JSON-Datei in einem privaten Repository abgeglichen.", "text"),
@@ -708,7 +771,7 @@ E += [
     ], [30 * mm, BREITE - 30 * mm], kopf=False),
     Spacer(1, 8),
 
-    p("10.2 &nbsp; Neue Version veröffentlichen", "h2"),
+    p("11.2 &nbsp; Neue Version veröffentlichen", "h2"),
     p("Versionsnummer setzen, dabei entstehen Eintrag im Änderungsprotokoll und neuer "
       "Programm-Cache:", "text"),
     tabelle([
@@ -719,12 +782,12 @@ E += [
     p("<b>patch</b> für Korrekturen, <b>minor</b> für neue Funktionen, <b>major</b> für große "
       "Umbauten. Der Push veröffentlicht automatisch und ergänzt die Buildnummer.", "text"),
 
-    p("10.3 &nbsp; Dieses Handbuch neu erzeugen", "h2"),
+    p("11.3 &nbsp; Dieses Handbuch neu erzeugen", "h2"),
     tabelle([["<font face='Courier'>python3 scripts/handbuch.py</font>"]], [BREITE], kopf=False),
     Spacer(1, 6),
     p("Die Versionsnummer wird dabei aus <font face='Courier'>version.json</font> gelesen.", "klein"),
 
-    p("10.4 &nbsp; Wenn etwas klemmt", "h2"),
+    p("11.4 &nbsp; Wenn etwas klemmt", "h2"),
     tabelle([
         ["Beobachtung", "Ursache und Abhilfe"],
         ["Anzeige bleibt auf <i>Token fehlt</i>",

@@ -12,6 +12,8 @@ import * as vEditor from './views/editor.js';
 import * as vFreidoku from './views/freidoku.js';
 import * as vVerbellen from './views/verbellen.js';
 import * as vVerbellenEditor from './views/verbellen-editor.js';
+import * as vNachweise from './views/nachweise.js';
+import * as N from './nachweise.js';
 import * as vDashboard from './views/dashboard.js';
 import * as vBilder from './views/bilder.js';
 import * as vEinstellungen from './views/einstellungen.js';
@@ -31,6 +33,7 @@ const ROUTEN = [
   { muster: /^#\/verbellen$/, view: vVerbellen, tab: 'verbellen', nurAuswertung: true },
   { muster: /^#\/dashboard$/, view: vDashboard, tab: 'dashboard', nurAuswertung: true },
   { muster: /^#\/bilder$/, view: vBilder, tab: 'bilder', nurAuswertung: true },
+  { muster: /^#\/nachweise$/, view: vNachweise, tab: 'nachweise' },
   { muster: /^#\/einstellungen$/, view: vEinstellungen, tab: 'mehr' },
   { muster: /^#\/einrichtung$/, view: vEinrichtung, tab: 'mehr' },
   { muster: /^#\/start$/, view: vStart, tab: '' },
@@ -91,6 +94,7 @@ async function route(navigiert = true) {
   // Bei jedem Wechsel neu bewerten: Rolle und Freigabe koennen sich
   // zwischendurch geaendert haben (eigene Umstellung oder Abgleich vom Team).
   aktualisiereNavigation();
+  aktualisiereHinweise();
   const view = document.getElementById('view');
   const y = window.scrollY;
   markiereTab(treffer.r.tab);
@@ -136,6 +140,22 @@ function aktualisiereNavigation() {
     rolle.textContent = R.istAusbilder() ? 'Ausbildung' : (p?.name || '');
     rolle.className = 'rollen-abz' + (R.istAusbilder() ? ' rollen-abz--ausbilder' : '');
   }
+}
+
+/**
+ * Einblendung ueber dem Inhalt: faellige und ueberfaellige Nachweise der Person
+ * an diesem Geraet. Auf der Seite "Nachweise" selbst entfaellt sie – dort steht
+ * dasselbe ausfuehrlich –, im Einrichtungsassistenten ebenso.
+ */
+function aktualisiereHinweise() {
+  const leiste = document.getElementById('hinweise');
+  if (!leiste) return;
+  const hash = location.hash || '#/suchen';
+  const liste = R.eingerichtet() && !['#/start', '#/nachweise'].includes(hash) ? N.hinweise() : [];
+  leiste.hidden = !liste.length;
+  leiste.innerHTML = liste
+    .map((h) => `<a class="hinweis hinweis--${h.art}" href="#/nachweise">${esc(h.text)}</a>`)
+    .join('');
 }
 
 function markiereTab(tab) {
@@ -243,6 +263,8 @@ async function start() {
   // Listenansichten aktualisieren, wenn extern Daten eintreffen.
   let timer;
   store.subscribe(() => {
+    // Die Einblendung liegt ausserhalb der Maske und darf immer nachziehen.
+    aktualisiereHinweise();
     // Masken mit Eingaben niemals unter den Fingern neu zeichnen
     if ([vEditor, vFreidoku, vVerbellenEditor].includes(aktuelleView)) return;
     clearTimeout(timer);

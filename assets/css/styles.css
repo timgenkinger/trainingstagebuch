@@ -1425,3 +1425,73 @@ span.wdh { cursor: default; }
 .seite--start .schritte { justify-content: center; }
 .start-fuss { text-align: center; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
 .seite--start .text { font-size: .92rem; }
+
+/* ================================================================
+   Nachweise: Führerscheinkontrollen und Impfungen
+   Die Farbpaare sind in sich geschlossen (heller Grund, dunkle Schrift) –
+   wie die übrigen Abzeichen. So kippt im dunklen Modus nichts um.
+   ================================================================ */
+
+/* --- Einblendung über dem Inhalt --- */
+.hinweise-leiste {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: .8rem .9rem 0;
+  display: grid;
+  gap: .4rem;
+}
+.hinweis {
+  display: block;
+  padding: .6rem .85rem;
+  border-radius: var(--r);
+  border: 1px solid;
+  font-size: .88rem;
+  line-height: 1.35;
+  text-decoration: none;
+}
+.hinweis::after { content: ' →'; }
+.hinweis--bald { background: #fff3d4; color: #6b4a00; border-color: #e8c877; }
+.hinweis--abgelaufen { background: #fde2df; color: #8f1d12; border-color: #f0aaa2; font-weight: 600; }
+.hinweis--wartet { background: var(--flaeche); color: var(--text); border-color: var(--rand-stark); }
+.hinweis--ausbildung { background: var(--flaeche); color: var(--text); border-color: var(--rand-stark);
+  border-left: 4px solid var(--marke); }
+
+/* --- Abzeichen zur Lage eines Termins --- */
+.abz--gueltig { background: #dff0e3; color: #1f5c33; border: 1px solid #9ecdae; }
+.abz--bald { background: #fff3d4; color: #6b4a00; border: 1px solid #e8c877; }
+.abz--abgelaufen { background: #fde2df; color: #8f1d12; border: 1px solid #f0aaa2; }
+.abz--nicht-erfasst { background: var(--flaeche-2); color: var(--text-leise); border: 1px solid var(--rand-stark); }
+
+/* --- Seite --- */
+.nachweis-liste { display: grid; gap: .6rem; }
+.nachweis {
+  border: 1px solid var(--rand);
+  border-radius: var(--r);
+  padding: .7rem .8rem;
+  background: var(--flaeche-2);
+}
+.nachweis__kopf { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+.nachweis__daten { display: grid; grid-template-columns: 1fr; gap: .5rem; margin: .6rem 0 0; }
+.nachweis__daten > div { min-width: 0; }
+.nachweis__daten dt { font-size: .74rem; font-weight: 600; color: var(--text-leise); margin-bottom: .15rem; }
+.nachweis__daten dd { margin: 0; display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.nachweis__daten dd small { color: var(--text-leise); font-size: .78rem; }
+.nachweis .btn-zeile { margin: .6rem 0 0; }
+.nachweis .karte__hint { margin: .5rem 0 0; }
+.input--datum { max-width: 11rem; }
+@media (min-width: 560px) {
+  .nachweis__daten { grid-template-columns: 1fr 1fr; }
+}
+
+.nachweis-hund + .nachweis-hund { margin-top: 1.1rem; }
+.nachweis-hund h3 small { font-weight: 500; color: var(--text-leise); text-transform: none; letter-spacing: 0; }
+
+.nachweis-offen { display: grid; gap: .4rem; margin-top: .6rem; }
+.nachweis-offen__zeile {
+  display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+  padding: .45rem .55rem; border-radius: 8px;
+  background: var(--flaeche); border: 1px dashed var(--rand-stark);
+}
+.nachweis-offen__text { flex: 1 1 12rem; min-width: 0; font-size: .86rem; }
+.nachweis-offen__text small { display: block; color: var(--text-leise); font-size: .76rem; }
+.nachweis-offen__knoepfe { display: inline-flex; gap: .3rem; }

@@ -7,6 +7,7 @@ import { ladeConfig, loescheLokaleConfig, speichereConfig, speichereToken, gerae
 import { RELEASE_DATE, BUILD, versionString } from '../version.js';
 import * as update from '../update.js';
 import * as R from '../rollen.js';
+import * as N from '../nachweise.js';
 import { esc, karte, feld, textInput, toast, frage, passwortFrage, download, relativeZeit, formatDatum, leer } from '../ui.js';
 
 let statusAbmelden = null;
@@ -143,6 +144,13 @@ function html() {
           ? `<p class="abschluss__offen">${offen.length} abgeschlossene Einheit(en) warten auf Bestätigung.</p>
              <a class="btn btn--primaer" href="#/bestaetigungen">Offene Bestätigungen ansehen</a>`
           : '<p class="gut">Alle abgeschlossenen Einheiten sind bestätigt. 👍</p>';
+      })()}
+      ${(() => {
+        const n = N.offeneImpfungen().length;
+        return n
+          ? `<p class="abschluss__offen">${n} eingetragene Impfung(en) warten auf Bestätigung.</p>
+             <a class="btn btn--still" href="#/nachweise">Zu den Nachweisen</a>`
+          : '';
       })()}
       <h3 class="unter">Was Hundeführer:innen sehen</h3>
       <label class="schalter">

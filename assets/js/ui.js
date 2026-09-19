@@ -281,6 +281,61 @@ export function passwortFrage(titel, text, { ok = 'Bestätigen' } = {}) {
 }
 
 /** Kurze Texteingabe im Dialog. Liefert den Text oder null bei Abbruch. */
+/**
+ * Dialog mit Datumsfeldern.
+ * @param {{id:string, label:string, wert?:string, hint?:string}[]} felder
+ * @param {{ok?:string, pruefe?:(werte:object)=>string|null}} opts  pruefe liefert
+ *        eine Fehlermeldung oder null; bei Fehler bleibt der Dialog offen.
+ * @returns {Promise<object|null>}  {id: 'JJJJ-MM-TT'} oder null bei Abbruch
+ */
+export function datumsFrage(titel, text, felder, { ok = 'Speichern', pruefe = null } = {}) {
+  return new Promise((resolve) => {
+    const back = document.createElement('div');
+    back.className = 'modal-back';
+    back.innerHTML = `<div class="modal" role="dialog" aria-modal="true">
+      <h2 class="karte__titel">${esc(titel)}</h2>
+      ${text ? `<p class="modal__text">${esc(text)}</p>` : ''}
+      ${felder.map((f) => `<label class="feld">
+        <span class="feld__label">${esc(f.label)}${f.hint ? ` <small>${esc(f.hint)}</small>` : ''}</span>
+        <input class="input" type="date" data-datum="${esc(f.id)}" value="${esc(f.wert || '')}" required>
+      </label>`).join('')}
+      <p class="modal__fehler" data-fehler hidden></p>
+      <div class="modal__aktionen">
+        <button type="button" class="btn btn--still" data-nein>Abbrechen</button>
+        <button type="button" class="btn btn--primaer" data-ja>${esc(ok)}</button>
+      </div>
+    </div>`;
+    document.body.appendChild(back);
+    const fehler = back.querySelector('[data-fehler]');
+    const werte = () => Object.fromEntries(
+      [...back.querySelectorAll('[data-datum]')].map((i) => [i.dataset.datum, i.value])
+    );
+    const schliesse = (v) => {
+      back.remove();
+      resolve(v);
+    };
+    back.querySelector('[data-ja]').onclick = () => {
+      const w = werte();
+      const leer = felder.find((f) => !w[f.id]);
+      const meldung = leer ? `Bitte „${leer.label}“ angeben.` : pruefe?.(w) || null;
+      if (meldung) {
+        fehler.textContent = meldung;
+        fehler.hidden = false;
+        return;
+      }
+      schliesse(w);
+    };
+    back.querySelector('[data-nein]').onclick = () => schliesse(null);
+    back.onclick = (e) => {
+      if (e.target === back) schliesse(null);
+    };
+    back.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') schliesse(null);
+    });
+    setTimeout(() => back.querySelector('[data-datum]')?.focus(), 50);
+  });
+}
+
 export function textFrage(titel, text, { ok = 'Anlegen', wert = '' } = {}) {
   return new Promise((resolve) => {
     const back = document.createElement('div');

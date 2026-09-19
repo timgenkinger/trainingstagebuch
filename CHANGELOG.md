@@ -1,5 +1,24 @@
 # Änderungsprotokoll
 
+## 1.20.0 – 2026-09-19
+- **Neuer Reiter „Nachweise“** mit Führerscheinkontrollen und Impfungen, für beide Rollen.
+- **Führerscheinkontrolle alle 6 Monate.** Die Ausbildung bestätigt per Knopf; der Dialog schlägt
+  heute und in sechs Monaten vor, beides anpassbar. Festgehalten wird, wer bestätigt hat. Der
+  nächste Termin lässt sich später ändern, eine versehentliche Bestätigung wieder entfernen.
+- **Impfungen je Hund: SPL und Tollwut**, jeweils mit letzter und nächster Impfung. Hundeführer:innen
+  tragen ein, die Ausbildung bestätigt; erst dann zählt die Impfung. Von der Ausbildung
+  eingetragene Impfungen gelten sofort. Der Vorschlag für den nächsten Termin (12 Monate) ist
+  bewusst knapp – die Gültigkeit steht im Impfpass.
+- **Einblendungen über jeder Seite** ab einem Monat vor dem Termin und rot, sobald er überschritten
+  ist – für die eigene Kontrolle und die Hunde, die man tatsächlich führt. Ist für eine fällige
+  Impfung schon eine neue eingetragen, steht dort „wartet auf Bestätigung“. Die Ausbildung sieht,
+  wie viele Eintragungen auf sie warten.
+- Jede Kontrolle und jede Impfung ist ein **eigener Datensatz**, nicht ein Feld am Hund: Der Abgleich
+  übernimmt bei Konflikten den ganzen neueren Datensatz, gleichzeitige Änderungen am Hund gingen
+  sonst verloren. So bleibt zudem der Verlauf als Nachweis erhalten.
+- Beide Sperren wie bisher doppelt: Bestätigen, Termine ändern und fremde Hunde sind auch über
+  eine veraltete Ansicht nicht erreichbar.
+
 ## 1.19.1 – 2026-09-10
 - **Die Einstellungen liefen auf schmalen Geräten seitlich aus dem Bild.** Knöpfe durften nicht
   umbrechen (`white-space: nowrap`), sodass lange Beschriftungen wie „Lokale Daten auf diesem

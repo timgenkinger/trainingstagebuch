@@ -21,13 +21,14 @@ und Ausbildung. Neu erzeugen mit `python3 scripts/handbuch.py` (benötigt `repor
 
 1. [Funktionsumfang](#funktionsumfang)
 2. [Ersteinrichtung auf einem neuen Gerät](#ersteinrichtung-auf-einem-neuen-gerät)
-3. [Schnellstart lokal](#schnellstart-lokal)
-4. [Veröffentlichen über GitHub Pages](#veröffentlichen-über-github-pages)
-5. [Nur abgeschlossene Suchen gehen online](#nur-abgeschlossene-suchen-gehen-online)
-6. [Online-Abgleich einrichten](#online-abgleich-einrichten)
-7. [Versionsnummern und Updates](#versionsnummern-und-updates)
-8. [Wie die Speicherung funktioniert](#wie-die-speicherung-funktioniert)
-9. [Aufbau des Projekts](#aufbau-des-projekts)
+3. [Nachweise: Führerscheinkontrollen und Impfungen](#nachweise-führerscheinkontrollen-und-impfungen)
+4. [Schnellstart lokal](#schnellstart-lokal)
+5. [Veröffentlichen über GitHub Pages](#veröffentlichen-über-github-pages)
+6. [Nur abgeschlossene Suchen gehen online](#nur-abgeschlossene-suchen-gehen-online)
+7. [Online-Abgleich einrichten](#online-abgleich-einrichten)
+8. [Versionsnummern und Updates](#versionsnummern-und-updates)
+9. [Wie die Speicherung funktioniert](#wie-die-speicherung-funktioniert)
+10. [Aufbau des Projekts](#aufbau-des-projekts)
 
 ---
 
@@ -203,6 +204,53 @@ Der Assistent lässt sich jederzeit erneut öffnen: **Einstellungen → Einricht
 
 ---
 
+## Nachweise: Führerscheinkontrollen und Impfungen
+
+Neben der Trainingsdokumentation führt die App zwei wiederkehrende Nachweise, beide unter dem
+Reiter **Nachweise**:
+
+| | **Führerscheinkontrolle** | **Impfungen (SPL, Tollwut)** |
+|---|---|---|
+| gehört zu | jeder Hundeführer:in | jedem Hund |
+| Abstand | alle 6 Monate | laut Impfpass, Vorschlag 12 Monate |
+| eintragen | nur die Ausbildung | Hundeführer:in oder Ausbildung |
+| gilt ab | sofort | mit der Bestätigung durch die Ausbildung |
+
+**Führerscheinkontrolle.** Die Ausbildung tippt bei der Person auf *Kontrolle bestätigen*. Der
+Dialog schlägt heute als Kontrolldatum und in sechs Monaten als nächste Kontrolle vor; beides
+lässt sich anpassen. Festgehalten wird, wer bestätigt hat. Den nächsten Termin kann die
+Ausbildung später noch ändern, eine versehentliche Bestätigung wieder entfernen.
+
+**Impfungen.** Je Hund gibt es SPL und Tollwut, jeweils mit letzter und nächster Impfung. Über
+*+ Impfung eintragen* werden Impfdatum und nächster Termin erfasst. Trägt eine Hundeführer:in
+ein, wartet die Impfung auf Bestätigung – maßgeblich für den Stand ist nur, was die Ausbildung
+bestätigt hat. Die Ausbildung findet offene Eintragungen gesammelt oben auf der Seite; trägt sie
+selbst ein, gilt die Impfung sofort.
+
+Der Vorschlag von zwölf Monaten ist bewusst knapp: Wie lange eine Impfung gilt, hängt vom
+Impfstoff ab und steht im Impfpass. Ein zu früher Vorschlag warnt zu früh, ein zu später zu spät.
+
+**Einblendungen.** Über jeder Seite erscheint ein Hinweis, sobald ein Termin **einen Monat oder
+weniger** entfernt ist, und rot, sobald er **überschritten** ist:
+
+* *Führerscheinkontrolle fällig am 29.09.2026 – in 10 Tagen.*
+* *Führerscheinkontrolle überfällig seit 14.09.2026.*
+* *Anni: SPL-Impfung abgelaufen seit 18.09.2026.*
+
+Die Einblendung gilt der Person am Gerät – ihrer eigenen Kontrolle und den Hunden, die sie
+tatsächlich führt. Hat sie für eine fällige Impfung schon eine neue eingetragen, steht dort
+stattdessen *… eingetragen – wartet auf Bestätigung*. Die Ausbildung sieht zusätzlich, wie viele
+Eintragungen auf sie warten. „Noch nicht erfasst" blendet nichts ein: Das ist weder fällig noch
+abgelaufen, und direkt nach der Einführung stünde es sonst bei allen.
+
+**Warum eigene Datensätze statt Felder am Hund.** Jede Kontrolle und jede Impfung ist ein eigener
+Eintrag. Der Abgleich übernimmt bei Konflikten immer den ganzen neueren Datensatz; trüge eine
+Hundeführer:in eine Impfung am Hund ein, während die Ausbildung ihn gleichzeitig umbenennt, ginge
+eins von beidem verloren. So geht nichts verloren, und der Verlauf bleibt als Nachweis erhalten.
+Auch unbestätigte Impfungen werden geteilt – sonst käme die Ausbildung nie an sie heran.
+
+---
+
 ## Schnellstart lokal
 
 Die App braucht einen Webserver (ES-Module und Service Worker laufen nicht über `file://`):
@@ -258,6 +306,8 @@ in vier Schritten festlegt. Erst danach zeigt die App Hunde und Dokumentation.
 | Sichtbare Hunde | nur die zugeordneten | alle |
 | Dokumentieren | ja – alle vier Arten | ja |
 | Hunde zuordnen, umbenennen, entfernen | nein | ja |
+| Führerscheinkontrolle bestätigen | nein | ja |
+| Impfung eintragen | ja – wartet auf Bestätigung | ja – gilt sofort |
 | Einheiten bestätigen | nein | ja |
 | Daten sichern und einspielen | nein | ja |
 | Dashboard, Verbellen-Stand, Helfer:in-Bilder | nur wenn freigegeben | ja |
@@ -590,6 +640,7 @@ assets/js/
   rollen.js                Rollen, Sichtbarkeit, Bestätigungen
   update.js                Programm-Aktualisierung
   helferbilder.js          Ableitung der Helfer:in-Bilder aus den Suchen
+  nachweise.js             Fälligkeiten der Führerscheinkontrollen und Impfungen
   fotos.js                 Fotos: Verkleinern, lokale Ablage, Warteschlange
   skizze.js                Zeichenfeld für das Suchgebiet
   ui.js                    Bausteine: Skala, Chips, Karten, Meldungen
@@ -604,6 +655,7 @@ assets/js/
     dashboard.js           Auswertung
     bilder.js              Helfer:in-Bilder
     start.js               Einrichtungsassistent für neue Geräte
+    nachweise.js           Führerscheinkontrollen und Impfungen
     einrichtung.js         Assistent für den Online-Abgleich
     einstellungen.js       Sync, Stammdaten, Sicherung, Version
 
