@@ -615,6 +615,35 @@ geht dabei nicht verloren.
 
 ---
 
+## Sicherung
+
+`scripts/backup.sh` sichert die gesamte Lösung in einen Ordner mit Datum und Uhrzeit, ab Werk
+unter `~/Backups/Trainingstagebuch/`:
+
+| Datei | Inhalt |
+|---|---|
+| `projekt.tar.gz` | der ganze Projektordner samt Git-Verlauf – auch noch nicht übertragene Änderungen |
+| `daten.bundle` | das private Daten-Repository als vollständiger Git-Spiegel, mit jedem Abgleich als eigenem Stand |
+| `trainingsdaten.json`, `bilder/` | der aktuelle Datenstand als einfache Dateien |
+| `MANIFEST.txt` | Prüfsummen, Zählungen und die Anleitung zur Wiederherstellung |
+
+Das Skript prüft die Datendatei, bevor es die Sicherung ablegt, und schreibt erst nach
+bestandener Prüfung – ein Abbruch hinterlässt keine halbe Sicherung. Hat die Staffel gegenüber
+der letzten Sicherung mehr als 10 % ihrer aktiven Datensätze verloren, meldet es eine
+**Warnung**: Ein Abgleichfehler, der Einträge verschluckt, fiele sonst erst auf, wenn man die
+Sicherung braucht. Es ändert nichts am Projekt oder auf GitHub und löscht keine älteren
+Sicherungen; eine Zeile je Lauf landet in `protokoll.txt`.
+
+Eine geplante Aufgabe in der Claude-App ruft das Skript **jeden Montag um 8:00 Uhr** auf. Sie
+läuft, solange die App geöffnet ist; ist sie zu diesem Zeitpunkt geschlossen, holt sie den Lauf
+beim nächsten Start nach. Von Hand: `scripts/backup.sh`, an ein anderes Ziel mit
+`BACKUP_ZIEL=/Volumes/Stick scripts/backup.sh`.
+
+Wiederherstellen: `tar -xzf projekt.tar.gz` für das Programm, `git clone daten.bundle` für die
+Daten. `trainingsdaten.json` lässt sich außerdem unter *Einstellungen → Sicherung* einspielen.
+
+---
+
 ## Aufbau des Projekts
 
 ```
@@ -661,6 +690,7 @@ assets/js/
 
 scripts/release.sh         vergibt eine neue Versionsnummer
 scripts/handbuch.py        erzeugt das Handbuch als PDF
+scripts/backup.sh          sichert Programm und Daten (wöchentlich per geplanter Aufgabe)
 scripts/dev-server.py      lokaler Testserver
 .github/workflows/deploy.yml   Veröffentlichung auf GitHub Pages
 ```
