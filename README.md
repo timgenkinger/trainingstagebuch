@@ -64,9 +64,9 @@ gespeichert; aus einer 4-MB-Aufnahme werden so typischerweise 150 bis 250 kB.
 
 **Fotos liegen nicht im Datensatz, sondern als einzelne Dateien** unter `bilder/` im
 Daten-Repository; der Datensatz merkt sich nur die Verweise. Das ist kein Detail, sondern
-notwendig: Der Abgleich schreibt alle Datensätze als *eine* JSON-Datei. Ein eingebettetes Foto
-wöge darin rund 290 kB – schon drei würden die Datei über die 1-MB-Grenze der GitHub-Contents-API
-heben und damit unlesbar machen, und jedes Speichern übertrüge den gesamten Bestand erneut.
+notwendig: Der Abgleich schreibt alle Datensätze als *eine* JSON-Datei, und jedes Speichern
+überträgt sie vollständig. Ein eingebettetes Foto wöge darin rund 290 kB – jede kleine Änderung
+schickte dann den ganzen Bildbestand mit.
 
 Ein Foto von einem anderen Gerät wird erst geladen, wenn es angezeigt werden soll – so lädt
 niemand den ganzen Bildbestand der Staffel auf sein Handy. Bis dahin steht in der Vorschau
@@ -604,6 +604,34 @@ Deshalb arbeitet die App nach dem Prinzip **local first**:
    den Cache der Programmdateien und fasst die Datenbank nie an.
 7. **Freigabe-Schranke.** Eine Suche verlässt das Gerät erst, wenn ihr Protokoll abgeschlossen
    ist. Entwürfe bleiben vorgemerkt und gehen automatisch mit, sobald sie freigegeben werden.
+
+### Die Datendatei und ihre Größe
+
+Alle Datensätze liegen in einer Datei, **ein Datensatz je Zeile**. Das hält sie kompakt, und im
+Verlauf des Daten-Repositorys bleibt jede Änderung als eine geänderte Zeile erkennbar.
+
+Bis Version 1.20.0 wurde die Datei eingerückt geschrieben. Die Koordinaten der Skizzen standen
+dadurch Zahl für Zahl auf eigenen Zeilen, die Datei war mehr als doppelt so groß wie nötig – und
+überschritt am 24.10.2026 mit 257 Datensätzen die **1-MB-Grenze**, ab der GitHub den Inhalt über
+den üblichen Weg (Contents-API) nicht mehr mitliefert. Der Abgleich meldete daraufhin auf allen
+Geräten *„Die Datei im Repository ist kein gültiges JSON“*. Verloren ging dabei nichts: Jedes
+Gerät behält seine Einträge in der lokalen Datenbank und schickt sie nach.
+
+Seit Version 1.20.1 gilt:
+
+* **Über 1 MB wird der Inhalt über die Blob-API geladen**, die bis 100 MB reicht. Sie wird über
+  denselben `sha` angesprochen wie die Datei, Inhalt und Stand passen also immer zusammen.
+* **Geschrieben wird kompakt.** Aus 1 038 KB wurden so rund 470 KB.
+* **Eine noch eingerückte Datei schreibt das erste aktualisierte Gerät einmal kompakt neu**, auch
+  ohne eigene Änderung (im Protokoll: *Datendatei kompakt neu geschrieben*). Erst dadurch können
+  auch Geräte, die das Update noch nicht haben, wieder abgleichen – ihr Lesen endet bei 1 MB.
+  Je Stand gibt es höchstens einen Versuch, damit ein fehlendes Schreibrecht nicht im
+  Sekundentakt anklopft.
+
+Gewachsen ist die Datei zuletzt um gut 200 KB im Monat (kompakt gerechnet), getrieben vor allem
+von den Skizzen. Bis zur Grenze von 100 MB ist das für Jahrzehnte genug; spürbar würde vorher
+eher die Übertragung auf dem Handy, denn bei jeder Änderung im Team lädt jedes Gerät die Datei
+neu. Unveränderte Stände kosten dank ETag fast nichts.
 
 Der Status oben rechts: grau *Nur lokal*, orange *Verbinde/Offline*, grün *Synchron*, rot *Fehler*
 (Titel antippen zeigt den Grund).

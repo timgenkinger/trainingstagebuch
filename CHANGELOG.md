@@ -1,5 +1,27 @@
 # Änderungsprotokoll
 
+## 1.20.1 – 2026-10-25
+- **Der Abgleich stand still: „Die Datei im Repository ist kein gültiges JSON“.** Die gemeinsame
+  Datendatei hatte am 24.10.2026 mit 257 Datensätzen die 1-MB-Grenze überschritten. Darüber liefert
+  die GitHub-Contents-API den Inhalt nicht mehr mit (`"encoding": "none"`), die App versuchte, eine
+  leere Antwort als JSON zu lesen. Verloren ging nichts – jedes Gerät behält seine Einträge lokal und
+  schickt sie nach, sobald der Abgleich wieder läuft.
+- **Über 1 MB wird jetzt über die Blob-API gelesen**, die bis 100 MB reicht. Sie wird über denselben
+  `sha` angesprochen wie die Datei; Inhalt und Stand passen also garantiert zusammen, auch wenn
+  zwischendurch jemand schreibt. Fotos nutzen denselben Weg.
+- **Die Datei wird kompakt geschrieben, ein Datensatz je Zeile.** Bisher war sie eingerückt – die
+  Koordinaten der Skizzen standen Zahl für Zahl auf eigenen Zeilen. Aus 1 038 KB werden so rund
+  470 KB, und eine Änderung bleibt im Verlauf des Daten-Repositorys als eine Zeile erkennbar.
+- **Die Datei heilt sich selbst.** Findet ein aktualisiertes Gerät sie noch im eingerückten Format
+  vor, schreibt es sie einmal kompakt neu, auch ohne eigene Änderung. Damit liegt sie wieder unter
+  1 MB, und auch Geräte, die das Update noch nicht haben, gleichen wieder ab. Je Stand gibt es
+  höchstens einen Versuch – fehlt einem Gerät das Schreibrecht, klopft es nicht im Sekundentakt an.
+- Geprüft gegen einen nachgebildeten GitHub-Server mit einer Datei wie der echten (257 Datensätze,
+  1 395 KB eingerückt): Die alte Fassung zeigt exakt die gemeldete Fehlermeldung, die neue liest die
+  Datei vollständig samt Umlauten und Skizzen; ETag/304, fehlende Datei, Schreibkonflikt (409) und
+  Fotos verhalten sich wie bisher. Die alte Fassung kann die kompakt geschriebene Datei wieder lesen.
+  Gegen das echte Repository wurde nur gelesen.
+
 ## 1.20.0 – 2026-09-19
 - **Neuer Reiter „Nachweise“** mit Führerscheinkontrollen und Impfungen, für beide Rollen.
 - **Führerscheinkontrolle alle 6 Monate.** Die Ausbildung bestätigt per Knopf; der Dialog schlägt

@@ -3,7 +3,9 @@
  *
  * Verfahren: Alle Datensätze liegen als eine JSON-Datei im Repository.
  * Gelesen wird per Contents-API (mit ETag, damit unveränderte Stände nichts
- * kosten), geschrieben mit dem `sha` des zuletzt gelesenen Standes.
+ * kosten), geschrieben mit dem `sha` des zuletzt gelesenen Standes. Ab 1 MB
+ * liefert die Contents-API den Inhalt nicht mehr mit; dann kommt er über die
+ * Blob-API, die bis 100 MB reicht (siehe leseBlob()).
  *
  * Der entscheidende Punkt ist die Behandlung gleichzeitiger Änderungen:
  * Vor JEDEM Schreiben wird der Fernstand frisch gelesen und mit dem lokalen
@@ -65,6 +67,44 @@ function ausBase64(b64) {
   return new TextDecoder().decode(bytes);
 }
 
+/**
+ * Inhalt einer Datei als Base64 – auch über 1 MB.
+ *
+ * Bis 1 MB liefert die Contents-API den Inhalt gleich mit. Darüber antwortet sie
+ * mit leerem `content` und `"encoding": "none"`; JSON.parse('') scheiterte dann
+ * mit "kein gültiges JSON", und der Abgleich stand für alle Geräte still.
+ * Die Blob-API reicht bis 100 MB und wird über denselben sha angesprochen –
+ * Inhalt und sha passen also garantiert zusammen, auch wenn zwischen beiden
+ * Anfragen jemand schreibt.
+ */
+async function inhaltAlsBase64(cfg, j, schritt) {
+  if (j.content) return j.content;
+  if (!(j.size > 0) || !j.sha) return '';
+  const res = await anfrage(cfg, `/repos/${cfg.owner}/${cfg.repo}/git/blobs/${j.sha}`);
+  if (!res.ok) throw new GhFehler(res.status, await fehlerText(res), schritt);
+  const blob = await res.json();
+  return blob.encoding === 'base64' ? blob.content || '' : nachBase64(blob.content || '');
+}
+
+/**
+ * Die Datendatei mit einem Datensatz je Zeile.
+ *
+ * Früher eingerückt (JSON.stringify(…, null, 1)): Die Koordinaten der Skizzen
+ * standen dadurch Zahl für Zahl auf eigenen Zeilen, die Datei war mehr als
+ * doppelt so groß wie nötig und überschritt im Oktober 2026 die 1-MB-Grenze.
+ * So ist sie kompakt, und eine Änderung bleibt im Verlauf des Repositorys
+ * trotzdem als eine geänderte Zeile je Datensatz erkennbar.
+ */
+export function serialisiere(kopf, records) {
+  const k = JSON.stringify(kopf).slice(1, -1);
+  return `{${k ? k + ',' : ''}"records":[\n${records.map((r) => JSON.stringify(r)).join(',\n')}\n]}\n`;
+}
+
+/** Liegt die Datei noch im alten, eingerückten Format vor? Dann beginnt sie mit "{" allein auf der ersten Zeile. */
+function istAltesFormat(text) {
+  return /^\{\r?\n/.test(text);
+}
+
 /* ---------------------------------------------------------------- */
 /* Lesen und Schreiben                                               */
 /* ---------------------------------------------------------------- */
@@ -77,7 +117,8 @@ function dateiPfad(cfg) {
 
 /**
  * Liest den Fernstand.
- * @returns {{records: Array, sha: string|null, unveraendert: boolean}}
+ * @returns {{records: Array, sha: string|null, unveraendert: boolean, formatAlt: boolean}}
+ *          formatAlt: Die Datei ist noch eingerückt und sollte kompakt neu geschrieben werden.
  */
 export async function lese(cfg, mitEtag = true) {
   const schluessel = `${cfg.owner}/${cfg.repo}/${cfg.branch}/${cfg.pfad}`;
@@ -87,20 +128,26 @@ export async function lese(cfg, mitEtag = true) {
 
   const res = await anfrage(cfg, `${dateiPfad(cfg)}?ref=${encodeURIComponent(cfg.branch)}`, { headers: kopf });
 
-  if (res.status === 304) return { records: bekannt.records, sha: bekannt.sha, unveraendert: true };
-  if (res.status === 404) return { records: [], sha: null, unveraendert: false };
+  if (res.status === 304) {
+    return { records: bekannt.records, sha: bekannt.sha, unveraendert: true, formatAlt: !!bekannt.formatAlt };
+  }
+  if (res.status === 404) return { records: [], sha: null, unveraendert: false, formatAlt: false };
   if (!res.ok) throw new GhFehler(res.status, await fehlerText(res), 'lesen');
 
   const j = await res.json();
+  const b64 = await inhaltAlsBase64(cfg, j, 'lesen');
+  let text = '';
   let daten = { records: [] };
   try {
-    daten = JSON.parse(ausBase64(j.content || ''));
+    text = ausBase64(b64);
+    daten = JSON.parse(text);
   } catch (e) {
     throw new GhFehler(0, 'Die Datei im Repository ist kein gültiges JSON.', 'lesen');
   }
   const records = Array.isArray(daten) ? daten : daten.records || [];
-  etags.set(schluessel, { etag: res.headers.get('ETag'), sha: j.sha, records });
-  return { records, sha: j.sha, unveraendert: false };
+  const formatAlt = istAltesFormat(text);
+  etags.set(schluessel, { etag: res.headers.get('ETag'), sha: j.sha, records, formatAlt });
+  return { records, sha: j.sha, unveraendert: false, formatAlt };
 }
 
 /** Mischt zwei Datensatzlisten – der jüngere Stand je Datensatz gewinnt. */
@@ -120,27 +167,26 @@ export function mischen(a, b) {
  * @returns {{records: Array, fernNeu: Array}} fernNeu = was von fern dazukam
  */
 export async function schreibe(cfg, lokal, versuch = 0) {
-  const { records: fern, sha } = await lese(cfg, false);
+  const { records: fern, sha, formatAlt } = await lese(cfg, false);
   const gemischt = mischen(fern, lokal);
+  const nurVerdichten = !!sha && gleich(fern, gemischt);
 
-  // Nichts zu tun, wenn der Fernstand bereits alles enthält.
-  if (sha && gleich(fern, gemischt)) return { records: gemischt, fern, geschrieben: false };
+  // Nichts zu tun, wenn der Fernstand bereits alles enthält – es sei denn, die
+  // Datei ist noch eingerückt. Dann wird sie auch ohne Änderung kompakt neu
+  // geschrieben: Geräte ohne das Update lesen nur bis 1 MB.
+  if (nurVerdichten && !formatAlt) return { records: gemischt, fern, geschrieben: false, verdichtet: false };
 
-  const inhalt = JSON.stringify(
-    {
-      app: 'rhd-trainingstagebuch',
-      aktualisiert: new Date().toISOString(),
-      geraet: geraeteName(),
-      records: gemischt,
-    },
-    null,
-    1
+  const inhalt = serialisiere(
+    { app: 'rhd-trainingstagebuch', aktualisiert: new Date().toISOString(), geraet: geraeteName() },
+    gemischt
   );
 
   const res = await anfrage(cfg, dateiPfad(cfg), {
     method: 'PUT',
     body: JSON.stringify({
-      message: `Trainingsdaten aktualisiert (${geraeteName()}, ${gemischt.length} Datensätze)`,
+      message: nurVerdichten
+        ? `Trainingsdaten kompakt neu geschrieben (${geraeteName()}, ${gemischt.length} Datensätze)`
+        : `Trainingsdaten aktualisiert (${geraeteName()}, ${gemischt.length} Datensätze)`,
       content: nachBase64(inhalt),
       branch: cfg.branch,
       ...(sha ? { sha } : {}),
@@ -160,8 +206,9 @@ export async function schreibe(cfg, lokal, versuch = 0) {
     etag: null,
     sha: j.content?.sha,
     records: gemischt,
+    formatAlt: false,
   });
-  return { records: gemischt, fern, geschrieben: true };
+  return { records: gemischt, fern, geschrieben: !nurVerdichten, verdichtet: formatAlt };
 }
 
 function gleich(a, b) {
@@ -185,7 +232,9 @@ export async function ladeFoto(cfg, id) {
   if (res.status === 404) return null;
   if (!res.ok) throw new GhFehler(res.status, await fehlerText(res), 'foto-lesen');
   const j = await res.json();
-  return 'data:image/jpeg;base64,' + (j.content || '').replace(/\s/g, '');
+  // Fotos bleiben dank Verkleinerung meist weit unter 1 MB – aber nicht garantiert.
+  const b64 = await inhaltAlsBase64(cfg, j, 'foto-lesen');
+  return 'data:image/jpeg;base64,' + b64.replace(/\s/g, '');
 }
 
 export async function schreibeFoto(cfg, id, dataUrl) {
@@ -228,7 +277,7 @@ export async function stelleBranchSicher(cfg) {
   const repo = await repoRes.json();
 
   const basis = `/repos/${cfg.owner}/${cfg.repo}/git`;
-  const leer = JSON.stringify({ app: 'rhd-trainingstagebuch', records: [] }, null, 1);
+  const leer = serialisiere({ app: 'rhd-trainingstagebuch' }, []);
 
   // Hat das Repository überhaupt schon einen Commit?
   const kopf = await anfrage(cfg, `${basis}/ref/heads/${encodeURIComponent(repo.default_branch)}`);

@@ -49,6 +49,8 @@ let abmelden = null;
 let pushTimer = null;
 let pollTimer = null;
 let laeuft = false;
+/** sha des Fernstands, für den das Verdichten schon versucht wurde – höchstens ein Versuch je Stand. */
+let verdichtetFuer = null;
 
 export async function starte() {
   await stoppe();
@@ -121,10 +123,14 @@ async function hole(cfg, ersteAbfrage = false) {
     return;
   }
   try {
-    const { records, unveraendert } = await adapter.lese(cfg.github);
+    const { records, unveraendert, formatAlt, sha } = await adapter.lese(cfg.github);
     if (!unveraendert) {
       const n = await store.uebernehmeExtern(records);
       if (n) notiere('empfangen', `${n} Änderung(en) empfangen`);
+    }
+    if (formatAlt && sha && sha !== verdichtetFuer) {
+      verdichtetFuer = sha;
+      verdichte(cfg);
     }
     status.letzterAbgleich = Date.now();
     await store.setzeLetzterAbgleich(status.letzterAbgleich);
@@ -132,6 +138,29 @@ async function hole(cfg, ersteAbfrage = false) {
     zeigeRuhe();
   } catch (e) {
     melde(e);
+  }
+}
+
+/**
+ * Schreibt eine noch eingerückte Datendatei einmal kompakt neu – auch ohne
+ * eigene Änderung. Erst dann können Geräte, die das Update noch nicht haben,
+ * sie wieder lesen: Ihr Lesen endet bei 1 MB, eingerückt hatte die Datei die
+ * Grenze überschritten. Mischen und Konfliktbehandlung laufen wie bei jedem
+ * Schreiben über adapter.schreibe().
+ */
+async function verdichte(cfg) {
+  if (laeuft || !navigator.onLine) return;
+  laeuft = true;
+  try {
+    const { fern, verdichtet } = await adapter.schreibe(cfg.github, store.freigegebeneRecords());
+    await store.uebernehmeExtern(fern);
+    if (verdichtet) notiere('info', 'Datendatei kompakt neu geschrieben');
+  } catch (e) {
+    melde(e);
+  } finally {
+    laeuft = false;
+    // Ein Push, der währenddessen abgewiesen wurde, kommt so nicht unter die Räder.
+    planePush(cfg, 0);
   }
 }
 
