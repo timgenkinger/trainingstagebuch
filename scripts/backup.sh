@@ -98,7 +98,45 @@ for art, n in sorted(arten.items(), key=lambda x: -x[1]):
 PY
 )" || fehler "Datendatei ist nicht lesbar"
 
-# --- 3) Manifest --------------------------------------------------------------
+# --- 3) Speicherplatz bei GitHub ---------------------------------------------
+# Die veröffentlichte Seite darf bei GitHub Pages höchstens 1 GB groß sein, und
+# für Repositorys empfiehlt GitHub dieselbe Grenze. Die Daten liegen nicht in
+# Pages, sondern im privaten Daten-Repository – das wächst mit jedem Abgleich
+# und jedem Foto und wird deshalb an derselben Grenze gemessen.
+# Die Abfrage ist Beiwerk: Scheitert sie, bleibt die Sicherung trotzdem gültig.
+GRENZE_KB="${SPEICHER_GRENZE_KB:-1048576}"
+PROGRAMM_REPO="${PROGRAMM_REPO:-$(git -C "$PROJEKT" remote get-url origin 2>/dev/null \
+  | sed -E 's|^.*github\.com[:/]||; s|\.git$||')}"
+SEITE_KB="$(git -C "$PROJEKT" ls-tree -r -l HEAD | awk '{s+=$4} END {printf "%d", (s+1023)/1024}')"
+PROGRAMM_KB="$(gh api "repos/$PROGRAMM_REPO" --jq .size 2>/dev/null || true)"
+DATEN_KB="$(gh api "repos/$DATEN_REPO" --jq .size 2>/dev/null || true)"
+
+speicherzeile() {  # Bezeichnung, belegte KB
+  case "$2" in
+    ''|*[!0-9]*) printf '%-22s Größe nicht abrufbar\n' "$1"; return ;;
+  esac
+  awk -v n="$1" -v kb="$2" -v g="$GRENZE_KB" 'BEGIN {
+    frei = g - kb; if (frei < 0) frei = 0
+    z = sprintf("%-22s %.1f MB von %.0f MB belegt (%.2f %%), %.1f MB frei",
+                n, kb / 1024, g / 1024, kb * 100 / g, frei / 1024)
+    gsub(/\./, ",", z); print z
+  }'
+}
+SPEICHER="$(
+  speicherzeile "Pages-Seite:" "$SEITE_KB"
+  speicherzeile "Programm-Repository:" "$PROGRAMM_KB"
+  speicherzeile "Daten-Repository:" "$DATEN_KB"
+)"
+# Ab 80 % wird es Zeit, sich um Platz zu kümmern – lange bevor GitHub ablehnt.
+SPEICHER_WARNUNG=""
+for kb in "$SEITE_KB" "$PROGRAMM_KB" "$DATEN_KB"; do
+  case "$kb" in
+    ''|*[!0-9]*) continue ;;
+  esac
+  if [ "$kb" -ge $((GRENZE_KB * 8 / 10)) ]; then SPEICHER_WARNUNG="ja"; fi
+done
+
+# --- 4) Manifest --------------------------------------------------------------
 {
   echo "Sicherung Rettungshund Trainingstagebuch"
   echo "Erstellt:  $(date '+%d.%m.%Y %H:%M')"
@@ -113,6 +151,9 @@ PY
   echo "  Fotos:               $FOTOS"
   echo "$ZAEHLUNG" | sed 's/^/  /'
   echo
+  echo "SPEICHERPLATZ BEI GITHUB (Grenze je $((GRENZE_KB / 1024)) MB)"
+  echo "$SPEICHER" | sed 's/^/  /'
+  echo
   echo "PRÜFSUMMEN (SHA-256)"
   (cd "$S" && find . -type f ! -name MANIFEST.txt | sort | xargs shasum -a 256 | sed 's/^/  /')
   echo
@@ -124,7 +165,7 @@ PY
   echo "             einspielen (Ausbilder-Rolle)."
 } > "$S/MANIFEST.txt"
 
-# --- 4) Vergleich mit der letzten Sicherung ----------------------------------
+# --- 5) Vergleich mit der letzten Sicherung ----------------------------------
 # Ein Abgleichfehler, der Datensaetze verschluckt, faellt sonst erst auf, wenn
 # man die Sicherung braucht. Geloeschte Eintraege bleiben als Grabstein erhalten
 # und zaehlen hier nicht – ein deutlicher Rueckgang der aktiven ist daher auffaellig.
@@ -141,7 +182,7 @@ PY
 )"
 fi
 
-# --- 5) An den Platz verschieben ---------------------------------------------------
+# --- 6) An den Platz verschieben ---------------------------------------------------
 mkdir -p "$ZIEL_BASIS"
 mv "$S" "$ZIEL"
 GROESSE="$(du -sh "$ZIEL" | cut -f1)"
@@ -151,7 +192,10 @@ echo "SICHERUNG ERFOLGREICH"
 echo "  Ziel:    $ZIEL ($GROESSE)"
 echo "  Programm $APP_VERSION, Commit $APP_COMMIT"
 echo "  Daten    Commit $DATEN_COMMIT – $(echo "$ZAEHLUNG" | head -1), $FOTOS Foto(s)"
+echo "  Speicherplatz bei GitHub:"
+echo "$SPEICHER" | sed 's/^/    /'
 [ -n "$WARNUNG" ] && echo "  $WARNUNG"
+[ -n "$SPEICHER_WARNUNG" ] && echo "  SPEICHERWARNUNG: mehr als 80 % der Grenze bei GitHub belegt – bitte prüfen."
 [ "$APP_OFFEN" != "0" ] && echo "  Hinweis: $APP_OFFEN nicht committete Datei(en) im Projekt – im Archiv enthalten."
 [ "$APP_NICHT_UEBERTRAGEN" != "0" ] && [ "$APP_NICHT_UEBERTRAGEN" != "?" ] && echo "  Hinweis: $APP_NICHT_UEBERTRAGEN Commit(s) noch nicht auf GitHub."
 exit 0
