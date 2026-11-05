@@ -471,6 +471,9 @@ E += [
       "die Trefferquote</b> – ein „nicht gefunden“ ginge sonst zu Unrecht zulasten des Hundes. "
       "Echte Funde zählen weiter für Zeit und Radius bis zum Fund. Erneutes Antippen hebt die "
       "Wahl wieder auf.", "text"),
+    p("Im Dashboard stehen Einsätze und Abbrüche eigens: als Kacheln mit Anzahl und Anteil an den "
+      "Suchen und in der Karte <b>Einsätze und Abbrüche</b> einzeln mit Ort, Hund und Grund "
+      "(siehe 7.1).", "text"),
 
     p("Was in der Trümmersuche anders ist", "h3"),
     tabelle([
@@ -662,6 +665,9 @@ E += [
         "Ø Anzeigenote und wann sie zuletzt dabei war – <b>schwächste Trefferquote zuerst</b>. "
         "So fällt auf, wenn ein Hund bei einer bestimmten Person regelmäßig danebenliegt, etwa "
         "weil sie sich anders verhält, anders riecht oder ruhiger ist.",
+        "<b>Einsätze und Abbrüche:</b> zwei Kacheln mit Anzahl, Anteil an den Suchen und dem "
+        "letzten Datum, dazu eine Karte, die jeden einzeln mit Datum, Ort, Hund und – beim "
+        "Abbruch – Grund aufführt. In die Trefferquote zählen sie nicht.",
         "<b>Verbellen und Helfer:in-Bilder</b> je Hund im Überblick.",
     ]),
     p("Filter nach Hund und Zeitraum stehen oben. Ohne Hundefilter erscheint beim Verbellen "

@@ -1514,3 +1514,17 @@ span.wdh { cursor: default; }
 .abz--ausgang { background: #4b5a6e; color: #fff; border: 1px solid #4b5a6e; }
 /* Der Grund kann lang sein: abschneiden statt die Karte zu sprengen; voll im title. */
 .tag--grund { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+/* Dashboard: Einsätze und Abbrüche als Liste – der Grund bekommt die volle Breite. */
+.ausgang-liste { display: grid; }
+.ausgang-eintrag {
+  display: block;
+  padding: .6rem .15rem;
+  border-bottom: 1px solid var(--rand);
+  color: var(--text);
+  text-decoration: none;
+}
+.ausgang-eintrag:last-child { border-bottom: none; }
+.ausgang-eintrag:hover { background: var(--flaeche-2); }
+.ausgang-eintrag__kopf { display: flex; align-items: center; gap: .3rem .55rem; flex-wrap: wrap; }
+.ausgang-eintrag__wo { color: var(--text-leise); font-size: .88rem; min-width: 0; overflow-wrap: anywhere; }
+.ausgang-eintrag__grund { display: block; margin-top: .3rem; font-size: .88rem; line-height: 1.4; overflow-wrap: anywhere; }

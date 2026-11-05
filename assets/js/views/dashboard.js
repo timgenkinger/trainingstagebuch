@@ -97,7 +97,7 @@ function html() {
 }
 
 function inhalt(daten) {
-  return versteckBlock(daten) + personenBlock(daten) + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
+  return versteckBlock(daten) + personenBlock(daten) + kacheln(daten) + verlauf(daten) + kriterienBloecke(daten) + problemBlock(daten) + einsatzAbbruchBlock(daten) + rahmenBlock(daten) + bilderBlock(daten) + tabelle(daten);
 }
 
 /* -------------------- Kennzahlen -------------------- */
@@ -119,6 +119,11 @@ function kacheln(daten) {
   const zeitBis = funde.map((h) => Number(h.zeitBisMin)).filter((v) => v > 0);
   const fehlanzeigen = daten.filter((s) => s.probleme?.fehlanzeige).length;
   const warten = daten.map((s) => Number(s.wartezeitAutoMin)).filter((v) => v > 0);
+  const einsaetze = daten.filter((s) => s.ausgang === 'einsatz');
+  const abbrueche = daten.filter((s) => s.ausgang === 'abbruch');
+  const ausgangSub = (liste) => liste.length
+    ? `${Math.round((liste.length / daten.length) * 100)} % der Suchen · zuletzt ${formatDatum(letztesDatum(liste))}`
+    : 'keine im Zeitraum';
 
   const k = (label, wert, sub, spark) => `<div class="kachel">
     <span class="kachel__label">${esc(label)}</span>
@@ -138,7 +143,13 @@ function kacheln(daten) {
     ${k('Suchen mit Fehlanzeige', fehlanzeigen, daten.length ? `${Math.round((fehlanzeigen / daten.length) * 100)} % der Suchen` : '')}
     ${k('Ø Wartezeit im Auto', warten.length ? formatMinuten(S.mittelwert(warten)) : '—',
         warten.length ? `längste ${formatMinuten(Math.max(...warten))}` : 'nicht erfasst')}
+    ${k('Einsätze', einsaetze.length, ausgangSub(einsaetze))}
+    ${k('Abbrüche', abbrueche.length, ausgangSub(abbrueche))}
   </div>`;
+}
+
+function letztesDatum(suchen) {
+  return suchen.map((s) => s.datum || '').sort().at(-1);
 }
 
 function zeitraumText(daten) {
@@ -493,6 +504,42 @@ function problemBlock(daten) {
   return karte('Problemverhalten – Häufigkeit', inhalt, {
     hint: `Bezogen auf ${daten.length} Suchen im gewählten Zeitraum.`,
   });
+}
+
+/* -------------------- Einsätze und Abbrüche -------------------- */
+
+/**
+ * Einsätze und Abbrüche zählen nicht in die Trefferquote. Damit sie trotzdem
+ * nicht aus dem Blick geraten, stehen sie hier einzeln – beim Abbruch mit Grund,
+ * denn erst die Gründe zeigen, ob sich etwas wiederholt.
+ */
+function einsatzAbbruchBlock(daten) {
+  const liste = daten
+    .filter((s) => S.sonderausgang(s))
+    .sort((a, b) => (b.datum || '').localeCompare(a.datum || ''));
+  if (!liste.length) {
+    return karte('Einsätze und Abbrüche',
+      '<p class="karte__hint">Im gewählten Zeitraum gab es keinen Einsatz und keinen Abbruch.</p>');
+  }
+  const anzahl = (id) => liste.filter((s) => s.ausgang === id).length;
+  const e = anzahl('einsatz'), a = anzahl('abbruch');
+  const mitHund = !filter.hundId;
+  // Liste statt Tabelle: Auf dem Handy läge der Grund sonst rechts ausserhalb des Bildes.
+  return karte('Einsätze und Abbrüche', `
+    <div class="ausgang-liste">${liste.map((s) => {
+      const grund = s.ausgang === 'abbruch' ? (s.abbruchGrund || '').trim() : '';
+      const wo = [s.ort || 'ohne Ortsangabe', mitHund ? store.get(s.hundId)?.name : null].filter(Boolean).join(' · ');
+      return `<a class="ausgang-eintrag" href="#/suche/${esc(s.id)}">
+        <span class="ausgang-eintrag__kopf">
+          <strong>${esc(formatDatum(s.datum))}</strong>
+          <span class="abz abz--ausgang">${esc(S.sonderausgang(s).label)}</span>
+          <span class="ausgang-eintrag__wo">${esc(wo)}</span>
+        </span>
+        ${grund ? `<span class="ausgang-eintrag__grund">Grund: ${esc(grund)}</span>` : ''}
+      </a>`;
+    }).join('')}</div>
+  `, { hint: `${e} ${e === 1 ? 'Einsatz' : 'Einsätze'} und ${a} ${a === 1 ? 'Abbruch' : 'Abbrüche'} im gewählten Zeitraum. `
+      + 'Sie zählen nicht in die Trefferquote.' });
 }
 
 /* -------------------- Rahmenbedingungen -------------------- */

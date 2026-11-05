@@ -120,6 +120,12 @@ Zeit und den Radius bis zum Fund, und ein Bild gilt weiterhin als vorgekommen. D
 *Trefferquote* nennt, wie viele Suchen deshalb nicht gezählt wurden. In der Übersicht trägt die
 Suche das Abzeichen *Einsatz* bzw. *Abbruch*, beim Abbruch mit dem Grund.
 
+Damit sie in der Auswertung trotzdem nicht untergehen, weist das Dashboard sie **eigens aus**:
+zwei Kacheln *Einsätze* und *Abbrüche* mit Anzahl, Anteil an den Suchen und dem letzten Datum,
+dazu die Karte **Einsätze und Abbrüche**, die jeden einzeln mit Datum, Ort, Hund und – beim
+Abbruch – Grund aufführt. Erst die Gründe zeigen, ob sich etwas wiederholt. Beides folgt den
+Filtern nach Hund, Sparte und Zeitraum.
+
 ### Zwei Sparten der Suche
 
 Fläche und Trümmer nutzen **dasselbe Protokoll** – bewusst eine Sparte statt einer eigenen
@@ -168,6 +174,8 @@ Zusätzlich: eigene Kriterien pro Bereich (die leeren Zeilen im Heft), Duplizier
   einschließlich der Wartezeit im Auto in vier Stufen
 * Fortschritt bei den Helfer:in-Bildern
 * **Versteckpersonen** – Trefferquote und Ø Anzeige je Person, schwächste zuerst
+* **Einsätze und Abbrüche** – Anzahl, Anteil und letztes Datum als Kacheln, dazu jeder einzeln
+  mit Ort, Hund und Grund des Abbruchs
 * Schwierigkeit der Verstecke je Hund (leicht / mittel / schwer) mit dem jeweils letzten Datum
 * Filter nach Hund, Sparte und Zeitraum
 

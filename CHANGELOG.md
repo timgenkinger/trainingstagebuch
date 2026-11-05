@@ -1,5 +1,15 @@
 # Änderungsprotokoll
 
+## 1.22.0 – 2026-11-05
+- **Einsätze und Abbrüche stehen jetzt eigens in der Statistik.** Im Dashboard gibt es zwei neue
+  Kacheln *Einsätze* und *Abbrüche* mit Anzahl, Anteil an den Suchen und dem letzten Datum.
+- Dazu die Karte **Einsätze und Abbrüche**: jeder einzeln mit Datum, Ort, Hund und – beim
+  Abbruch – dem Grund, das Neueste zuerst; ein Tippen öffnet die Suche. Bewusst als Liste statt
+  Tabelle, damit der Grund auch auf dem Handy in voller Breite lesbar ist. Ist nach einem Hund
+  gefiltert, entfällt der Hundename.
+- Beides folgt den Filtern nach Hund, Sparte und Zeitraum. In die Trefferquote zählen Einsätze
+  und Abbrüche weiterhin nicht.
+
 ## 1.21.0 – 2026-11-05
 - **Einsatz und Abbruch als Ausgang der ganzen Suche.** Neben *gefunden / nicht gefunden* je
   Person gibt es oben in der Karte „Versteckpersonen & Funde“ zwei Schalter, die für die ganze
