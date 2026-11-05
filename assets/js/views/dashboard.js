@@ -107,7 +107,13 @@ function kacheln(daten) {
   const zeiten = daten.map((s) => Number(s.suchzeitMin)).filter((v) => v > 0);
 
   const helfer = daten.flatMap((s) => s.helfer || []);
-  const bewertet = helfer.filter((h) => h.gefunden === true || h.gefunden === false);
+  // Einsatz und Abbruch zählen nicht in die Trefferquote (siehe zaehltFuerTrefferquote);
+  // ihre Funde gehen aber weiter in Zeit und Radius bis zum Fund ein.
+  const mitChance = daten.filter(S.zaehltFuerTrefferquote);
+  const ohneChance = daten.length - mitChance.length;
+  const quoteHelfer = mitChance.flatMap((s) => s.helfer || []);
+  const bewertet = quoteHelfer.filter((h) => h.gefunden === true || h.gefunden === false);
+  const treffer = quoteHelfer.filter((h) => h.gefunden === true);
   const funde = helfer.filter((h) => h.gefunden === true);
   const radien = funde.map((h) => Number(h.radiusM)).filter((v) => v > 0);
   const zeitBis = funde.map((h) => Number(h.zeitBisMin)).filter((v) => v > 0);
@@ -124,7 +130,8 @@ function kacheln(daten) {
   return `<div class="kacheln">
     ${k('Suchen', daten.length, zeitraumText(daten))}
     ${k('Ø Gesamtnote', formatNote(S.mittelwert(scores)), scores.length ? `aus ${scores.length} bewerteten Suchen` : 'noch nicht bewertet', sparkline(scores.slice(-14), 'var(--gruen)'))}
-    ${k('Trefferquote', bewertet.length ? `${Math.round((funde.length / bewertet.length) * 100)} %` : '—', `${funde.length} von ${bewertet.length} Versteckpersonen`)}
+    ${k('Trefferquote', bewertet.length ? `${Math.round((treffer.length / bewertet.length) * 100)} %` : '—',
+      `${treffer.length} von ${bewertet.length} Versteckpersonen${ohneChance ? ` · ${ohneChance}× Einsatz/Abbruch nicht gezählt` : ''}`)}
     ${k('Ø Zeit bis Fund', zeitBis.length ? formatMinuten(S.mittelwert(zeitBis)) : '—', zeitBis.length ? `${zeitBis.length} Funde mit Zeitangabe` : '')}
     ${k('Ø Radius bei Fund', radien.length ? `${runde(S.mittelwert(radien), 0)} m` : '—', 'Abstand Hund ↔ Hundeführer:in')}
     ${k('Gesamte Suchzeit', zeiten.length ? formatMinuten(zeiten.reduce((a, b) => a + b, 0)) : '—', zeiten.length ? `Ø ${formatMinuten(S.mittelwert(zeiten))} pro Suche` : '')}
@@ -290,8 +297,10 @@ function personenBlock(daten) {
       if (!h.personId) return;
       const e = (z[h.personId] ||= { versteckt: 0, gefunden: 0, nicht: 0, noten: [], letzteAm: null });
       e.versteckt++;
-      if (h.gefunden === true) e.gefunden++;
-      else if (h.gefunden === false) e.nicht++;
+      if (S.zaehltFuerTrefferquote(s)) {
+        if (h.gefunden === true) e.gefunden++;
+        else if (h.gefunden === false) e.nicht++;
+      }
       if (typeof h.anzeigeNote === 'number') e.noten.push(h.anzeigeNote);
       if (!e.letzteAm || (s.datum || '') > e.letzteAm) e.letzteAm = s.datum;
     });
@@ -603,7 +612,7 @@ function tabelle(daten) {
             <td>${esc(s.ort || '—')}</td>
             <td>${esc(store.get(s.hundId)?.name || '—')}</td>
             <td>${esc(s.suchzeitMin ? formatMinuten(s.suchzeitMin) : '—')}</td>
-            <td>${gesamt ? `${funde}/${gesamt}` : '—'}</td>
+            <td>${S.sonderausgang(s) ? esc(S.sonderausgang(s).label) : gesamt ? `${funde}/${gesamt}` : '—'}</td>
             ${zelle(S.mittelwert(S.werteDerGruppe(s, 'team')))}
             ${zelle(S.mittelwert(S.werteDerGruppe(s, 'hund')))}
             ${zelle(S.mittelwert(S.werteDerGruppe(s, 'hf')))}

@@ -113,10 +113,15 @@ function markiere() {
  * wird nur die Markierung nachgezogen – ein Neuaufbau wuerde den Fokus und
  * die Cursorposition im gerade bearbeiteten Feld verlieren.
  */
+/** Fehlt dieser Versteckperson das Ergebnis? Bei Einsatz und Abbruch nie – dann gibt es keins. */
+function ergebnisFehlt(h) {
+  return !S.sonderausgang(suche) && S.helferErfasst(h) && h.gefunden !== true && h.gefunden !== false;
+}
+
 function aktualisiereHelferMarker() {
   document.querySelectorAll('.helfer').forEach((el, i) => {
     const h = suche.helfer?.[i];
-    const offen = S.helferErfasst(h) && h.gefunden !== true && h.gefunden !== false;
+    const offen = ergebnisFehlt(h);
     el.classList.toggle('helfer--offen', offen);
     const vorhanden = el.querySelector('.helfer__fehlt');
     if (offen && !vorhanden) {
@@ -175,7 +180,7 @@ function html() {
       ${skizzeHtml(suche.skizze)}
     `)}
 
-    ${karte('Versteckpersonen & Funde', helferTabelle(), {
+    ${karte('Versteckpersonen & Funde', ausgangBlock() + helferTabelle(), {
       hint: truemmer
         ? 'Pro Versteckperson: Zeit bis zum Fund, Helfer:in-Bild, Abstand, Verdeckung, Schwierigkeit des Verstecks und die Bewertung der Anzeige.'
         : `Pro Versteckperson: Zeit bis zum Fund, gewähltes Helfer:in-Bild, Abstand zur Hundeführer:in beim Fund und die Bewertung der Anzeige. Angezeigt wird durchgängig durch ${S.ANZEIGE_ART}.`,
@@ -285,14 +290,41 @@ function eigeneKriterien(gruppe) {
   <button type="button" class="btn btn--mini" data-eigen-plus="${gruppe}">+ eigenes Kriterium</button>`;
 }
 
+/**
+ * Ausgang der ganzen Suche – nicht je Versteckperson. Einsatz und Abbruch
+ * schliessen einander aus; ein zweites Antippen hebt die Wahl wieder auf.
+ * Der Grund steht immer im Dokument und wird nur ein- und ausgeblendet, damit
+ * ein versehentliches Umschalten keinen getippten Text verwirft.
+ */
+function ausgangBlock() {
+  const aktiv = S.sonderausgang(suche);
+  return `<div class="ausgang">
+    <div class="ausgang__kopf">
+      <span class="feld__label">Ausgang der ganzen Suche
+        <small>nur wenn es keine Funde je Person geben konnte</small></span>
+      <span class="mini-wahl">
+        ${S.AUSGAENGE.map((a) => `<button type="button" class="mini-chip${aktiv?.id === a.id ? ' mini-chip--an' : ''}"
+          data-ausgang="${a.id}" aria-pressed="${aktiv?.id === a.id}" title="${esc(a.hint)}">${esc(a.label)}</button>`).join('')}
+      </span>
+    </div>
+    <p class="ausgang__hinweis" data-ausgang-hinweis ${aktiv ? '' : 'hidden'}>
+      ${aktiv ? esc(aktiv.hint) + '.' : ''} Gefunden / nicht gefunden je Person ist damit freiwillig
+      und zählt nicht in die Trefferquote.</p>
+    <div data-abbruch-grund ${aktiv?.id === 'abbruch' ? '' : 'hidden'}>
+      ${feld('Grund für den Abbruch', textArea('abbruchGrund', suche.abbruchGrund, {
+        rows: 2, placeholder: 'z.B. Gewitter, Hund verletzt, Gelände nicht begehbar, Zeit abgelaufen',
+      }))}
+    </div>
+  </div>`;
+}
+
 function helferTabelle() {
   return `<div class="helfer-liste">${suche.helfer
     .map(
-      (h, i) => `<div class="helfer${S.helferErfasst(h) && h.gefunden !== true && h.gefunden !== false ? ' helfer--offen' : ''}">
+      (h, i) => `<div class="helfer${ergebnisFehlt(h) ? ' helfer--offen' : ''}">
       <div class="helfer__kopf">
         <strong>Helfer:in ${i + 1}</strong>
-        ${S.helferErfasst(h) && h.gefunden !== true && h.gefunden !== false
-          ? '<small class="helfer__fehlt">Ergebnis fehlt</small>' : ''}
+        ${ergebnisFehlt(h) ? '<small class="helfer__fehlt">Ergebnis fehlt</small>' : ''}
         <span class="helfer__gefunden">
           <button type="button" class="mini-chip${h.gefunden === true ? ' mini-chip--an' : ''}" data-tri="helfer.${i}.gefunden" data-wert="true">gefunden</button>
           <button type="button" class="mini-chip${h.gefunden === false ? ' mini-chip--an mini-chip--rot' : ''}" data-tri="helfer.${i}.gefunden" data-wert="false">nicht gefunden</button>
@@ -455,6 +487,26 @@ function binde(wurzel) {
       check.classList.toggle('check--an', an);
       check.setAttribute('aria-pressed', String(an));
       markiere();
+      return;
+    }
+
+    const ausgang = t.closest('[data-ausgang]');
+    if (ausgang) {
+      suche.ausgang = suche.ausgang === ausgang.dataset.ausgang ? '' : ausgang.dataset.ausgang;
+      const aktiv = S.sonderausgang(suche);
+      wurzel.querySelectorAll('[data-ausgang]').forEach((b) => {
+        const an = b.dataset.ausgang === suche.ausgang;
+        b.classList.toggle('mini-chip--an', an);
+        b.setAttribute('aria-pressed', String(an));
+      });
+      const hinweis = wurzel.querySelector('[data-ausgang-hinweis]');
+      hinweis.hidden = !aktiv;
+      if (aktiv) {
+        hinweis.textContent = `${aktiv.hint}. Gefunden / nicht gefunden je Person ist damit freiwillig `
+          + 'und zählt nicht in die Trefferquote.';
+      }
+      wurzel.querySelector('[data-abbruch-grund]').hidden = aktiv?.id !== 'abbruch';
+      markiere();   // zieht Pflichtangaben und die Markierungen "Ergebnis fehlt" nach
       return;
     }
 

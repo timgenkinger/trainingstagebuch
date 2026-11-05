@@ -98,6 +98,28 @@ die Trefferquote, die durchschnittliche Anzeigenote und das Datum des letzten Ma
 **schwächste Trefferquote zuerst**. So fällt auf, wenn ein Hund bei einer bestimmten Person
 regelmäßig danebenliegt, etwa weil sie sich anders verhält, anders riecht oder ruhiger ist.
 
+### Einsatz und Abbruch
+
+Neben *gefunden / nicht gefunden* je Person gibt es oben in der Karte **Versteckpersonen & Funde**
+einen Ausgang für die **ganze Suche** – für die Fälle, in denen es keine Funde je Person geben
+konnte:
+
+| | bedeutet | dazu |
+|---|---|---|
+| **Einsatz** | Im Suchgebiet war niemand versteckt | – |
+| **Abbruch** | Die Suche wurde abgebrochen, der Hund hatte keine Chance | Freitextfeld *Grund für den Abbruch* |
+
+Ist einer der beiden gewählt, wird *gefunden / nicht gefunden* je Person freiwillig, und die
+Markierung *Ergebnis fehlt* entfällt. Beide schließen einander aus; erneutes Antippen hebt die
+Wahl auf. Ein getippter Grund bleibt beim Umschalten erhalten und wird nur ausgeblendet.
+
+**Solche Suchen zählen nicht in die Trefferquote** – weder im Dashboard noch bei den
+Versteckpersonen oder den Helfer:in-Bildern. Ein *nicht gefunden* ginge dort zu Unrecht zulasten
+des Hundes, und nur die Funde zu zählen, schönte die Quote. Echte Funde zählen weiter für die
+Zeit und den Radius bis zum Fund, und ein Bild gilt weiterhin als vorgekommen. Die Kachel
+*Trefferquote* nennt, wie viele Suchen deshalb nicht gezählt wurden. In der Übersicht trägt die
+Suche das Abzeichen *Einsatz* bzw. *Abbruch*, beim Abbruch mit dem Grund.
+
 ### Zwei Sparten der Suche
 
 Fläche und Trümmer nutzen **dasselbe Protokoll** – bewusst eine Sparte statt einer eigenen
@@ -423,8 +445,9 @@ Abschließen lässt sich ein Eintrag erst, wenn alle Pflichtangaben vorliegen. D
 unten laufend, was noch fehlt – und aktualisiert das bei jeder Eingabe.
 
 **Suche (10 Angaben):** Datum, **Durchgang des Tages**, Ort, Hund, Hundeführer:in, Suchzeit,
-das Ergebnis **jeder erfassten Versteckperson** (gefunden / nicht gefunden) sowie mindestens je
-eine Bewertung bei Team, Hund und Hundeführer:in.
+das Ergebnis **jeder erfassten Versteckperson** (gefunden / nicht gefunden) – oder stattdessen
+*Einsatz* bzw. *Abbruch* für die ganze Suche – sowie mindestens je eine Bewertung bei Team, Hund
+und Hundeführer:in. Der Grund für einen Abbruch ist freiwillig.
 
 > **Was heißt „erfasst"?** Die Maske legt vier leere Versteckperson-Zeilen an. Sobald an einer
 > Zeile irgendetwas steht – Name, Bild, Zeit, Radius, Anzahl der Beller, Anzeige oder Bemerkung –

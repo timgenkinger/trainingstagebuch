@@ -11,7 +11,7 @@
  */
 
 import * as store from './store.js';
-import { HELFER_BILDER, istAbgeschlossen } from './schema.js';
+import { HELFER_BILDER, istAbgeschlossen, zaehltFuerTrefferquote } from './schema.js';
 import * as R from './rollen.js';
 
 /** Stufe, die sich allein aus dem Einsatz in einer Suche ergibt. */
@@ -61,8 +61,11 @@ export function einsaetze(hundId) {
         anzahl: 0, gefunden: 0, nichtGefunden: 0, ersteAm: null, letzteAm: null, orte: new Set(),
       });
       e.anzahl++;
-      if (h.gefunden === true) e.gefunden++;
-      else if (h.gefunden === false) e.nichtGefunden++;
+      // Bei Einsatz und Abbruch hatte der Hund keine Chance – dort zählt nur, dass das Bild vorkam.
+      if (zaehltFuerTrefferquote(s)) {
+        if (h.gefunden === true) e.gefunden++;
+        else if (h.gefunden === false) e.nichtGefunden++;
+      }
       e.ersteAm = e.ersteAm || s.datum;
       e.letzteAm = s.datum;
       if (s.ort) e.orte.add(s.ort);

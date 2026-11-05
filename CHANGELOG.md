@@ -1,5 +1,21 @@
 # Änderungsprotokoll
 
+## 1.21.0 – 2026-11-05
+- **Einsatz und Abbruch als Ausgang der ganzen Suche.** Neben *gefunden / nicht gefunden* je
+  Person gibt es oben in der Karte „Versteckpersonen & Funde“ zwei Schalter, die für die ganze
+  Suche gelten: **Einsatz** – im Suchgebiet war niemand versteckt – und **Abbruch** – die Suche
+  wurde abgebrochen, der Hund hatte keine Chance. Bei Abbruch erscheint ein Freitextfeld für den
+  Grund. Die beiden schließen einander aus; erneutes Antippen hebt die Wahl auf.
+- Mit Einsatz oder Abbruch ist *gefunden / nicht gefunden* je Person freiwillig: Die Pflichtangabe
+  gilt als erfüllt, die Markierung „Ergebnis fehlt“ entfällt. Der Grund ist freiwillig.
+- **Solche Suchen zählen nicht in die Trefferquote** – im Dashboard, bei den Versteckpersonen und
+  bei den Helfer:in-Bildern. Ein „nicht gefunden“ ginge sonst zu Unrecht zulasten des Hundes, und
+  nur die Funde zu zählen, schönte die Quote. Echte Funde zählen weiter für Zeit und Radius bis
+  zum Fund; ein Bild gilt weiterhin als vorgekommen. Die Kachel *Trefferquote* nennt, wie viele
+  Suchen deshalb nicht gezählt wurden.
+- In der Übersicht trägt die Suche das Abzeichen *Einsatz* bzw. *Abbruch*, beim Abbruch mit dem
+  Grund; in der Dashboard-Tabelle steht es in der Spalte *Funde*. Beides in Fläche und Trümmer.
+
 ## 1.20.1 – 2026-10-25
 - **Der Abgleich stand still: „Die Datei im Repository ist kein gültiges JSON“.** Die gemeinsame
   Datendatei hatte am 24.10.2026 mit 257 Datensätzen die 1-MB-Grenze überschritten. Darüber liefert

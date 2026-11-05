@@ -458,6 +458,20 @@ E += [
       "angeschlagen hat. Das Feld ist freiwillig – wer nicht mitzählt, lässt es leer; für den "
       "Abschluss der Suche wird es nicht verlangt.", "text"),
 
+    p("Einsatz und Abbruch", "h3"),
+    p("Oben in der Karte <b>Versteckpersonen &amp; Funde</b> lässt sich für die <b>ganze Suche</b> "
+      "ein Ausgang wählen – für die Fälle, in denen es keine Funde je Person geben konnte:", "text"),
+    tabelle([
+        ["Einsatz", "Im Suchgebiet war niemand versteckt."],
+        ["Abbruch", "Die Suche wurde abgebrochen, der Hund hatte keine Chance. Dazu gibt es das "
+                    "Feld <b>Grund für den Abbruch</b>."],
+    ], [26 * mm, BREITE - 26 * mm], kopf=False),
+    Spacer(1, 6),
+    p("Dann ist „gefunden / nicht gefunden“ je Person freiwillig. Solche Suchen zählen <b>nicht in "
+      "die Trefferquote</b> – ein „nicht gefunden“ ginge sonst zu Unrecht zulasten des Hundes. "
+      "Echte Funde zählen weiter für Zeit und Radius bis zum Fund. Erneutes Antippen hebt die "
+      "Wahl wieder auf.", "text"),
+
     p("Was in der Trümmersuche anders ist", "h3"),
     tabelle([
         ["Gelände", "eigenes Verzeichnis: Gebäude intakt, Gebäude mit Trümmer, Trümmerkegel, "
@@ -531,8 +545,9 @@ E += [
       "<b>Abschließen und mit dem Team teilen</b> frei.", "text"),
     tabelle([
         ["Suche", "10 Angaben: Datum, <b>Durchgang des Tages</b>, Ort, Hund, Hundeführer:in, "
-                  "Suchzeit, das Ergebnis <b>jeder erfassten Versteckperson</b> sowie je eine "
-                  "Bewertung bei Team, Hund und Hundeführer:in"],
+                  "Suchzeit, das Ergebnis <b>jeder erfassten Versteckperson</b> – oder Einsatz "
+                  "bzw. Abbruch für die ganze Suche – sowie je eine Bewertung bei Team, Hund und "
+                  "Hundeführer:in"],
         ["Verbellen", "5 Angaben: Datum, <b>Durchgang des Tages</b>, Hund, mindestens eine "
                       "bearbeitete Stufe und mindestens eine gelungene Wiederholung"],
         ["Freie Doku", "5 Angaben: Datum, <b>Durchgang des Tages</b>, Überschrift, Hund sowie "

@@ -347,6 +347,13 @@ export function neueSuche(defaults = {}) {
     skizze: null,
 
     helfer: [1, 2, 3, 4].map(neueHelferZeile),
+    /**
+     * Ausgang der ganzen Suche, wenn es keine Funde je Person geben konnte –
+     * 'einsatz' oder 'abbruch' (siehe AUSGAENGE). Leer: gewöhnliche Suche
+     * mit Ergebnis je Versteckperson.
+     */
+    ausgang: '',
+    abbruchGrund: '',
 
     team: {},
     teamAblageOk: null,
@@ -501,6 +508,31 @@ export function gesamtScore(suche) {
  * Die Maske legt vier leere Zeilen an; unberuehrte davon sind keine
  * dokumentierte Versteckperson und werden bei den Pflichtangaben uebergangen.
  */
+/**
+ * Ausgänge, die für die ganze Suche gelten statt je Versteckperson. In beiden
+ * Fällen hatte der Hund keine Chance, die Personen zu finden – das Ergebnis je
+ * Person ist dann freiwillig und zählt nicht in die Trefferquote.
+ */
+export const AUSGAENGE = [
+  { id: 'einsatz', label: 'Einsatz', hint: 'Im Suchgebiet war niemand versteckt' },
+  { id: 'abbruch', label: 'Abbruch', hint: 'Die Suche wurde abgebrochen' },
+];
+
+/** Der besondere Ausgang einer Suche oder null für eine gewöhnliche Suche. */
+export function sonderausgang(s) {
+  return AUSGAENGE.find((a) => a.id === s?.ausgang) || null;
+}
+
+/**
+ * Zählen die Ergebnisse dieser Suche in Trefferquoten? Bei Einsatz und Abbruch
+ * nicht: Ein "nicht gefunden" ginge dort zu Unrecht zulasten des Hundes, und
+ * nur die Funde zu zählen, schönte die Quote. Funde bleiben trotzdem echte
+ * Funde – für Zeit und Radius bis zum Fund zählen sie weiter.
+ */
+export function zaehltFuerTrefferquote(s) {
+  return !sonderausgang(s);
+}
+
 export function helferErfasst(h) {
   if (!h) return false;
   return !!(
@@ -545,8 +577,9 @@ export const PFLICHT = [
   },
   {
     id: 'versteck',
-    label: 'Bei jeder erfassten Versteckperson: gefunden / nicht gefunden',
+    label: 'Bei jeder erfassten Versteckperson: gefunden / nicht gefunden – oder Einsatz bzw. Abbruch',
     pruefe: (s) => {
+      if (sonderausgang(s)) return true;
       const erfasst = (s.helfer || []).filter(helferErfasst);
       return erfasst.length > 0
         && erfasst.every((h) => h.gefunden === true || h.gefunden === false);

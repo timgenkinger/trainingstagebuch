@@ -1495,3 +1495,22 @@ span.wdh { cursor: default; }
 .nachweis-offen__text { flex: 1 1 12rem; min-width: 0; font-size: .86rem; }
 .nachweis-offen__text small { display: block; color: var(--text-leise); font-size: .76rem; }
 .nachweis-offen__knoepfe { display: inline-flex; gap: .3rem; }
+
+/* ================================================================
+   Ausgang der ganzen Suche: Einsatz / Abbruch
+   ================================================================ */
+.ausgang {
+  margin-bottom: .8rem;
+  padding-bottom: .7rem;
+  border-bottom: 1px solid var(--rand);
+}
+.ausgang__kopf { display: flex; align-items: center; justify-content: space-between; gap: .3rem .6rem; flex-wrap: wrap; }
+.ausgang__kopf .feld__label small { display: block; font-weight: 400; }
+.ausgang__hinweis { margin: .45rem 0 0; font-size: .82rem; color: var(--text-leise); }
+.ausgang [data-abbruch-grund] { margin-top: .6rem; }
+.ausgang [data-abbruch-grund] .feld { margin-bottom: 0; }
+
+/* Festes Farbpaar wie bei den übrigen Abzeichen – kippt im dunklen Modus nicht (7,0:1). */
+.abz--ausgang { background: #4b5a6e; color: #fff; border: 1px solid #4b5a6e; }
+/* Der Grund kann lang sein: abschneiden statt die Karte zu sprengen; voll im title. */
+.tag--grund { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }

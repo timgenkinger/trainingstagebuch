@@ -212,6 +212,7 @@ function karteSuche(s) {
         <strong>${esc(formatDatum(s.datum))}</strong>
         <span class="such-karte__ort">${esc(s.ort || 'ohne Ortsangabe')}</span>
         <span class="abz abz--art${S.sparteVon(s) === 'truemmer' ? ' abz--truemmer' : ''}">${esc(S.SPARTEN.find((x) => x.id === S.sparteVon(s)).kurz)}</span>
+        ${S.sonderausgang(s) ? `<span class="abz abz--ausgang">${esc(S.sonderausgang(s).label)}</span>` : ''}
         ${S.istAbgeschlossen(s) ? '' : '<span class="abz abz--entwurf abz--klein">Entwurf</span>'}
         ${bestaetigungAbzeichen(s)}
         ${score != null ? `<span class="note" style="--n:${skalaFarbe(score)}">${formatNote(score)}</span>` : ''}
@@ -219,7 +220,9 @@ function karteSuche(s) {
       <div class="such-karte__zeile2">
         ${zeile2(s)}
         ${s.suchzeitMin ? `<span class="tag">⏱ ${esc(formatMinuten(s.suchzeitMin))} Suche</span>` : ''}
-        ${versteckt ? `<span class="tag">🎯 ${funde}/${versteckt} gefunden</span>` : ''}
+        ${!S.sonderausgang(s) && versteckt ? `<span class="tag">🎯 ${funde}/${versteckt} gefunden</span>` : ''}
+        ${s.ausgang === 'abbruch' && (s.abbruchGrund || '').trim()
+          ? `<span class="tag tag--grund" title="${esc(s.abbruchGrund.trim())}">Grund: ${esc(s.abbruchGrund.trim())}</span>` : ''}
         ${probleme ? `<span class="tag tag--warn">⚠ ${probleme} Problemverhalten</span>` : ''}
       </div>
       <div class="such-karte__noten">
